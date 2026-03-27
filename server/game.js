@@ -261,7 +261,31 @@ export class GameEngine {
       cygne: 'animal', pégase: 'mythologie', onyx: 'pierre', cyclone: 'meteo',
       rubis: 'pierre', voltige: 'sport', cobalt: 'element', tempête: 'meteo',
       prisme: 'objet', aurore: 'phenomene', quartz: 'pierre', comète: 'astronomie',
-      magma: 'geologie', plasma: 'science', pause: 'concept', samouraï: 'histoire'
+      magma: 'geologie', plasma: 'science', pause: 'concept', samouraï: 'histoire',
+      // Mots faciles (nouveau schedule)
+      chat: 'animal', chien: 'animal', soleil: 'astronomie', maison: 'lieu',
+      musique: 'art', jardin: 'lieu', montagne: 'nature', forêt: 'nature',
+      cuisine: 'lieu', plage: 'lieu', bonbon: 'nourriture', pomme: 'fruit',
+      banane: 'fruit', tomate: 'legume', citron: 'fruit', fleur: 'nature',
+      arbre: 'nature', pierre: 'matiere', terre: 'element', vent: 'meteo',
+      pluie: 'meteo', oiseau: 'animal', poisson: 'animal', serpent: 'animal',
+      lapin: 'animal', cheval: 'animal', mouton: 'animal', lion: 'animal',
+      cerise: 'fruit', orange: 'fruit', chapeau: 'accessoire', fenêtre: 'objet',
+      voiture: 'vehicule', chemin: 'lieu', rivière: 'nature', bateau: 'vehicule',
+      ballon: 'objet', bouteille: 'objet', couteau: 'objet', peinture: 'art',
+      guitare: 'instrument', tambour: 'instrument', biscuit: 'nourriture',
+      château: 'architecture', souris: 'animal', hibou: 'animal', dauphin: 'animal',
+      tortue: 'animal', renard: 'animal', grenouille: 'animal', escargot: 'animal',
+      abeille: 'insecte', fourmi: 'insecte', araignée: 'animal', girafe: 'animal',
+      panther: 'animal', chocolat: 'nourriture', football: 'sport',
+      // Mots difficiles (nouveau schedule)
+      métamorphose: 'concept', palindrome: 'linguistique', anachronisme: 'concept',
+      oxymoron: 'litterature', mélancolie: 'emotion', nonchalance: 'attitude',
+      dichotomie: 'concept', paradigme: 'concept', apothéose: 'concept',
+      cacophonie: 'son', euphémisme: 'litterature', allégorie: 'litterature',
+      sorcellerie: 'magie', archéologie: 'science', astronomie: 'science',
+      mythologie: 'culture', cybernétique: 'science', hologramme: 'technologie',
+      algorithme: 'informatique'
     }
     return categories[word] || 'mot courant'
   }

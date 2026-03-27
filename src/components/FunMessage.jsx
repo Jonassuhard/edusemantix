@@ -162,10 +162,109 @@ const MESSAGES = {
     "Hmm, jamais entendu parler 🤔",
     "Ce mot n'est pas de ce monde 👽",
   ],
+  fiveHot: [
+    "You know the way 🐸",
+    "T'es en feu là, le mot tremble 🔥",
+    "5 chauds d'affilée, machine de guerre 💥",
+    "Le thermomètre va exploser 🌡️💣",
+    "T'es sur la bonne piste, fonce ! 🏎️",
+  ],
+}
+
+// Easter egg messages triggered by specific words
+const EASTER_EGGS = {
+  'infirmiere': "Coquinou 😏",
+  'infirmière': "Coquinou 😏",
+  'docteur': "Coquinou 😏",
+  'stethoscope': "Coquinou 😏",
+  'glace': "Ramène nous des glaçons 🧊",
+  'glacons': "Ramène nous des glaçons 🧊",
+  'glaçons': "Ramène nous des glaçons 🧊",
+  'froid': "Ramène nous des glaçons 🧊",
+  'congélateur': "Ramène nous des glaçons 🧊",
+  'mariage': "C'est pour quand ? 💍",
+  'fiançailles': "C'est pour quand ? 💍",
+  'noce': "C'est pour quand ? 💍",
+  'épouser': "C'est pour quand ? 💍",
+  'arabe': "T'es raciste ou ? 🤨",
+  'noir': "T'es raciste ou ? 🤨",
+  'blanc': "T'es raciste ou ? 🤨",
+  'racisme': "T'es raciste ou ? 🤨",
+  'drapeau': "GAY! 🏳️‍🌈",
+  'arc-en-ciel': "GAY! 🏳️‍🌈",
+  'joyeux': "GAY! 🏳️‍🌈",
+  'rainbow': "GAY! 🏳️‍🌈",
+  'fierté': "GAY! 🏳️‍🌈",
+  'jonas': "😛",
+  'suhard': "Le boss est dans la place 😎",
+  'tuer': "Quintuple ⚔️",
+  'tue': "Quintuple ⚔️",
+  'kill': "Quintuple ⚔️",
+  'jeu': "Quintuple ⚔️",
+  'lol': "Quintuple ⚔️",
+  'league': "Quintuple ⚔️",
+  'pentakill': "Quintuple ⚔️",
+  'tour': "🛬▮▮",
+  'avion': "🛬▮▮",
+  'septembre': "🛬▮▮",
+  // Actu / pop culture
+  'trump': "Make EduSemantix Great Again 🇺🇸",
+  'macron': "En même temps... 🤷",
+  'politique': "On est pas à l'Assemblée ici 🏛️",
+  'grève': "C'est la France hein 🥖",
+  'métro': "Métro, boulot, Semantix 🚇",
+  'ia': "Je suis là aussi hein 🤖",
+  'intelligence': "Artificielle ou naturelle ? 🧠",
+  'robot': "Bip boop, je me sens visé 🤖",
+  'chatgpt': "Hé oh, c'est Claude ici ! 😤",
+  'claude': "C'est moi ! Enchanté 👋",
+  'café': "T'en veux un ? ☕",
+  'lundi': "Force et courage 💀",
+  'vendredi': "ENFIN le weekend 🎉",
+  'vacances': "Emmène-moi avec toi 🏖️",
+  'salaire': "On en parle pas ici 🤫",
+  'patron': "Chut il va t'entendre 🤫",
+  'pizza': "Hawaïenne ou Margherita ? 🍕 (mauvaise réponse = exclusion)",
+  'bière': "C'est pas encore l'heure 🍺... ou si ?",
+  'apéro': "Il est quelle heure ? 🍷",
+  'dormir': "Pas pendant le jeu ! 😴",
+  'ennui': "Joue à EduSemantix plutôt 😏",
+  'toilettes': "TMI 🚽",
+  'amour': "C'est beau l'amour ❤️",
+  'bisou': "Pas au bureau 💋😳",
+  'sarah': "Elle est au courant que tu joues ? 👀",
+  'alternance': "On est tous passés par là 📚",
+  'stage': "Stagiaire un jour, stagiaire toujours ☕",
+  'réunion': "La réunion qui aurait pu être un mail 📧",
+  'teams': "Tu veux dire la réunion de trop ? 💻",
+  'excel': "Pas de RECHERCHEV ici 📊",
+  'powerpoint': "Pas de slides, que des mots 📽️",
+  'drupal': "Jonas a des flashbacks 😱",
+  'wordpress': "L'ennemi juré de Drupal 🗡️",
+  'tiktok': "Battle TikTok ISCOM quand ? 🎵",
+  'instagram': "Like et abonne-toi 📱",
+  'linkedin': "Poste tes résultats sur LinkedIn 💼",
+  'maman': "Elle serait fière de toi 🥹",
+  'papa': "Il serait fier de toi 🥹",
+  'chat': "Miaou 🐱",
+  'chien': "Ouaf 🐕",
+  'fromage': "On est en France quand même 🧀",
+  'baguette': "Hon hon hon 🥖🇫🇷",
+  'croissant': "Petit-déj au bureau ? 🥐",
 }
 
 function getFunMessage(guesses, lastResult, round, foundPerRound) {
   if (!lastResult) return null
+
+  // Easter egg check — always takes priority for specific words
+  if (lastResult.word) {
+    const wordRaw = lastResult.word.toLowerCase().trim()
+    const wordNorm = wordRaw.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    const easterEgg = EASTER_EGGS[wordRaw] || EASTER_EGGS[wordNorm]
+    if (easterEgg) {
+      return { text: easterEgg, type: 'neutral' }
+    }
+  }
 
   // Unknown word
   if (lastResult.known === false) {
@@ -176,6 +275,14 @@ function getFunMessage(guesses, lastResult, round, foundPerRound) {
   const score = lastResult.score
   const rank = lastResult.rank
   const emoji = lastResult.emoji
+
+  // 5 hot words in a row
+  if (guessCount >= 5) {
+    const last5 = guesses.slice(-5).map(g => g.emoji)
+    if (last5.every(e => e === '🥵' || e === '🔥' || e === '😱')) {
+      return { text: pick(MESSAGES.fiveHot), type: 'fire' }
+    }
+  }
 
   // BINGO messages
   if (lastResult.found) {

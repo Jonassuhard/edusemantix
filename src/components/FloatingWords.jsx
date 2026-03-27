@@ -51,24 +51,29 @@ export default function FloatingWords() {
       // Moment of inertia for a rectangle: (1/12) * m * (w² + h²)
       const inertia = (mass / 12) * (textW * textW + textH * textH)
 
+      const is67 = word === '67'
+
       return {
         word, size,
-        x: 80 + Math.random() * (w - 160),
-        y: 80 + Math.random() * (h - 160),
-        vx: (Math.random() - 0.5) * 3,
-        vy: (Math.random() - 0.5) * 3,
-        angle: (Math.random() - 0.5) * 1.5,
-        angVel: (Math.random() - 0.5) * 0.02,
+        x: is67 ? -100 : 80 + Math.random() * (w - 160),
+        y: is67 ? Math.random() * h : 80 + Math.random() * (h - 160),
+        vx: is67 ? 7 : (Math.random() - 0.5) * 3,
+        vy: is67 ? (Math.random() - 0.5) * 3 : (Math.random() - 0.5) * 3,
+        angle: is67 ? 0 : (Math.random() - 0.5) * 1.5,
+        angVel: is67 ? 0.15 : (Math.random() - 0.5) * 0.02,
         halfW: textW / 2,
         halfH: textH / 2,
-        // Collision radius (enclosing circle of the bounding box)
         radius: Math.sqrt(textW * textW + textH * textH) / 2,
-        mass,
-        invMass: 1 / mass,
+        mass: is67 ? mass * 3 : mass, // 67 is heavy — pushes others
+        invMass: is67 ? 1 / (mass * 3) : 1 / mass,
         inertia,
         invInertia: 1 / inertia,
-        opacity: 0.5 + Math.random() * 0.3,
+        opacity: is67 ? 0.9 : 0.5 + Math.random() * 0.3,
         flashTimer: 0,
+        is67,
+        hidden: is67, // starts hidden, appears after 20s
+        hiddenTimer: is67 ? 20 * 60 : 0, // 20sec * 60fps
+        respawnCooldown: 20 * 60, // 20sec in frames
       }
     })
 
@@ -198,68 +203,122 @@ export default function FloatingWords() {
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i]
 
-        // Integrate
-        p.x += p.vx
-        p.y += p.vy
-        p.angle += p.angVel
+        // === 67 SPECIAL BEHAVIOR ===
+        if (p.is67) {
+          // Hidden: countdown then respawn
+          if (p.hidden) {
+            if (p.hiddenTimer > 0) {
+              p.hiddenTimer--
+              continue // Don't draw or update
+            }
+            // Respawn from a random edge
+            const edge = Math.floor(Math.random() * 4)
+            const spd = 6 + Math.random() * 3
+            if (edge === 0) { p.x = -50; p.y = Math.random() * h; p.vx = spd; p.vy = (Math.random() - 0.5) * 4 }
+            else if (edge === 1) { p.x = w + 50; p.y = Math.random() * h; p.vx = -spd; p.vy = (Math.random() - 0.5) * 4 }
+            else if (edge === 2) { p.y = -50; p.x = Math.random() * w; p.vy = spd; p.vx = (Math.random() - 0.5) * 4 }
+            else { p.y = h + 50; p.x = Math.random() * w; p.vy = -spd; p.vx = (Math.random() - 0.5) * 4 }
+            p.angVel = (Math.random() - 0.5) * 0.3
+            p.hidden = false
+          }
 
-        // Apply drag
-        p.vx *= FRICTION
-        p.vy *= FRICTION
-        p.angVel *= ANG_FRICTION
+          // Move (no drag for 67 — stays fast)
+          p.x += p.vx
+          p.y += p.vy
+          p.angle += p.angVel
 
-        // Keep minimum speed so it doesn't die
-        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy)
-        if (speed < 0.5) {
-          p.vx += (Math.random() - 0.5) * 0.15
-          p.vy += (Math.random() - 0.5) * 0.15
-        }
-        // Cap max speed
-        if (speed > 4) {
-          p.vx = (p.vx / speed) * 4
-          p.vy = (p.vy / speed) * 4
-        }
+          // NO wall bounce — just check if off screen → hide + cooldown
+          if (p.x < -100 || p.x > w + 100 || p.y < -100 || p.y > h + 100) {
+            p.hidden = true
+            p.hiddenTimer = p.respawnCooldown
+            continue
+          }
 
-        // Wall collisions (with rotation transfer on angled hits)
-        const margin = 10
-        if (p.x - p.halfW < margin) {
-          p.x = margin + p.halfW
-          p.vx = Math.abs(p.vx) * WALL_RESTITUTION
-          p.angVel += p.vy * 0.003 // Wall friction spin
-        }
-        if (p.x + p.halfW > w - margin) {
-          p.x = w - margin - p.halfW
-          p.vx = -Math.abs(p.vx) * WALL_RESTITUTION
-          p.angVel -= p.vy * 0.003
-        }
-        if (p.y - p.halfH < margin) {
-          p.y = margin + p.halfH
-          p.vy = Math.abs(p.vy) * WALL_RESTITUTION
-          p.angVel -= p.vx * 0.003
-        }
-        if (p.y + p.halfH > h - margin) {
-          p.y = h - margin - p.halfH
-          p.vy = -Math.abs(p.vy) * WALL_RESTITUTION
-          p.angVel += p.vx * 0.003
-        }
+          // 67 collides with other words (but ignores walls)
+          for (let j = 0; j < particles.length; j++) {
+            if (j === i) continue
+            const q = particles[j]
+            if (q.hidden) continue
+            const dx = p.x - q.x
+            const dy = p.y - q.y
+            const dist = Math.sqrt(dx * dx + dy * dy)
+            if (dist > p.radius + q.radius) continue
+            const col = satCollision(p, q)
+            if (col) resolveCollision(p, q, col)
+          }
 
-        // Particle-particle collision (broad phase: radius check, narrow: SAT)
-        for (let j = i + 1; j < particles.length; j++) {
-          const q = particles[j]
-          const dx = p.x - q.x
-          const dy = p.y - q.y
-          const dist = Math.sqrt(dx * dx + dy * dy)
+          // Flash timer
+          if (p.flashTimer > 0) p.flashTimer--
 
-          // Broad phase
-          if (dist > p.radius + q.radius) continue
+          // Draw 67 (skip to draw section below)
+        } else {
+          // === NORMAL WORDS ===
 
-          // Narrow phase: SAT on oriented bounding boxes
-          const col = satCollision(p, q)
-          if (col) resolveCollision(p, q, col)
+          // Integrate
+          p.x += p.vx
+          p.y += p.vy
+          p.angle += p.angVel
+
+          // Apply drag
+          p.vx *= FRICTION
+          p.vy *= FRICTION
+          p.angVel *= ANG_FRICTION
+
+          // Keep minimum speed so it doesn't die
+          const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy)
+          if (speed < 0.5) {
+            p.vx += (Math.random() - 0.5) * 0.15
+            p.vy += (Math.random() - 0.5) * 0.15
+          }
+          // Cap max speed
+          if (speed > 4) {
+            p.vx = (p.vx / speed) * 4
+            p.vy = (p.vy / speed) * 4
+          }
+
+          // Wall collisions (with rotation transfer on angled hits)
+          const margin = 10
+          if (p.x - p.halfW < margin) {
+            p.x = margin + p.halfW
+            p.vx = Math.abs(p.vx) * WALL_RESTITUTION
+            p.angVel += p.vy * 0.003
+          }
+          if (p.x + p.halfW > w - margin) {
+            p.x = w - margin - p.halfW
+            p.vx = -Math.abs(p.vx) * WALL_RESTITUTION
+            p.angVel -= p.vy * 0.003
+          }
+          if (p.y - p.halfH < margin) {
+            p.y = margin + p.halfH
+            p.vy = Math.abs(p.vy) * WALL_RESTITUTION
+            p.angVel -= p.vx * 0.003
+          }
+          if (p.y + p.halfH > h - margin) {
+            p.y = h - margin - p.halfH
+            p.vy = -Math.abs(p.vy) * WALL_RESTITUTION
+            p.angVel += p.vx * 0.003
+          }
+
+          // Particle-particle collision (broad phase: radius check, narrow: SAT)
+          for (let j = i + 1; j < particles.length; j++) {
+            const q = particles[j]
+            if (q.is67) continue // 67 handles its own collisions
+            if (q.hidden) continue
+            const dx = p.x - q.x
+            const dy = p.y - q.y
+            const dist = Math.sqrt(dx * dx + dy * dy)
+
+            // Broad phase
+            if (dist > p.radius + q.radius) continue
+
+            // Narrow phase: SAT on oriented bounding boxes
+            const col = satCollision(p, q)
+            if (col) resolveCollision(p, q, col)
+          }
+
+          // Flash timer
+          if (p.flashTimer > 0) p.flashTimer--
         }
-
-        // Flash timer
-        if (p.flashTimer > 0) p.flashTimer--
 
         // Draw
         ctx.save()

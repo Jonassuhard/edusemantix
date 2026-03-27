@@ -10,6 +10,7 @@ import TempLegend from './components/TempLegend'
 import HelpModal from './components/HelpModal'
 import HintBar from './components/HintBar'
 import ConnectionStatus from './components/ConnectionStatus'
+import FunMessage from './components/FunMessage'
 
 const STORAGE_KEY = 'edusemantix'
 const MAX_ROUNDS = 3
@@ -163,8 +164,9 @@ export default function App() {
     if (!word.trim() || found) return
     const cleaned = word.trim().toLowerCase()
     if (guesses.find(g => g.word === cleaned)) {
-      setError('Deja essaye !')
-      setTimeout(() => setError(''), 1500)
+      const dupeMessages = ['Déjà tenté chef 🫡', 'Alzheimer ? 🤔', 'Tu l\'as déjà mis celui-là 😅', 'Ctrl+Z mental 🔄', 'Déjà vu ! Littéralement.']
+      setError(dupeMessages[Math.floor(Math.random() * dupeMessages.length)])
+      setTimeout(() => setError(''), 2000)
       return
     }
     socket.emit('guess', { word: cleaned, round })
@@ -228,6 +230,7 @@ export default function App() {
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-4 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
         <div className="flex flex-col gap-3">
           <GuessInput onGuess={handleGuess} error={error} disabled={found} />
+          <FunMessage guesses={guesses} lastResult={lastResult} round={round} foundPerRound={foundPerRound} />
           <EmojiSummary guesses={guesses} />
           <TemperatureBar bestScore={guesses.length > 0 ? Math.max(...guesses.map(g => g.score)) : null} />
           {showLegend && <TempLegend />}

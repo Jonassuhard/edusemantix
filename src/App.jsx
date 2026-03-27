@@ -13,6 +13,7 @@ import ConnectionStatus from './components/ConnectionStatus'
 import FunMessage from './components/FunMessage'
 import EasterEggOverlay from './components/EasterEggOverlay'
 import FeedbackBox from './components/FeedbackBox'
+import FloatingWords from './components/FloatingWords'
 import Confetti from './components/Confetti'
 import useTimer from './hooks/useTimer'
 import useSounds from './hooks/useSounds'
@@ -301,8 +302,9 @@ function LoginScreen({ onLogin, savedName }) {
   const [name, setName] = useState(savedName || '')
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="glass-strong rounded-2xl p-8 max-w-md w-full text-center">
+    <div className="min-h-screen flex items-center justify-center px-4 relative">
+      <FloatingWords />
+      <div className="glass-strong rounded-2xl p-8 max-w-md w-full text-center relative z-10">
         <div className="text-5xl mb-4">🔤</div>
         <h1 className="text-3xl font-bold mb-2">
           <span className="bg-gradient-to-r from-accent-violet to-accent-orange bg-clip-text text-transparent">

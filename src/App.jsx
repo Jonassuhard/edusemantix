@@ -164,6 +164,24 @@ export default function App() {
           copy[r] = timer.elapsed
           return copy
         })
+        // Special BINGO animations for ~10% of schedule words
+        const bingoAnims = {
+          chat: 'butterfly', soleil: 'firework', musique: 'disco',
+          montagne: 'volcano', forêt: 'butterfly', plage: 'ocean',
+          lion: 'lightning', dragon: 'firework', serpent: 'ninja',
+          tortue: 'ocean', araignée: 'spider', football: 'firework',
+          dinosaure: 'volcano', papillon: 'butterfly', tigre: 'ninja',
+          orage: 'lightning', loup: 'ninja', tempête: 'tornado',
+          volcan: 'volcano', galaxie: 'rocket', étoile: 'rocket',
+          chocolat: 'firework', scorpion: 'ninja', tonnerre: 'lightning',
+          météore: 'rocket', cyclone: 'tornado', dauphin: 'ocean',
+          baleine: 'ocean', flamme: 'explosion', requin: 'ocean',
+        }
+        const w = result.word?.toLowerCase()
+        if (bingoAnims[w]) {
+          setEasterEggAnim(bingoAnims[w])
+          setEasterEggKey(k => k + 1)
+        }
         setShowWin(true)
         const stats = loadStats()
         stats.played++

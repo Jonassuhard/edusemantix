@@ -13,6 +13,8 @@ import ConnectionStatus from './components/ConnectionStatus'
 import FunMessage from './components/FunMessage'
 import EasterEggOverlay from './components/EasterEggOverlay'
 import Confetti from './components/Confetti'
+import useTimer from './hooks/useTimer'
+import useSounds from './hooks/useSounds'
 
 const STORAGE_KEY = 'edusemantix'
 const MAX_ROUNDS = 3
@@ -64,9 +66,16 @@ export default function App() {
   const [easterEggAnim, setEasterEggAnim] = useState(null)
   const [easterEggKey, setEasterEggKey] = useState(0)
   const [showConfetti, setShowConfetti] = useState(false)
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    try { return localStorage.getItem(STORAGE_KEY + '_sound') !== 'off' } catch { return true }
+  })
+  const [targetWord, setTargetWord] = useState(null)
+  const [timerPerRound, setTimerPerRound] = useState([0, 0, 0])
 
   const guesses = guessesPerRound[round] || []
   const found = foundPerRound[round]
+  const timer = useTimer(!found && guesses.length > 0 && screen === 'game')
+  const sounds = useSounds(soundEnabled)
 
   // Restore from localStorage
   useEffect(() => {
@@ -101,9 +110,12 @@ export default function App() {
       setLastResult(result)
       if (!result.known) {
         setError(result.error || 'Mot inconnu')
+        sounds.unknown()
         setTimeout(() => setError(''), 2000)
         return
       }
+      // Play sound based on emoji
+      if (result.emoji) sounds.forEmoji(result.emoji)
       setError('')
       const r = result.round ?? round
       setGuessesPerRound(prev => {
@@ -128,6 +140,12 @@ export default function App() {
             return copy
           })
         }
+        setTargetWord(result.word)
+        setTimerPerRound(prev => {
+          const copy = [...prev]
+          copy[r] = timer.elapsed
+          return copy
+        })
         setShowWin(true)
         const stats = loadStats()
         stats.played++
@@ -202,6 +220,10 @@ export default function App() {
         onLegend={() => setShowLegend(!showLegend)}
         darkMode={darkMode}
         onToggleTheme={() => { setDarkMode(!darkMode); document.documentElement.classList.toggle('light') }}
+        soundEnabled={soundEnabled}
+        onToggleSound={() => { const next = !soundEnabled; setSoundEnabled(next); localStorage.setItem(STORAGE_KEY + '_sound', next ? 'on' : 'off') }}
+        timer={timer}
+        found={found}
       />
 
       {/* Round tabs */}
@@ -261,6 +283,8 @@ export default function App() {
           hasNextRound={round < roundCount - 1}
           onNextRound={handleNextRound}
           onClose={() => setShowWin(false)}
+          elapsedTime={timerPerRound[round]}
+          targetWord={targetWord}
         />
       )}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}

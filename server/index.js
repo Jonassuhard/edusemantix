@@ -29,6 +29,48 @@ app.get('/api/status', (req, res) => {
   })
 })
 
+// Definition API (fetches from Wiktionary MediaWiki API)
+app.get('/api/definition/:word', async (req, res) => {
+  try {
+    const word = req.params.word.toLowerCase()
+    // Try Wiktionary parse API for definitions
+    const url = `https://fr.wiktionary.org/w/api.php?action=parse&page=${encodeURIComponent(word)}&prop=wikitext&format=json&section=1`
+    const response = await fetch(url)
+    if (!response.ok) return res.json({ definition: null })
+    const data = await response.json()
+    if (data.parse && data.parse.wikitext) {
+      const wikitext = data.parse.wikitext['*'] || ''
+      // Extract definitions from wikitext (lines starting with #)
+      const defs = wikitext.split('\n')
+        .filter(l => /^# /.test(l))
+        .map(l => l.replace(/^# /, '').replace(/\[\[([^\]|]*\|)?([^\]]*)\]\]/g, '$2').replace(/\{\{[^}]*\}\}/g, '').replace(/'{2,}/g, '').trim())
+        .filter(l => l.length > 5)
+        .slice(0, 2)
+      if (defs.length > 0) {
+        let def = defs.join(' | ')
+        if (def.length > 250) def = def.slice(0, 250) + '...'
+        return res.json({ definition: def })
+      }
+    }
+    // Fallback: try extract API
+    const url2 = `https://fr.wiktionary.org/w/api.php?action=query&titles=${encodeURIComponent(word)}&prop=extracts&exintro=1&explaintext=1&format=json`
+    const r2 = await fetch(url2)
+    const d2 = await r2.json()
+    const pages = d2?.query?.pages
+    if (pages) {
+      const page = Object.values(pages)[0]
+      if (page?.extract) {
+        let def = page.extract.trim()
+        if (def.length > 250) def = def.slice(0, 250) + '...'
+        return res.json({ definition: def })
+      }
+    }
+    res.json({ definition: null })
+  } catch {
+    res.json({ definition: null })
+  }
+})
+
 // Socket.io
 io.on('connection', (socket) => {
   let playerName = null

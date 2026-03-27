@@ -1,16 +1,19 @@
 {
   "name": "EduSemantix",
   "short_name": "EduSemantix",
-  "description": "Trouve le mot du jour par proximite semantique",
+  "description": "Trouve le mot du jour par proximite semantique — Eduservices",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0a0a12",
   "theme_color": "#8b5cf6",
+  "categories": ["games", "entertainment"],
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }

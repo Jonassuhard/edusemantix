@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-export default function Header({ day, guessCount, playerCount, onHelp, onLegend, darkMode, onToggleTheme }) {
+export default function Header({ day, guessCount, playerCount, onHelp, onLegend, darkMode, onToggleTheme, soundEnabled, onToggleSound, timer, found }) {
   const [nextWord, setNextWord] = useState('')
 
   useEffect(() => {
@@ -42,6 +42,14 @@ export default function Header({ day, guessCount, playerCount, onHelp, onLegend,
           </div>
 
           <div className="flex items-center gap-3 text-sm">
+            {/* Timer */}
+            {timer && guessCount > 0 && (
+              <div className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-mono ${found ? 'text-temp-bingo bg-temp-bingo/10' : 'text-gray-400 bg-white/5'}`}>
+                <span>⏱️</span>
+                <span>{timer.formatted}</span>
+              </div>
+            )}
+
             <div className="flex items-center gap-1.5 text-gray-400">
               <span className="text-base">💬</span>
               <span className="font-mono">{guessCount}</span>
@@ -61,23 +69,34 @@ export default function Header({ day, guessCount, playerCount, onHelp, onLegend,
           <button
             onClick={onToggleTheme}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium glass hover:bg-white/[0.05] transition-all text-gray-400 hover:text-white"
+            title={darkMode ? 'Mode clair' : 'Mode sombre'}
           >
             <span>{darkMode ? '☀️' : '🌙'}</span>
             <span className="hidden sm:inline">{darkMode ? 'Clair' : 'Sombre'}</span>
           </button>
           <button
+            onClick={onToggleSound}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium glass hover:bg-white/[0.05] transition-all ${soundEnabled ? 'text-accent-violet' : 'text-gray-500'}`}
+            title={soundEnabled ? 'Couper le son' : 'Activer le son'}
+          >
+            <span>{soundEnabled ? '🔊' : '🔇'}</span>
+            <span className="hidden sm:inline">{soundEnabled ? 'Son' : 'Muet'}</span>
+          </button>
+          <button
             onClick={onLegend}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium glass hover:bg-white/[0.05] transition-all text-gray-400 hover:text-white"
+            title="Échelle de température"
           >
             <span>🌡</span>
-            <span className="hidden sm:inline">Echelle</span>
+            <span className="hidden sm:inline">Échelle</span>
           </button>
           <button
             onClick={onHelp}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium glass hover:bg-white/[0.05] transition-all text-gray-400 hover:text-white"
+            title="Règles du jeu"
           >
             <span>❓</span>
-            <span className="hidden sm:inline">Regles</span>
+            <span className="hidden sm:inline">Règles</span>
           </button>
         </div>
       </div>

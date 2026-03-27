@@ -5,6 +5,14 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { appendFileSync, readFileSync } from 'fs'
 import { GameEngine } from './game.js'
+import { firebaseEnabled } from './firebase.js'
+import {
+  savePlayerResult,
+  updatePlayerAfterGame,
+  getPlayerStats,
+  getDailyLeaderboard,
+  getAllTimeLeaderboard,
+} from './db.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -130,13 +138,13 @@ function broadcastLeaderboard() {
 io.on('connection', (socket) => {
   let playerName = null
 
-  socket.on('join', (name) => {
+  socket.on('join', async (name) => {
     if (typeof name !== 'string') return
     playerName = name.trim().replace(/[<>&"']/g, '').slice(0, 20)
     if (!playerName) return
     game.addPlayer(playerName)
     const info = game.getTodayInfo()
-    socket.emit('joined', {
+    const joinData = {
       name: playerName,
       day: info.day,
       yesterdayWords: info.yesterdayWords,
@@ -146,7 +154,15 @@ io.on('connection', (socket) => {
         game.getHints(1),
         game.getHints(2)
       ]
-    })
+    }
+    // Attach persistent stats if Firebase is available
+    if (firebaseEnabled) {
+      try {
+        const stats = await getPlayerStats(playerName)
+        if (stats) joinData.stats = stats
+      } catch {}
+    }
+    socket.emit('joined', joinData)
     broadcastLeaderboard()
     io.emit('player-count', io.engine.clientsCount)
   })
@@ -183,7 +199,39 @@ io.on('connection', (socket) => {
       broadcastLeaderboard()
       if (result.found) {
         io.emit('player-found', { name: playerName, round: r })
+        // Persist to Firestore (fire-and-forget, don't block the game)
+        if (firebaseEnabled) {
+          const today = new Date().toISOString().slice(0, 10)
+          const guessCount = result.guessNumber || 0
+          savePlayerResult(playerName, today, r, result.word, guessCount, 0, true)
+            .catch(() => {})
+          updatePlayerAfterGame(playerName, true, guessCount)
+            .catch(() => {})
+        }
       }
+    }
+  })
+
+  // Persistent stats from Firestore
+  socket.on('get-stats', async (name) => {
+    if (!firebaseEnabled) return socket.emit('stats', null)
+    const target = (typeof name === 'string' && name) ? name : playerName
+    if (!target) return socket.emit('stats', null)
+    try {
+      const stats = await getPlayerStats(target)
+      socket.emit('stats', stats)
+    } catch {
+      socket.emit('stats', null)
+    }
+  })
+
+  socket.on('get-alltime-leaderboard', async () => {
+    if (!firebaseEnabled) return socket.emit('alltime-leaderboard', [])
+    try {
+      const lb = await getAllTimeLeaderboard()
+      socket.emit('alltime-leaderboard', lb)
+    } catch {
+      socket.emit('alltime-leaderboard', [])
     }
   })
 

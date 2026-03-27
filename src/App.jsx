@@ -12,6 +12,7 @@ import HintBar from './components/HintBar'
 import ConnectionStatus from './components/ConnectionStatus'
 import FunMessage from './components/FunMessage'
 import EasterEggOverlay from './components/EasterEggOverlay'
+import FeedbackBox from './components/FeedbackBox'
 import Confetti from './components/Confetti'
 import useTimer from './hooks/useTimer'
 import useSounds from './hooks/useSounds'
@@ -268,6 +269,7 @@ export default function App() {
         <aside className="lg:sticky lg:top-4 lg:self-start flex flex-col gap-4">
           <Leaderboard players={leaderboard} currentUser={username} />
           {yesterdayWords.length > 0 && <YesterdayWords words={yesterdayWords} />}
+          <FeedbackBox />
           <ServerNotice />
         </aside>
       </main>

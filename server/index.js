@@ -3,6 +3,7 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import { appendFileSync, readFileSync } from 'fs'
 import { GameEngine } from './game.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -91,6 +92,16 @@ app.get('/api/definition/:word', async (req, res) => {
   }
 })
 
+// Feedback list (dev only)
+app.get('/api/feedback', (req, res) => {
+  try {
+    const data = readFileSync(join(__dirname, '..', 'data', 'feedback.txt'), 'utf-8')
+    res.type('text/plain').send(data)
+  } catch {
+    res.type('text/plain').send('Pas encore de feedback')
+  }
+})
+
 // SPA fallback
 app.get('*', (req, res) => {
   res.sendFile(join(distPath, 'index.html'))
@@ -159,6 +170,17 @@ io.on('connection', (socket) => {
         io.emit('player-found', { name: playerName, round: r })
       }
     }
+  })
+
+  socket.on('feedback', (msg) => {
+    if (!playerName || typeof msg !== 'string') return
+    const text = msg.trim().slice(0, 500)
+    if (!text) return
+    const line = `[${new Date().toISOString()}] ${playerName}: ${text}\n`
+    console.log(`💡 FEEDBACK — ${line.trim()}`)
+    try {
+      appendFileSync(join(__dirname, '..', 'data', 'feedback.txt'), line)
+    } catch {}
   })
 
   socket.on('disconnect', () => {

@@ -30,7 +30,7 @@ export default function GuessList({ guesses, lastResult }) {
       <div className="glass rounded-xl p-8 text-center text-gray-500">
         <p className="text-4xl mb-3">🤔</p>
         <p>Tape ton premier mot pour commencer</p>
-        <p className="text-xs mt-2 text-gray-600">342 000+ mots francais reconnus</p>
+        <p className="text-xs mt-2 text-gray-600">350 000+ mots francais reconnus</p>
         <p className="text-xs text-gray-600">Noms communs, adjectifs, verbes a l'infinitif</p>
       </div>
     )

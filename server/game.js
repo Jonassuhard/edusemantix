@@ -285,7 +285,10 @@ export class GameEngine {
       cacophonie: 'son', euphémisme: 'litterature', allégorie: 'litterature',
       sorcellerie: 'magie', archéologie: 'science', astronomie: 'science',
       mythologie: 'culture', cybernétique: 'science', hologramme: 'technologie',
-      algorithme: 'informatique'
+      algorithme: 'informatique',
+      candidature: 'vie pro', certification: 'formation',
+      chrysanthème: 'plante', conférence: 'vie pro',
+      hiérarchie: 'concept', organigramme: 'outil', séminaire: 'evenement'
     }
     return categories[word] || 'mot courant'
   }

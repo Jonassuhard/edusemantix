@@ -379,7 +379,7 @@ function LoginScreen({ onLogin, savedName }) {
             <span>🔥 brulant</span><span>·</span><span>😱 proche</span><span>·</span>
             <span>🥳 trouve !</span>
           </div>
-          <p className="text-gray-600 mt-2">342 000+ mots francais — noms communs uniquement</p>
+          <p className="text-gray-600 mt-2">350 000+ mots francais — noms communs uniquement</p>
         </div>
       </div>
     </div>

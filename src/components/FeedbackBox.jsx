@@ -35,7 +35,8 @@ export default function FeedbackBox() {
         </div>
         <button
           onClick={() => setOpen(false)}
-          className="text-gray-600 hover:text-gray-400 text-xs"
+          className="text-gray-600 hover:text-gray-400 text-xs min-w-[44px] min-h-[44px] flex items-center justify-center"
+          aria-label="Fermer"
         >
           ✕
         </button>
@@ -61,7 +62,7 @@ export default function FeedbackBox() {
             <button
               onClick={handleSend}
               disabled={!message.trim()}
-              className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-accent-violet to-accent-orange text-white text-xs font-medium disabled:opacity-30 hover:opacity-90 active:scale-95 transition-all"
+              className="px-4 py-2.5 min-h-[44px] rounded-lg bg-gradient-to-r from-accent-violet to-accent-orange text-white text-xs font-medium disabled:opacity-30 hover:opacity-90 active:scale-95 transition-all"
             >
               Envoyer 🚀
             </button>

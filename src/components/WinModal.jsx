@@ -46,7 +46,8 @@ export default function WinModal({ guessCount, guesses, stats, topWords, round, 
         <div className="relative glass-strong rounded-2xl p-6 sm:p-8 max-w-sm w-full text-center animate-bingo glow-gold max-h-[90vh] overflow-y-auto">
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 w-8 h-8 rounded-full border border-white/10 text-gray-500 hover:text-white hover:border-white/30 transition-all flex items-center justify-center text-sm"
+            className="absolute top-3 right-3 w-11 h-11 rounded-full border border-white/10 text-gray-500 hover:text-white hover:border-white/30 transition-all flex items-center justify-center text-sm"
+            aria-label="Fermer"
           >
             ✕
           </button>

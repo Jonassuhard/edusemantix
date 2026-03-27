@@ -30,9 +30,7 @@ export default function GuessInput({ onGuess, error, disabled }) {
             placeholder={disabled ? 'Bravo ! Tu as trouvé !' : 'Tape un mot...'}
             disabled={disabled}
             autoComplete="off"
-            autoCorrect="off"
             autoCapitalize="off"
-            spellCheck="false"
             className={`
               w-full px-4 py-3.5 rounded-xl bg-bg-surface border text-white
               placeholder-gray-500 text-lg font-medium transition-all

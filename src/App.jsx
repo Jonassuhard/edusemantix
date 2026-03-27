@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import socket from './socket'
 import Header from './components/Header'
 import GuessInput from './components/GuessInput'
@@ -365,13 +365,43 @@ function YesterdayWords({ words }) {
 }
 
 function ServerNotice() {
+  const [sleepIn, setSleepIn] = useState('')
+  const lastActivityRef = useRef(Date.now())
+
+  useEffect(() => {
+    // Reset timer on any guess
+    const handler = () => { lastActivityRef.current = Date.now() }
+    window.addEventListener('click', handler)
+    window.addEventListener('keydown', handler)
+
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - lastActivityRef.current
+      const remaining = Math.max(0, 15 * 60 * 1000 - elapsed)
+      const mins = Math.floor(remaining / 60000)
+      const secs = Math.floor((remaining % 60000) / 1000)
+      setSleepIn(remaining > 0 ? `${mins}:${secs.toString().padStart(2, '0')}` : '💤')
+    }, 1000)
+
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('click', handler)
+      window.removeEventListener('keydown', handler)
+    }
+  }, [])
+
   return (
     <div className="glass rounded-xl px-4 py-3 text-[11px] text-gray-500 space-y-1">
-      <div className="flex items-center gap-1.5">
-        <span>⚡</span>
-        <span className="text-gray-400 font-medium">Serveur gratuit</span>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <span>⚡</span>
+          <span className="text-gray-400 font-medium">Serveur gratuit</span>
+        </div>
+        <div className="flex items-center gap-1 font-mono text-gray-600">
+          <span>💤</span>
+          <span>{sleepIn}</span>
+        </div>
       </div>
-      <p>Le serveur s'endort apres 15 min d'inactivite. Le premier chargement peut prendre ~30s. Tes essais sont sauvegardes localement.</p>
+      <p>Serveur Render : s'endort apres 15 min d'inactivite (~30s au reveil).</p>
     </div>
   )
 }

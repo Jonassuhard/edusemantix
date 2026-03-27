@@ -111,6 +111,21 @@ app.get('*', (req, res) => {
 const guessRateLimit = new Map()
 const GUESS_RATE_LIMIT = 10 // max guesses per 5 seconds
 
+// Throttle leaderboard broadcasts to 1/sec max
+let leaderboardDirty = false
+let leaderboardTimer = null
+function broadcastLeaderboard() {
+  if (leaderboardTimer) return
+  leaderboardDirty = true
+  leaderboardTimer = setTimeout(() => {
+    if (leaderboardDirty) {
+      io.emit('leaderboard', game.getLeaderboard())
+      leaderboardDirty = false
+    }
+    leaderboardTimer = null
+  }, 1000)
+}
+
 // Socket.io
 io.on('connection', (socket) => {
   let playerName = null
@@ -132,7 +147,7 @@ io.on('connection', (socket) => {
         game.getHints(2)
       ]
     })
-    io.emit('leaderboard', game.getLeaderboard())
+    broadcastLeaderboard()
     io.emit('player-count', io.engine.clientsCount)
   })
 
@@ -165,7 +180,7 @@ io.on('connection', (socket) => {
     socket.emit('guess-result', result)
 
     if (result.known) {
-      io.emit('leaderboard', game.getLeaderboard())
+      broadcastLeaderboard()
       if (result.found) {
         io.emit('player-found', { name: playerName, round: r })
       }

@@ -32,19 +32,19 @@ export default function FloatingWords() {
     window.addEventListener('resize', handleResize)
 
     // Create floating word particles
-    const particles = Array.from({ length: 22 }, (_, i) => {
+    const particles = Array.from({ length: 18 }, (_, i) => {
       const word = WORDS[i % WORDS.length]
-      const size = 12 + Math.random() * 16
+      const size = 14 + Math.random() * 18
       return {
         word,
         x: Math.random() * w,
         y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: (Math.random() - 0.5) * 0.6,
+        vx: (Math.random() - 0.5) * 2.5,
+        vy: (Math.random() - 0.5) * 2.5,
         rotation: Math.random() * Math.PI * 2,
-        rotSpeed: (Math.random() - 0.5) * 0.008,
+        rotSpeed: (Math.random() - 0.5) * 0.012,
         size,
-        opacity: 0.06 + Math.random() * 0.1,
+        opacity: 0.15 + Math.random() * 0.15,
         // Approx width for collision
         width: word.length * size * 0.55,
         height: size * 1.2,
@@ -113,15 +113,15 @@ export default function FloatingWords() {
 
         // Clamp speed
         const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy)
-        const maxSpeed = 1.2
-        const minSpeed = 0.15
+        const maxSpeed = 3
+        const minSpeed = 0.8
         if (speed > maxSpeed) {
           p.vx = (p.vx / speed) * maxSpeed
           p.vy = (p.vy / speed) * maxSpeed
         }
         if (speed < minSpeed) {
-          p.vx += (Math.random() - 0.5) * 0.05
-          p.vy += (Math.random() - 0.5) * 0.05
+          p.vx += (Math.random() - 0.5) * 0.3
+          p.vy += (Math.random() - 0.5) * 0.3
         }
 
         // Dampen rotation slowly

@@ -212,7 +212,48 @@ export class GameEngine {
       voilier: 'sport', création: 'art', courage: 'qualite',
       patience: 'qualite', ordinateur: 'objet', maladroit: 'qualite',
       retardataire: 'qualite', gourmandise: 'defaut', cinéphile: 'loisir',
-      astronaute: 'metier', dinosaure: 'animal'
+      astronaute: 'metier', dinosaure: 'animal',
+      stage: 'vie pro', bureau: 'lieu', café: 'boisson', clavier: 'objet',
+      écran: 'objet', agenda: 'objet', wifi: 'technologie', stylo: 'objet',
+      salon: 'lieu', dossier: 'objet', tableau: 'objet', congé: 'vie pro',
+      mail: 'communication', teams: 'outil', meeting: 'vie pro',
+      projet: 'vie pro', rapport: 'document', planning: 'outil',
+      collègue: 'personne', logiciel: 'technologie', serveur: 'technologie',
+      ticket: 'objet', sandwich: 'nourriture', photocopie: 'bureau',
+      comptable: 'metier', recrutement: 'vie pro', sécurité: 'concept',
+      comptoir: 'lieu', vestiaire: 'lieu', powerpoint: 'outil',
+      tableur: 'outil', cravate: 'accessoire', parking: 'lieu',
+      'open-space': 'lieu', formation: 'vie pro', promotion: 'vie pro',
+      brainstorming: 'methode', benchmark: 'methode', workshop: 'evenement',
+      feedback: 'communication', afterwork: 'evenement', management: 'concept',
+      leadership: 'concept', coaching: 'methode', freelance: 'vie pro',
+      stratégie: 'concept', innovation: 'concept',
+      // Mots courts
+      tigre: 'animal', pirate: 'personnage', lune: 'astronomie', robot: 'technologie',
+      feu: 'element', ninja: 'personnage', rêve: 'concept', viking: 'histoire',
+      ombre: 'concept', sphinx: 'mythologie', orage: 'meteo', bandit: 'personnage',
+      plume: 'objet', magie: 'concept', glace: 'nature', dragon: 'mythologie',
+      ancre: 'objet', trésor: 'objet', nuage: 'nature', sirène: 'mythologie',
+      torche: 'objet', météore: 'astronomie', jade: 'pierre', sable: 'nature',
+      aigle: 'animal', cascade: 'nature', perle: 'bijou', fantôme: 'creature',
+      cœur: 'organe', sorcier: 'personnage', neige: 'meteo', odyssée: 'litterature',
+      flamme: 'element', énigme: 'concept', brise: 'meteo', mirage: 'phenomene',
+      roche: 'nature', légende: 'litterature', loup: 'animal', oracle: 'mythologie',
+      aube: 'moment', spectre: 'creature', ciel: 'nature', alchimie: 'science',
+      étoile: 'astronomie', corsaire: 'personnage', fauve: 'animal', elfe: 'creature',
+      masque: 'objet', momie: 'histoire', forge: 'lieu', titan: 'mythologie',
+      sève: 'nature', enchanteur: 'personnage', arène: 'lieu', gobelin: 'creature',
+      toile: 'art', phénix: 'mythologie', iris: 'fleur', centaure: 'mythologie',
+      nacre: 'matiere', cyclope: 'mythologie', dune: 'nature', kraken: 'creature',
+      palme: 'nature', chimère: 'mythologie', bûche: 'objet', amazone: 'mythologie',
+      givre: 'nature', minotaure: 'mythologie', algue: 'nature', valkyrie: 'mythologie',
+      rosée: 'nature', griffon: 'creature', cendre: 'matiere', hydre: 'creature',
+      ambre: 'matiere', golem: 'creature', opale: 'pierre', djinn: 'creature',
+      zèbre: 'animal', licorne: 'creature', lynx: 'animal', basilic: 'creature',
+      cygne: 'animal', pégase: 'mythologie', onyx: 'pierre', cyclone: 'meteo',
+      rubis: 'pierre', voltige: 'sport', cobalt: 'element', tempête: 'meteo',
+      prisme: 'objet', aurore: 'phenomene', quartz: 'pierre', comète: 'astronomie',
+      magma: 'geologie', plasma: 'science', pause: 'concept', samouraï: 'histoire'
     }
     return categories[word] || 'mot courant'
   }
@@ -239,6 +280,36 @@ export class GameEngine {
     }
   }
 
+  // Strip accents from a string
+  stripAccents(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  }
+
+  // Try to find word in index, with accent fallback
+  resolveWord(word) {
+    // Direct match
+    if (this.wordIndex[word] !== undefined) return word
+    // Try with accents stripped — find the accented version in index
+    const stripped = this.stripAccents(word)
+    if (this.accentMap && this.accentMap[stripped]) return this.accentMap[stripped]
+    // Try adding common accent patterns
+    return null
+  }
+
+  buildAccentMap() {
+    if (this.accentMap) return
+    console.log('Building accent fallback map...')
+    this.accentMap = {}
+    for (const w of this.vocabWords) {
+      const stripped = this.stripAccents(w)
+      // Only store the first (most common) accented version
+      if (!this.accentMap[stripped]) {
+        this.accentMap[stripped] = w
+      }
+    }
+    console.log(`Accent map: ${Object.keys(this.accentMap).length} entries`)
+  }
+
   processGuess(playerName, word, round) {
     const words = this.getTodayWords()
     const target = words[round]
@@ -247,10 +318,15 @@ export class GameEngine {
     // Load vectors for this round
     this.loadWordForRound(round)
 
+    // Build accent map on first guess (lazy init)
+    if (!this.accentMap) this.buildAccentMap()
+
     const player = this.players.get(playerName)
 
-    // Exact match
-    if (word === target) {
+    // Exact match (with accent fallback)
+    const targetStripped = this.stripAccents(target)
+    const wordStripped = this.stripAccents(word)
+    if (word === target || wordStripped === targetStripped) {
       if (player) {
         player.guesses[round]++
         player.bestScore[round] = 100
@@ -258,7 +334,7 @@ export class GameEngine {
         player.found[round] = true
       }
       return {
-        word, known: true, score: 100, rank: 1000,
+        word: target, known: true, score: 100, rank: 1000,
         emoji: '\u{1F973}', found: true,
         guessNumber: player?.guesses[round] || 0,
         topWords: this.getTopWords(10),
@@ -266,7 +342,33 @@ export class GameEngine {
       }
     }
 
+    // Resolve word (try exact, then accent fallback)
+    const resolved = this.resolveWord(word)
+
     // Vector similarity
+    if (this.vectors && resolved) {
+      const result = this.computeSimilarity(resolved)
+      if (result) {
+        const { score, rank } = result
+        const emoji = this.getEmoji(score, rank)
+        if (player) {
+          player.guesses[round]++
+          if (score > player.bestScore[round]) {
+            player.bestScore[round] = score
+            player.bestRank[round] = rank
+          }
+        }
+        return {
+          word: resolved, known: true,
+          score: Math.round(score * 100) / 100,
+          rank, emoji, found: false,
+          guessNumber: player?.guesses[round] || 0,
+          round
+        }
+      }
+    }
+
+    // Try direct similarity as last resort (word might be in vectors but not resolved)
     if (this.vectors) {
       const result = this.computeSimilarity(word)
       if (result) {

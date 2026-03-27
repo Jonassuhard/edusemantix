@@ -36,7 +36,8 @@ export default function FloatingWords() {
     window.addEventListener('resize', handleResize)
 
     function createParticle(word, is67 = false) {
-      const size = is67 ? 36 : 18 + Math.random() * 22
+      const isMobile = w < 768
+      const size = is67 ? (isMobile ? 24 : 36) : isMobile ? 11 + Math.random() * 10 : 18 + Math.random() * 22
       ctx.font = `700 ${Math.round(size)}px Inter, system-ui, sans-serif`
       const textW = ctx.measureText(word).width
       const textH = size * 1.3
@@ -64,8 +65,10 @@ export default function FloatingWords() {
       }
     }
 
-    // Shuffle words and pick 17 + force 67
-    const shuffled = [...WORDS].sort(() => Math.random() - 0.5).slice(0, 17)
+    // Shuffle words and pick less on mobile
+    const isMobile = w < 768
+    const count = isMobile ? 10 : 17
+    const shuffled = [...WORDS].sort(() => Math.random() - 0.5).slice(0, count)
     const particles = shuffled.map(w => createParticle(w))
     particles.push(createParticle('67', true)) // Force 67
 

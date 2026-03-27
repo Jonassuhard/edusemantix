@@ -64,7 +64,9 @@ export default function App() {
   const [showWin, setShowWin] = useState(false)
   const [yesterdayWords, setYesterdayWords] = useState([])
   const [hints, setHints] = useState([null, null, null])
-  const [darkMode, setDarkMode] = useState(true)
+  const [darkMode, setDarkMode] = useState(() => {
+    try { return localStorage.getItem(STORAGE_KEY + '_theme') !== 'light' } catch { return true }
+  })
   const [easterEggAnim, setEasterEggAnim] = useState(null)
   const [easterEggKey, setEasterEggKey] = useState(0)
   const [showConfetti, setShowConfetti] = useState(false)
@@ -78,6 +80,11 @@ export default function App() {
   const found = foundPerRound[round]
   const timer = useTimer(!found && guesses.length > 0 && screen === 'game')
   const sounds = useSounds(soundEnabled)
+
+  // Apply saved theme on mount
+  useEffect(() => {
+    if (!darkMode) document.documentElement.classList.add('light')
+  }, [])
 
   // Restore from localStorage
   useEffect(() => {
@@ -221,7 +228,7 @@ export default function App() {
         onHelp={() => setShowHelp(true)}
         onLegend={() => setShowLegend(!showLegend)}
         darkMode={darkMode}
-        onToggleTheme={() => { setDarkMode(!darkMode); document.documentElement.classList.toggle('light') }}
+        onToggleTheme={() => { const next = !darkMode; setDarkMode(next); document.documentElement.classList.toggle('light'); localStorage.setItem(STORAGE_KEY + '_theme', next ? 'dark' : 'light') }}
         soundEnabled={soundEnabled}
         onToggleSound={() => { const next = !soundEnabled; setSoundEnabled(next); localStorage.setItem(STORAGE_KEY + '_sound', next ? 'on' : 'off') }}
         timer={timer}

@@ -157,6 +157,14 @@ export class GameEngine {
     return this.schedule[index]
   }
 
+  getYesterdayWord() {
+    const epoch = new Date('2026-03-28')
+    const now = new Date()
+    const day = Math.floor((now - epoch) / 86400000) - 1
+    const index = ((day % this.schedule.length) + this.schedule.length) % this.schedule.length
+    return this.schedule[index]
+  }
+
   getTodayInfo() {
     this.loadTodayWord()
     const epoch = new Date('2026-03-28')
@@ -164,7 +172,8 @@ export class GameEngine {
     const day = Math.floor((now - epoch) / 86400000) + 1
     return {
       day,
-      totalWords: this.vocabWords.length || (this.jsonVocabs?.[this.currentWord] ? Object.keys(this.jsonVocabs[this.currentWord]).length : 0)
+      totalWords: this.vocabWords.length || (this.jsonVocabs?.[this.currentWord] ? Object.keys(this.jsonVocabs[this.currentWord]).length : 0),
+      yesterdayWord: this.getYesterdayWord()
     }
   }
 

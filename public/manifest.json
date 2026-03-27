@@ -1,0 +1,16 @@
+{
+  "name": "EduSemantix",
+  "short_name": "EduSemantix",
+  "description": "Trouve le mot du jour par proximite semantique",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a12",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

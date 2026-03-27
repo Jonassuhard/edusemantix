@@ -64,17 +64,16 @@ body::before {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Temperature bar gradient */
+/* Temperature bar gradient — blue (cold) to red (hot) */
 .temp-gradient {
   background: linear-gradient(
     to right,
     #3b82f6 0%,
-    #06b6d4 20%,
-    #22c55e 40%,
-    #f97316 60%,
-    #ef4444 75%,
-    #a855f7 90%,
-    #eab308 100%
+    #6366f1 25%,
+    #a855f7 45%,
+    #ec4899 65%,
+    #ef4444 85%,
+    #dc2626 100%
   );
 }
 

@@ -38,7 +38,8 @@ io.on('connection', (socket) => {
     game.addPlayer(playerName)
     io.emit('leaderboard', game.getLeaderboard())
     io.emit('player-count', io.engine.clientsCount)
-    socket.emit('joined', { name: playerName, day: game.getTodayInfo().day })
+    const info = game.getTodayInfo()
+    socket.emit('joined', { name: playerName, day: info.day, yesterdayWord: info.yesterdayWord })
   })
 
   socket.on('guess', (word) => {

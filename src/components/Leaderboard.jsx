@@ -25,41 +25,59 @@ export default function Leaderboard({ players, currentUser }) {
             <div
               key={player.name}
               className={`
-                px-4 py-3 flex items-center gap-3 transition-colors
+                px-4 py-3 transition-colors
                 ${isMe ? 'bg-accent-violet/5' : 'hover:bg-white/[0.02]'}
               `}
             >
-              {/* Rank */}
-              <span className="w-6 text-center">
-                {medal || <span className="text-xs text-gray-600 font-mono">{i + 1}</span>}
-              </span>
+              <div className="flex items-center gap-3">
+                {/* Rank */}
+                <span className="w-6 text-center shrink-0">
+                  {medal || <span className="text-xs text-gray-600 font-mono">{i + 1}</span>}
+                </span>
 
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className={`font-medium truncate text-sm ${isMe ? 'text-accent-violet' : 'text-white'}`}>
-                    {player.name}
-                    {isMe && <span className="text-[10px] text-gray-500 ml-1">(toi)</span>}
-                  </span>
-                  {player.found > 0 && <span className="text-xs">{player.found}/{player.roundsTotal || 3} 🥳</span>}
-                </div>
-                <div className="flex items-center gap-2 text-[11px] text-gray-500 mt-0.5">
-                  <span>{player.guesses} essai{player.guesses !== 1 ? 's' : ''}</span>
-                  {player.bestScore != null && (
-                    <>
-                      <span>·</span>
-                      <span className="font-mono">{player.bestScore.toFixed(1)}°</span>
-                      <span>{player.emoji}</span>
-                    </>
-                  )}
+                {/* Name + total */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className={`font-medium truncate text-sm ${isMe ? 'text-accent-violet' : 'text-white'}`}>
+                      {player.name}
+                      {isMe && <span className="text-[10px] text-gray-500 ml-1">(toi)</span>}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-gray-500 mt-0.5">
+                    {player.guesses} essai{player.guesses !== 1 ? 's' : ''} · {player.found}/{player.roundsTotal || 3} trouvé{player.found > 1 ? 's' : ''}
+                  </div>
                 </div>
               </div>
 
-              {/* Best rank */}
-              {player.bestRank && (
-                <div className="text-right">
-                  <div className="text-xs font-mono text-gray-400">{player.bestRank}</div>
-                  <div className="text-[10px] text-gray-600">rang</div>
+              {/* Per-round progress */}
+              {player.rounds && (
+                <div className="flex gap-1.5 mt-2 ml-9">
+                  {player.rounds.map((r, ri) => (
+                    <div
+                      key={ri}
+                      className={`
+                        flex-1 rounded-lg px-2 py-1.5 text-center text-[10px] border
+                        ${r.found
+                          ? 'bg-temp-bingo/10 border-temp-bingo/30 text-temp-bingo'
+                          : r.guesses > 0
+                            ? 'bg-white/[0.03] border-white/10 text-gray-400'
+                            : 'bg-white/[0.01] border-white/5 text-gray-600'
+                        }
+                      `}
+                    >
+                      <div className="font-medium">
+                        {r.found ? '🥳' : r.guesses > 0 ? r.emoji || '🔍' : '—'}
+                      </div>
+                      <div className="mt-0.5">
+                        {r.found
+                          ? `${r.guesses}e`
+                          : r.guesses > 0
+                            ? `${r.bestScore}°`
+                            : `M${ri + 1}`
+                        }
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

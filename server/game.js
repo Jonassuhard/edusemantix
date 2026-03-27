@@ -415,11 +415,19 @@ export class GameEngine {
   getLeaderboard() {
     return Array.from(this.players.values())
       .map(p => {
-        // Overall best across rounds
         const maxScore = Math.max(...p.bestScore.filter(s => s !== -Infinity), -Infinity)
         const roundsFound = p.found.filter(Boolean).length
         const totalGuesses = p.guesses.reduce((a, b) => a + b, 0)
         const bestRoundIdx = p.bestScore.indexOf(Math.max(...p.bestScore))
+
+        // Per-round status
+        const rounds = p.found.map((found, i) => ({
+          found,
+          guesses: p.guesses[i],
+          bestScore: p.bestScore[i] === -Infinity ? null : Math.round(p.bestScore[i] * 100) / 100,
+          emoji: p.bestScore[i] === -Infinity ? '' : this.getEmoji(p.bestScore[i], p.bestRank[i]),
+        }))
+
         return {
           name: p.name,
           guesses: totalGuesses,
@@ -427,7 +435,8 @@ export class GameEngine {
           bestRank: p.bestRank[bestRoundIdx],
           found: roundsFound,
           roundsTotal: this.getTodayWords().length,
-          emoji: maxScore === -Infinity ? '' : this.getEmoji(maxScore, p.bestRank[bestRoundIdx])
+          emoji: maxScore === -Infinity ? '' : this.getEmoji(maxScore, p.bestRank[bestRoundIdx]),
+          rounds,
         }
       })
       .sort((a, b) => {

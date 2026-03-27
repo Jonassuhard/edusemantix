@@ -172,85 +172,86 @@ const MESSAGES = {
 }
 
 // Easter egg messages triggered by specific words
+// { text, anim } — anim maps to CSS class .egg-{anim}
 const EASTER_EGGS = {
-  'infirmiere': "Coquinou 😏",
-  'infirmière': "Coquinou 😏",
-  'docteur': "Coquinou 😏",
-  'stethoscope': "Coquinou 😏",
-  'glace': "Ramène nous des glaçons 🧊",
-  'glacons': "Ramène nous des glaçons 🧊",
-  'glaçons': "Ramène nous des glaçons 🧊",
-  'froid': "Ramène nous des glaçons 🧊",
-  'congélateur': "Ramène nous des glaçons 🧊",
-  'mariage': "C'est pour quand ? 💍",
-  'fiançailles': "C'est pour quand ? 💍",
-  'noce': "C'est pour quand ? 💍",
-  'épouser': "C'est pour quand ? 💍",
-  'arabe': "T'es raciste ou ? 🤨",
-  'noir': "T'es raciste ou ? 🤨",
-  'blanc': "T'es raciste ou ? 🤨",
-  'racisme': "T'es raciste ou ? 🤨",
-  'drapeau': "GAY! 🏳️‍🌈",
-  'arc-en-ciel': "GAY! 🏳️‍🌈",
-  'joyeux': "GAY! 🏳️‍🌈",
-  'rainbow': "GAY! 🏳️‍🌈",
-  'fierté': "GAY! 🏳️‍🌈",
-  'jonas': "😛",
-  'suhard': "Le boss est dans la place 😎",
-  'tuer': "Quintuple ⚔️",
-  'tue': "Quintuple ⚔️",
-  'kill': "Quintuple ⚔️",
-  'jeu': "Quintuple ⚔️",
-  'lol': "Quintuple ⚔️",
-  'league': "Quintuple ⚔️",
-  'pentakill': "Quintuple ⚔️",
-  'tour': "🛬▮▮",
-  'avion': "🛬▮▮",
-  'septembre': "🛬▮▮",
+  'infirmiere': { text: "Coquinou 😏", anim: 'wiggle' },
+  'infirmière': { text: "Coquinou 😏", anim: 'wiggle' },
+  'docteur': { text: "Coquinou 😏", anim: 'wiggle' },
+  'stethoscope': { text: "Coquinou 😏", anim: 'wiggle' },
+  'glace': { text: "Ramène nous des glaçons 🧊", anim: 'snow' },
+  'glacons': { text: "Ramène nous des glaçons 🧊", anim: 'snow' },
+  'glaçons': { text: "Ramène nous des glaçons 🧊", anim: 'snow' },
+  'froid': { text: "Ramène nous des glaçons 🧊", anim: 'snow' },
+  'congélateur': { text: "Ramène nous des glaçons 🧊", anim: 'snow' },
+  'mariage': { text: "C'est pour quand ? 💍", anim: 'heartbeat' },
+  'fiançailles': { text: "C'est pour quand ? 💍", anim: 'heartbeat' },
+  'noce': { text: "C'est pour quand ? 💍", anim: 'heartbeat' },
+  'épouser': { text: "C'est pour quand ? 💍", anim: 'heartbeat' },
+  'arabe': { text: "T'es raciste ou ? 🤨", anim: 'siren' },
+  'noir': { text: "T'es raciste ou ? 🤨", anim: 'siren' },
+  'blanc': { text: "T'es raciste ou ? 🤨", anim: 'siren' },
+  'racisme': { text: "T'es raciste ou ? 🤨", anim: 'siren' },
+  'drapeau': { text: "GAY! 🏳️‍🌈", anim: 'rainbow' },
+  'arc-en-ciel': { text: "GAY! 🏳️‍🌈", anim: 'rainbow' },
+  'joyeux': { text: "GAY! 🏳️‍🌈", anim: 'rainbow' },
+  'rainbow': { text: "GAY! 🏳️‍🌈", anim: 'rainbow' },
+  'fierté': { text: "GAY! 🏳️‍🌈", anim: 'rainbow' },
+  'jonas': { text: "😛", anim: 'bounce' },
+  'suhard': { text: "Le boss est dans la place 😎", anim: 'bounce' },
+  'tuer': { text: "Quintuple ⚔️", anim: 'shake-gold' },
+  'tue': { text: "Quintuple ⚔️", anim: 'shake-gold' },
+  'kill': { text: "Quintuple ⚔️", anim: 'shake-gold' },
+  'jeu': { text: "Quintuple ⚔️", anim: 'shake-gold' },
+  'lol': { text: "Quintuple ⚔️", anim: 'shake-gold' },
+  'league': { text: "Quintuple ⚔️", anim: 'shake-gold' },
+  'pentakill': { text: "Quintuple ⚔️", anim: 'shake-gold' },
+  'tour': { text: "🛬▮▮", anim: 'plane' },
+  'avion': { text: "🛬▮▮", anim: 'plane' },
+  'septembre': { text: "🛬▮▮", anim: 'plane' },
   // Actu / pop culture
-  'trump': "Make EduSemantix Great Again 🇺🇸",
-  'macron': "En même temps... 🤷",
-  'politique': "On est pas à l'Assemblée ici 🏛️",
-  'grève': "C'est la France hein 🥖",
-  'métro': "Métro, boulot, Semantix 🚇",
-  'ia': "Je suis là aussi hein 🤖",
-  'intelligence': "Artificielle ou naturelle ? 🧠",
-  'robot': "Bip boop, je me sens visé 🤖",
-  'chatgpt': "Hé oh, c'est Claude ici ! 😤",
-  'claude': "C'est moi ! Enchanté 👋",
-  'café': "T'en veux un ? ☕",
-  'lundi': "Force et courage 💀",
-  'vendredi': "ENFIN le weekend 🎉",
-  'vacances': "Emmène-moi avec toi 🏖️",
-  'salaire': "On en parle pas ici 🤫",
-  'patron': "Chut il va t'entendre 🤫",
-  'pizza': "Hawaïenne ou Margherita ? 🍕 (mauvaise réponse = exclusion)",
-  'bière': "C'est pas encore l'heure 🍺... ou si ?",
-  'apéro': "Il est quelle heure ? 🍷",
-  'dormir': "Pas pendant le jeu ! 😴",
-  'ennui': "Joue à EduSemantix plutôt 😏",
-  'toilettes': "TMI 🚽",
-  'amour': "C'est beau l'amour ❤️",
-  'bisou': "Pas au bureau 💋😳",
-  'sarah': "Elle est au courant que tu joues ? 👀",
-  'alternance': "On est tous passés par là 📚",
-  'stage': "Stagiaire un jour, stagiaire toujours ☕",
-  'réunion': "La réunion qui aurait pu être un mail 📧",
-  'teams': "Tu veux dire la réunion de trop ? 💻",
-  'excel': "Pas de RECHERCHEV ici 📊",
-  'powerpoint': "Pas de slides, que des mots 📽️",
-  'drupal': "Jonas a des flashbacks 😱",
-  'wordpress': "L'ennemi juré de Drupal 🗡️",
-  'tiktok': "Battle TikTok ISCOM quand ? 🎵",
-  'instagram': "Like et abonne-toi 📱",
-  'linkedin': "Poste tes résultats sur LinkedIn 💼",
-  'maman': "Elle serait fière de toi 🥹",
-  'papa': "Il serait fier de toi 🥹",
-  'chat': "Miaou 🐱",
-  'chien': "Ouaf 🐕",
-  'fromage': "On est en France quand même 🧀",
-  'baguette': "Hon hon hon 🥖🇫🇷",
-  'croissant': "Petit-déj au bureau ? 🥐",
+  'trump': { text: "Make EduSemantix Great Again 🇺🇸", anim: 'slide-politics' },
+  'macron': { text: "En même temps... 🤷", anim: 'slide-politics' },
+  'politique': { text: "On est pas à l'Assemblée ici 🏛️", anim: 'slide-politics' },
+  'grève': { text: "C'est la France hein 🥖", anim: 'pop' },
+  'métro': { text: "Métro, boulot, Semantix 🚇", anim: 'pop' },
+  'ia': { text: "Je suis là aussi hein 🤖", anim: 'glitch' },
+  'intelligence': { text: "Artificielle ou naturelle ? 🧠", anim: 'glitch' },
+  'robot': { text: "Bip boop, je me sens visé 🤖", anim: 'glitch' },
+  'chatgpt': { text: "Hé oh, c'est Claude ici ! 😤", anim: 'glitch' },
+  'claude': { text: "C'est moi ! Enchanté 👋", anim: 'glitch' },
+  'café': { text: "T'en veux un ? ☕", anim: 'float' },
+  'lundi': { text: "Force et courage 💀", anim: 'pop' },
+  'vendredi': { text: "ENFIN le weekend 🎉", anim: 'bounce' },
+  'vacances': { text: "Emmène-moi avec toi 🏖️", anim: 'float' },
+  'salaire': { text: "On en parle pas ici 🤫", anim: 'wiggle' },
+  'patron': { text: "Chut il va t'entendre 🤫", anim: 'wiggle' },
+  'pizza': { text: "Hawaïenne ou Margherita ? 🍕 (mauvaise réponse = exclusion)", anim: 'pop' },
+  'bière': { text: "C'est pas encore l'heure 🍺... ou si ?", anim: 'float' },
+  'apéro': { text: "Il est quelle heure ? 🍷", anim: 'float' },
+  'dormir': { text: "Pas pendant le jeu ! 😴", anim: 'wiggle' },
+  'ennui': { text: "Joue à EduSemantix plutôt 😏", anim: 'pop' },
+  'toilettes': { text: "TMI 🚽", anim: 'pop' },
+  'amour': { text: "C'est beau l'amour ❤️", anim: 'heartbeat' },
+  'bisou': { text: "Pas au bureau 💋😳", anim: 'heartbeat' },
+  'sarah': { text: "Elle est au courant que tu joues ? 👀", anim: 'wiggle' },
+  'alternance': { text: "On est tous passés par là 📚", anim: 'pop' },
+  'stage': { text: "Stagiaire un jour, stagiaire toujours ☕", anim: 'pop' },
+  'réunion': { text: "La réunion qui aurait pu être un mail 📧", anim: 'slide-politics' },
+  'teams': { text: "Tu veux dire la réunion de trop ? 💻", anim: 'glitch' },
+  'excel': { text: "Pas de RECHERCHEV ici 📊", anim: 'glitch' },
+  'powerpoint': { text: "Pas de slides, que des mots 📽️", anim: 'glitch' },
+  'drupal': { text: "Jonas a des flashbacks 😱", anim: 'siren' },
+  'wordpress': { text: "L'ennemi juré de Drupal 🗡️", anim: 'shake-gold' },
+  'tiktok': { text: "Battle TikTok ISCOM quand ? 🎵", anim: 'bounce' },
+  'instagram': { text: "Like et abonne-toi 📱", anim: 'pop' },
+  'linkedin': { text: "Poste tes résultats sur LinkedIn 💼", anim: 'pop' },
+  'maman': { text: "Elle serait fière de toi 🥹", anim: 'heartbeat' },
+  'papa': { text: "Il serait fier de toi 🥹", anim: 'heartbeat' },
+  'chat': { text: "Miaou 🐱", anim: 'bounce' },
+  'chien': { text: "Ouaf 🐕", anim: 'bounce' },
+  'fromage': { text: "On est en France quand même 🧀", anim: 'pop' },
+  'baguette': { text: "Hon hon hon 🥖🇫🇷", anim: 'pop' },
+  'croissant': { text: "Petit-déj au bureau ? 🥐", anim: 'float' },
 }
 
 function getFunMessage(guesses, lastResult, round, foundPerRound) {
@@ -260,9 +261,9 @@ function getFunMessage(guesses, lastResult, round, foundPerRound) {
   if (lastResult.word) {
     const wordRaw = lastResult.word.toLowerCase().trim()
     const wordNorm = wordRaw.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    const easterEgg = EASTER_EGGS[wordRaw] || EASTER_EGGS[wordNorm]
-    if (easterEgg) {
-      return { text: easterEgg, type: 'neutral' }
+    const egg = EASTER_EGGS[wordRaw] || EASTER_EGGS[wordNorm]
+    if (egg) {
+      return { text: egg.text, type: 'easter', anim: egg.anim }
     }
   }
 
@@ -381,31 +382,41 @@ const TYPE_STYLES = {
   fire: 'bg-temp-hot/20 border-temp-hot/30 text-temp-hot',
   warm: 'bg-temp-warm/20 border-temp-warm/30 text-temp-warm',
   cold: 'bg-temp-ice/20 border-temp-ice/30 text-temp-ice',
-  neutral: 'bg-accent-violet/20 border-accent-violet/30 text-accent-violet'
+  neutral: 'bg-accent-violet/20 border-accent-violet/30 text-accent-violet',
+  easter: 'bg-accent-violet/20 border-accent-violet/40 text-white',
 }
 
 export default function FunMessage({ guesses, lastResult, round, foundPerRound }) {
   const [message, setMessage] = useState(null)
   const [visible, setVisible] = useState(false)
+  const [animKey, setAnimKey] = useState(0)
 
   useEffect(() => {
     const msg = getFunMessage(guesses, lastResult, round, foundPerRound)
     if (msg) {
       setMessage(msg)
       setVisible(true)
-      const timer = setTimeout(() => setVisible(false), 4000)
+      setAnimKey(k => k + 1) // Force re-trigger animation
+      const duration = msg.anim === 'plane' || msg.anim === 'snow' ? 3000 : 4000
+      const timer = setTimeout(() => setVisible(false), duration)
       return () => clearTimeout(timer)
     }
   }, [lastResult])
 
   if (!visible || !message) return null
 
+  const animClass = message.anim ? `egg-${message.anim}` : ''
+
   return (
-    <div className={`
-      rounded-xl px-4 py-2.5 text-sm font-medium text-center border
-      animate-slide-up transition-opacity
-      ${TYPE_STYLES[message.type] || TYPE_STYLES.neutral}
-    `}>
+    <div
+      key={animKey}
+      className={`
+        rounded-xl px-4 py-2.5 text-sm font-medium text-center border
+        animate-slide-up transition-opacity
+        ${TYPE_STYLES[message.type] || TYPE_STYLES.neutral}
+        ${animClass}
+      `}
+    >
       {message.text}
     </div>
   )

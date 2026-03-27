@@ -10,7 +10,7 @@ const WORDS = [
   'alt+f4', 'RTFM', 'copier-coller', 'ça marche pas',
   'c\'est en prod', 'ça compile', 'oups', 'GG', 'EZ',
   'ragequit', 'tricheur 👀', 'big brain 🧠', '200 IQ',
-  'pain au chocolat', 'chocolatine', '42',
+  'pain au chocolat', 'chocolatine', '42', '67',
 ]
 
 export default function FloatingWords() {
@@ -34,7 +34,7 @@ export default function FloatingWords() {
     // Create floating word particles
     const particles = Array.from({ length: 18 }, (_, i) => {
       const word = WORDS[i % WORDS.length]
-      const size = 14 + Math.random() * 18
+      const size = 18 + Math.random() * 22
       return {
         word,
         x: Math.random() * w,
@@ -44,7 +44,7 @@ export default function FloatingWords() {
         rotation: Math.random() * Math.PI * 2,
         rotSpeed: (Math.random() - 0.5) * 0.012,
         size,
-        opacity: 0.15 + Math.random() * 0.15,
+        opacity: 0.5 + Math.random() * 0.3,
         // Approx width for collision
         width: word.length * size * 0.55,
         height: size * 1.2,

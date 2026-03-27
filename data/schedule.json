@@ -1,93 +1,457 @@
 [
-  ["chocolat", "café", "football"],
-  ["parapluie", "stagiaire", "dinosaure"],
-  ["miroir", "cantine", "funambule"],
-  ["volcan", "alternance", "ratatouille"],
-  ["papillon", "cafétéria", "gladiateur"],
-  ["escalier", "réunion", "kaléidoscope"],
-  ["bougie", "marketing", "astronaute"],
-  ["horloge", "newsletter", "champignon"],
-  ["orchidée", "présentation", "catapulte"],
-  ["méduse", "brochure", "troubadour"],
-  ["hérisson", "graphisme", "sablier"],
-  ["avalanche", "diaporama", "ventriloque"],
-  ["caméléon", "événement", "origami"],
-  ["corail", "rédaction", "forgeron"],
-  ["cannelle", "référencement", "labyrinthe"],
-  ["satellite", "campus", "contrebande"],
-  ["microscope", "diplôme", "naufrage"],
-  ["galaxie", "soutenance", "vagabond"],
-  ["fossile", "mémoire", "toboggan"],
-  ["gravité", "portfolio", "trampoline"],
-  ["cathédrale", "imprimante", "stratagème"],
-  ["mosaïque", "ascenseur", "crocodile"],
-  ["pharaon", "badge", "cartographe"],
-  ["samurai", "conférence", "artificier"],
-  ["nostalgie", "publication", "apiculteur"],
-  ["vertige", "communication", "marionnettiste"],
-  ["silence", "illustration", "horloger"],
-  ["crépuscule", "retardataire", "boussole"],
-  ["paradoxe", "gourmandise", "télescope"],
-  ["harmonie", "cinéphile", "citadelle"],
-  ["mystère", "basketball", "aquarium"],
-  ["moutarde", "entrepreneur", "observatoire"],
-  ["pistache", "animation", "grotte"],
-  ["brioche", "patience", "archipel"],
-  ["anchois", "courage", "phare"],
-  ["pendule", "création", "oasis"],
-  ["oxygène", "voilier", "catacombes"],
-  ["métamorphose", "maladroit", "souffleur"],
-  ["éphémère", "ordinateur", "calligraphie"],
-  ["boomerang", "candidat", "caravane"],
-  ["tigre", "stage", "pirate"],
-  ["lune", "bureau", "robot"],
-  ["feu", "café", "ninja"],
-  ["rêve", "clavier", "viking"],
-  ["ombre", "écran", "sphinx"],
-  ["orage", "agenda", "bandit"],
-  ["plume", "comptable", "magie"],
-  ["glace", "wifi", "dragon"],
-  ["ancre", "stylo", "trésor"],
-  ["nuage", "dossier", "sirène"],
-  ["torche", "tableur", "corsaire"],
-  ["requin", "tableau", "météore"],
-  ["sable", "congé", "samouraï"],
-  ["aigle", "mail", "cascade"],
-  ["perle", "teams", "fantôme"],
-  ["cœur", "meeting", "sorcier"],
-  ["neige", "projet", "odyssée"],
-  ["flamme", "rapport", "énigme"],
-  ["brise", "planning", "vampire"],
-  ["roche", "collègue", "légende"],
-  ["loup", "logiciel", "titan"],
-  ["aube", "serveur", "sorcière"],
-  ["ciel", "ticket", "spectre"],
-  ["étoile", "sandwich", "alchimie"],
-  ["fauve", "photocopie", "momie"],
-  ["masque", "recrutement", "elfe"],
-  ["forge", "vestiaire", "enchanteur"],
-  ["sève", "sécurité", "gobelin"],
-  ["arène", "comptoir", "phénix"],
-  ["toile", "photocopieur", "centaure"],
-  ["iris", "powerpoint", "cyclope"],
-  ["nacre", "cravate", "kraken"],
-  ["baleine", "parking", "chimère"],
-  ["palme", "formation", "amazone"],
-  ["bûche", "promotion", "minotaure"],
-  ["givre", "brainstorming", "valkyrie"],
-  ["algue", "benchmark", "griffon"],
-  ["tonnerre", "workshop", "hydre"],
-  ["scorpion", "feedback", "golem"],
-  ["ambre", "afterwork", "djinn"],
-  ["opale", "management", "licorne"],
-  ["zèbre", "leadership", "basilic"],
-  ["lynx", "coaching", "pégase"],
-  ["cygne", "freelance", "cyclone"],
-  ["onyx", "stratégie", "voltige"],
-  ["rubis", "innovation", "tempête"],
-  ["cobalt", "séminaire", "comète"],
-  ["dauphin", "organigramme", "sorcellerie"],
-  ["quartz", "hiérarchie", "piège"],
-  ["magma", "candidature", "panthère"],
-  ["plasma", "certification", "tornade"]
+  [
+    "chocolat",
+    "café",
+    "football"
+  ],
+  [
+    "parapluie",
+    "stagiaire",
+    "dinosaure"
+  ],
+  [
+    "miroir",
+    "cantine",
+    "funambule"
+  ],
+  [
+    "volcan",
+    "alternance",
+    "ratatouille"
+  ],
+  [
+    "papillon",
+    "cafétéria",
+    "gladiateur"
+  ],
+  [
+    "escalier",
+    "réunion",
+    "kaléidoscope"
+  ],
+  [
+    "bougie",
+    "marketing",
+    "astronaute"
+  ],
+  [
+    "horloge",
+    "newsletter",
+    "champignon"
+  ],
+  [
+    "orchidée",
+    "présentation",
+    "catapulte"
+  ],
+  [
+    "méduse",
+    "brochure",
+    "troubadour"
+  ],
+  [
+    "hérisson",
+    "graphisme",
+    "sablier"
+  ],
+  [
+    "avalanche",
+    "diaporama",
+    "ventriloque"
+  ],
+  [
+    "caméléon",
+    "événement",
+    "origami"
+  ],
+  [
+    "corail",
+    "rédaction",
+    "forgeron"
+  ],
+  [
+    "cannelle",
+    "référencement",
+    "labyrinthe"
+  ],
+  [
+    "satellite",
+    "campus",
+    "contrebande"
+  ],
+  [
+    "microscope",
+    "diplôme",
+    "naufrage"
+  ],
+  [
+    "galaxie",
+    "soutenance",
+    "vagabond"
+  ],
+  [
+    "fossile",
+    "mémoire",
+    "toboggan"
+  ],
+  [
+    "gravité",
+    "portfolio",
+    "trampoline"
+  ],
+  [
+    "cathédrale",
+    "imprimante",
+    "stratagème"
+  ],
+  [
+    "mosaïque",
+    "ascenseur",
+    "crocodile"
+  ],
+  [
+    "pharaon",
+    "badge",
+    "cartographe"
+  ],
+  [
+    "samurai",
+    "conférence",
+    "artificier"
+  ],
+  [
+    "nostalgie",
+    "publication",
+    "apiculteur"
+  ],
+  [
+    "vertige",
+    "communication",
+    "marionnettiste"
+  ],
+  [
+    "silence",
+    "illustration",
+    "horloger"
+  ],
+  [
+    "crépuscule",
+    "retardataire",
+    "boussole"
+  ],
+  [
+    "paradoxe",
+    "gourmandise",
+    "télescope"
+  ],
+  [
+    "harmonie",
+    "cinéphile",
+    "citadelle"
+  ],
+  [
+    "mystère",
+    "basketball",
+    "aquarium"
+  ],
+  [
+    "moutarde",
+    "entrepreneur",
+    "observatoire"
+  ],
+  [
+    "pistache",
+    "animation",
+    "grotte"
+  ],
+  [
+    "brioche",
+    "patience",
+    "archipel"
+  ],
+  [
+    "anchois",
+    "courage",
+    "phare"
+  ],
+  [
+    "pendule",
+    "création",
+    "oasis"
+  ],
+  [
+    "oxygène",
+    "voilier",
+    "catacombes"
+  ],
+  [
+    "métamorphose",
+    "maladroit",
+    "souffleur"
+  ],
+  [
+    "éphémère",
+    "ordinateur",
+    "calligraphie"
+  ],
+  [
+    "boomerang",
+    "candidat",
+    "caravane"
+  ],
+  [
+    "tigre",
+    "stage",
+    "pirate"
+  ],
+  [
+    "lune",
+    "bureau",
+    "robot"
+  ],
+  [
+    "feu",
+    "café",
+    "ninja"
+  ],
+  [
+    "rêve",
+    "clavier",
+    "viking"
+  ],
+  [
+    "ombre",
+    "écran",
+    "sphinx"
+  ],
+  [
+    "orage",
+    "agenda",
+    "bandit"
+  ],
+  [
+    "plume",
+    "comptable",
+    "magie"
+  ],
+  [
+    "glace",
+    "wifi",
+    "dragon"
+  ],
+  [
+    "ancre",
+    "stylo",
+    "trésor"
+  ],
+  [
+    "nuage",
+    "dossier",
+    "sirène"
+  ],
+  [
+    "torche",
+    "tableur",
+    "corsaire"
+  ],
+  [
+    "requin",
+    "tableau",
+    "météore"
+  ],
+  [
+    "sable",
+    "congé",
+    "samouraï"
+  ],
+  [
+    "aigle",
+    "mail",
+    "cascade"
+  ],
+  [
+    "perle",
+    "teams",
+    "fantôme"
+  ],
+  [
+    "cœur",
+    "meeting",
+    "sorcier"
+  ],
+  [
+    "neige",
+    "projet",
+    "odyssée"
+  ],
+  [
+    "flamme",
+    "rapport",
+    "énigme"
+  ],
+  [
+    "brise",
+    "planning",
+    "vampire"
+  ],
+  [
+    "roche",
+    "collègue",
+    "légende"
+  ],
+  [
+    "loup",
+    "logiciel",
+    "titan"
+  ],
+  [
+    "aube",
+    "serveur",
+    "sorcière"
+  ],
+  [
+    "ciel",
+    "ticket",
+    "spectre"
+  ],
+  [
+    "étoile",
+    "sandwich",
+    "alchimie"
+  ],
+  [
+    "fauve",
+    "photocopie",
+    "momie"
+  ],
+  [
+    "masque",
+    "recrutement",
+    "elfe"
+  ],
+  [
+    "forge",
+    "vestiaire",
+    "enchanteur"
+  ],
+  [
+    "sève",
+    "sécurité",
+    "gobelin"
+  ],
+  [
+    "arène",
+    "comptoir",
+    "phénix"
+  ],
+  [
+    "toile",
+    "photocopieur",
+    "centaure"
+  ],
+  [
+    "iris",
+    "powerpoint",
+    "cyclope"
+  ],
+  [
+    "nacre",
+    "cravate",
+    "kraken"
+  ],
+  [
+    "baleine",
+    "parking",
+    "chimère"
+  ],
+  [
+    "palme",
+    "formation",
+    "amazone"
+  ],
+  [
+    "bûche",
+    "promotion",
+    "minotaure"
+  ],
+  [
+    "givre",
+    "brainstorming",
+    "valkyrie"
+  ],
+  [
+    "algue",
+    "benchmark",
+    "griffon"
+  ],
+  [
+    "tonnerre",
+    "séminaire",
+    "hydre"
+  ],
+  [
+    "scorpion",
+    "feedback",
+    "golem"
+  ],
+  [
+    "ambre",
+    "afterwork",
+    "djinn"
+  ],
+  [
+    "opale",
+    "management",
+    "licorne"
+  ],
+  [
+    "zèbre",
+    "leadership",
+    "basilic"
+  ],
+  [
+    "lynx",
+    "coaching",
+    "pégase"
+  ],
+  [
+    "cygne",
+    "freelance",
+    "cyclone"
+  ],
+  [
+    "onyx",
+    "stratégie",
+    "voltige"
+  ],
+  [
+    "rubis",
+    "innovation",
+    "tempête"
+  ],
+  [
+    "cobalt",
+    "séminaire",
+    "comète"
+  ],
+  [
+    "dauphin",
+    "organigramme",
+    "sorcellerie"
+  ],
+  [
+    "quartz",
+    "hiérarchie",
+    "piège"
+  ],
+  [
+    "magma",
+    "candidature",
+    "panthère"
+  ],
+  [
+    "plasma",
+    "certification",
+    "tornade"
+  ]
 ]

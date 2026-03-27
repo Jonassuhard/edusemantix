@@ -455,7 +455,7 @@ const EASTER_EGGS = {
   // === MEMES FRANÇAIS ===
   'sur': { text: "For sure 💯", anim: 'pop' },
   'certain': { text: "Mais c'était sûr en fait 🤷", anim: 'pop' },
-  'assassin': { text: "Assassino Capoutchino ☕🗡️", anim: 'shake-gold' },
+  'assassin': { text: "Assassino Capoutchino ☕🗡️", anim: 'ninja' },
   'café': { text: "Assassino Capoutchino ☕😏", anim: 'float' },
   'parti': { text: "ET C'EST PARTIII 🚀🎉", anim: 'bounce' },
   'commencer': { text: "Et c'est partiii ! 🏁", anim: 'bounce' },
@@ -535,7 +535,6 @@ const EASTER_EGGS = {
   'captain': { text: "I can do this all day 🛡️", anim: 'shield' },
   'bouclier': { text: "Vibranium vibes 🛡️", anim: 'shield' },
   'seigneur': { text: "One ring to rule them all 💍🌋", anim: 'shake-gold' },
-  'titanic': { text: "I'm the king of the world ! 🚢", anim: 'ocean' },
   'rapide': { text: "I am speed ⚡🏎️ — Flash McQueen", anim: 'bounce' },
   'famille': { text: "Family 🫡 — Dom Toretto", anim: 'shake-gold' },
   // === NEW ANIMATIONS MAPPING ===
@@ -589,7 +588,6 @@ const EASTER_EGGS = {
   'lune': { text: "To the moon ! 🌙🚀", anim: 'rocket' },
   'mars': { text: "Elon nous attend là-bas 🔴🚀", anim: 'rocket' },
   'étoile': { text: "Vers l'infini et au-delà ! ⭐🚀", anim: 'rocket' },
-  'galaxie': { text: "Galaxy brain 🌌🧠", anim: 'rocket' },
   'astronaute': { text: "Ground control to Major Tom 🧑‍🚀", anim: 'rocket' },
   'spacex': { text: "Ready for launch 🚀🔥", anim: 'rocket' },
   'satellite': { text: "En orbite ! 🛰️", anim: 'rocket' },
@@ -630,6 +628,52 @@ const EASTER_EGGS = {
   'wormhole': { text: "Interstellar vibes 🌀🕳️", anim: 'portal' },
   'interstellar': { text: "MURPH ! 🌀😭", anim: 'portal' },
   'trou': { text: "Trou noir detected 🕳️🌀", anim: 'portal' },
+  // 🌊 Tsunami
+  'tsunami': { text: "ALERTE TSUNAMI ! Sauve qui peut 🌊💨", anim: 'tsunami' },
+  'vague': { text: "La vague arrive ! 🌊🏄", anim: 'tsunami' },
+  'inondation': { text: "Inondation en cours ! Sortez les bouées 🌊🛟", anim: 'tsunami' },
+  'déluge': { text: "Le déluge ! Noé, t'es où ? 🌊🚢", anim: 'tsunami' },
+  // 🌋 Volcano
+  'volcan': { text: "ERUPTION IMMINENTE ! 🌋🔥", anim: 'volcano' },
+  'éruption': { text: "Le volcan se réveille ! 🌋💥", anim: 'volcano' },
+  'lave': { text: "LE SOL EST DE LA LAVE ! 🌋🦶🔥", anim: 'volcano' },
+  'magma': { text: "Température : 1200°C 🌋🌡️", anim: 'volcano' },
+  // 🕳️ BlackHole
+  'trou-noir': { text: "Le trou noir t'aspire... 🕳️✨", anim: 'blackhole' },
+  'galaxie': { text: "Une galaxie entière aspirée 🌌🕳️", anim: 'blackhole' },
+  'cosmos': { text: "Lost in the cosmos 🌌🕳️", anim: 'blackhole' },
+  'infini': { text: "L'infini et au-delà... vers le néant 🕳️♾️", anim: 'blackhole' },
+  'néant': { text: "Le néant t'appelle 🕳️💀", anim: 'blackhole' },
+  // 🦋 Butterfly
+  'papillon': { text: "L'effet papillon 🦋✨", anim: 'butterfly' },
+  'printemps': { text: "Le printemps est là ! 🦋🌸", anim: 'butterfly' },
+  'fleur': { text: "Les fleurs s'ouvrent 🌺🦋", anim: 'butterfly' },
+  'jardin': { text: "Bienvenue au jardin 🦋🌻", anim: 'butterfly' },
+  'nature': { text: "Mère Nature approuve 🦋🌿", anim: 'butterfly' },
+  // 🎰 Casino
+  'casino': { text: "JACKPOT ! 🎰💰", anim: 'casino' },
+  'chance': { text: "La chance sourit aux audacieux 🎰🍀", anim: 'casino' },
+  'jackpot': { text: "JACKPOOOOT 777 ! 🎰🤑", anim: 'casino' },
+  'loterie': { text: "Et le numéro gagnant est... 🎰🎫", anim: 'casino' },
+  'poker': { text: "All-in 🎰♠️♥️", anim: 'casino' },
+  'dé': { text: "Snake eyes ! 🎰🎲", anim: 'casino' },
+  // 🥷 Ninja
+  'ninja': { text: "Omae wa mou shindeiru 🥷💨", anim: 'ninja' },
+  'samouraï': { text: "Honneur et discipline 🥷⚔️", anim: 'ninja' },
+  'katana': { text: "La lame chante dans le vent 🥷🗡️", anim: 'ninja' },
+  'ombre': { text: "L'ombre frappe 🥷🌑", anim: 'ninja' },
+  // Additional mappings for existing animations
+  'noyade': { text: "Au secours ! 🌊😱", anim: 'ocean' },
+  'piscine': { text: "Plouf ! 🏊🌊", anim: 'ocean' },
+  'météore': { text: "IMPACT IMMINENT ! ☄️💥", anim: 'explosion' },
+  'comète': { text: "L'étoile filante passe ! ☄️🚀", anim: 'rocket' },
+  'planète': { text: "Planète en orbite 🪐🚀", anim: 'rocket' },
+  'laser': { text: "PEW PEW PEW 🔫✨", anim: 'force' },
+  'sabre': { text: "Le sabre laser s'allume ⚔️✨", anim: 'force' },
+  'champignon': { text: "Champignon atomique 🍄☁️💥", anim: 'explosion' },
+  'feu': { text: "AU FEU ! 🔥🚒", anim: 'explosion' },
+  'incendie': { text: "Appelez les pompiers ! 🔥🚒", anim: 'explosion' },
+  'dragon': { text: "DRACARYS ! 🐉🔥", anim: 'explosion' },
 }
 
 function getFunMessage(guesses, lastResult, round, foundPerRound) {

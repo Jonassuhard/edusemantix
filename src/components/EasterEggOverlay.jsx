@@ -28,6 +28,12 @@ const ANIMATIONS = {
   disco: DiscoAnimation,
   explosion: ExplosionAnimation,
   portal: PortalAnimation,
+  tsunami: TsunamiAnimation,
+  volcano: VolcanoAnimation,
+  blackhole: BlackHoleAnimation,
+  butterfly: ButterflyAnimation,
+  casino: CasinoAnimation,
+  ninja: NinjaAnimation,
 }
 
 export default function EasterEggOverlay({ anim, animKey }) {
@@ -1021,6 +1027,412 @@ function PortalAnimation() {
         @keyframes portal-spin { 0% { transform: translate(-50%,-50%) rotate(0deg); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-50%,-50%) rotate(360deg); opacity: 0; } }
         @keyframes portal-glow { from { transform: translate(-50%,-50%) scale(1); } to { transform: translate(-50%,-50%) scale(1.5); } }
         @keyframes portal-pull { 0% { opacity: 1; transform: translate(calc(-50% + var(--sx)), calc(-50% + var(--sy))) scale(1); } 100% { opacity: 0; transform: translate(-50%,-50%) scale(0) rotate(360deg); } }
+      `}</style>
+    </div>
+  )
+}
+
+// 🌊 Tsunami — massive wave crashes across screen
+function TsunamiAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 4500); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const droplets = Array.from({ length: 35 }, (_, i) => ({
+    id: i,
+    x: 20 + Math.random() * 70,
+    y: 10 + Math.random() * 60,
+    delay: 1.2 + Math.random() * 1.5,
+    size: 0.8 + Math.random() * 1.5,
+    emoji: ['💧', '💦', '🫧', '🌊'][Math.floor(Math.random() * 4)],
+    dx: Math.random() * 200 - 100,
+    dy: Math.random() * -150 - 50,
+  }))
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Dark water tint */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,40,80,0) 30%, rgba(0,60,120,0.2) 70%, rgba(0,30,80,0.35) 100%)', animation: 'tsunami-tint 4s ease-in-out forwards' }} />
+      {/* The massive wave */}
+      <div style={{ position: 'absolute', left: '-120%', top: '15%', width: '200%', height: '85%', animation: 'tsunami-wave 2.5s 0.3s cubic-bezier(0.2, 0.8, 0.3, 1) forwards' }}>
+        {/* Wave crest with foam */}
+        <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} viewBox="0 0 1000 600" preserveAspectRatio="none">
+          <path d="M0,200 Q100,50 200,150 Q300,250 400,100 Q500,0 600,120 Q700,200 800,80 Q900,0 1000,150 L1000,600 L0,600 Z" fill="rgba(0,100,180,0.35)" />
+          <path d="M0,250 Q150,100 300,200 Q450,300 600,170 Q750,80 900,200 L1000,250 L1000,600 L0,600 Z" fill="rgba(0,80,160,0.25)" />
+        </svg>
+        {/* Foam line at top of wave */}
+        <div style={{ position: 'absolute', top: '5%', left: '30%', width: '50%', height: '40px', background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.4), rgba(200,230,255,0.3), transparent)', borderRadius: '50%', animation: 'tsunami-foam 0.8s ease-in-out infinite alternate', filter: 'blur(3px)' }} />
+      </div>
+      {/* Water droplets scatter after impact */}
+      {droplets.map(d => (
+        <div key={d.id} style={{
+          position: 'absolute', fontSize: `${d.size}rem`,
+          left: `${d.x}%`, top: `${d.y}%`,
+          animation: `tsunami-droplet 1.5s ${d.delay}s ease-out forwards`,
+          opacity: 0,
+          '--dx': `${d.dx}px`, '--dy': `${d.dy}px`,
+        }}>{d.emoji}</div>
+      ))}
+      {/* Big splash text */}
+      <div style={{ position: 'absolute', top: '35%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '6rem', animation: 'tsunami-splash 1s 1.5s ease-out forwards', opacity: 0 }}>🌊</div>
+      <style>{`
+        @keyframes tsunami-tint { 0% { opacity: 0; } 25% { opacity: 1; } 75% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes tsunami-wave { 0% { left: -120%; } 40% { left: -20%; } 100% { left: 120%; } }
+        @keyframes tsunami-foam { 0% { opacity: 0.3; transform: scaleX(0.9); } 100% { opacity: 0.6; transform: scaleX(1.1); } }
+        @keyframes tsunami-droplet { 0% { opacity: 1; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); } }
+        @keyframes tsunami-splash { 0% { opacity: 0; transform: translate(-50%,-50%) scale(0) rotate(-20deg); } 40% { opacity: 1; transform: translate(-50%,-50%) scale(1.5) rotate(10deg); } 100% { opacity: 0; transform: translate(-50%,-50%) scale(0.6) translateY(-60px); } }
+      `}</style>
+    </div>
+  )
+}
+
+// 🌋 Volcano — eruption with lava particles and ash cloud
+function VolcanoAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 4500); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const lavaParticles = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    dx: (Math.random() - 0.5) * 300,
+    dy: -(150 + Math.random() * 350),
+    delay: 0.8 + Math.random() * 1.2,
+    size: 4 + Math.random() * 10,
+    color: ['#ff4500', '#ff6a00', '#ff8c00', '#ffd700', '#ff2200'][Math.floor(Math.random() * 5)],
+    duration: 1.5 + Math.random() * 1.5,
+  }))
+  const ashParticles = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    x: 30 + Math.random() * 40,
+    delay: 1.5 + Math.random() * 1.5,
+    dx: (Math.random() - 0.5) * 200,
+    size: 3 + Math.random() * 6,
+  }))
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Red/orange glow from below */}
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 100%, rgba(255,69,0,0.2) 0%, transparent 60%)', animation: 'volcano-glow 4s ease-in-out forwards' }} />
+      {/* Mountain silhouette */}
+      <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', fontSize: '8rem', animation: 'volcano-shake 0.3s 0.5s ease-in-out 6' }}>🌋</div>
+      {/* Lava particles shooting up */}
+      {lavaParticles.map(p => (
+        <div key={p.id} style={{
+          position: 'absolute', bottom: '12%', left: '50%',
+          width: `${p.size}px`, height: `${p.size}px`,
+          borderRadius: '50%',
+          backgroundColor: p.color,
+          boxShadow: `0 0 ${p.size}px ${p.color}`,
+          animation: `volcano-lava ${p.duration}s ${p.delay}s ease-out forwards`,
+          opacity: 0,
+          '--dx': `${p.dx}px`, '--dy': `${p.dy}px`,
+        }} />
+      ))}
+      {/* Ash cloud expanding at top */}
+      <div style={{ position: 'absolute', top: '5%', left: '50%', transform: 'translateX(-50%)', width: '50px', height: '50px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(80,80,80,0.6) 0%, rgba(60,60,60,0.3) 50%, transparent 100%)', animation: 'volcano-ash-cloud 2.5s 1.5s ease-out forwards', opacity: 0 }} />
+      {/* Small ash particles falling */}
+      {ashParticles.map(a => (
+        <div key={a.id} style={{
+          position: 'absolute', top: '10%', left: `${a.x}%`,
+          width: `${a.size}px`, height: `${a.size}px`,
+          borderRadius: '50%',
+          backgroundColor: `rgba(100,100,100,${0.3 + Math.random() * 0.4})`,
+          animation: `volcano-ash-fall 2s ${a.delay}s ease-in forwards`,
+          opacity: 0,
+          '--dx': `${a.dx}px`,
+        }} />
+      ))}
+      {/* ERUPTION text */}
+      <div style={{ position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '2rem', fontWeight: 900, color: '#ff4500', textShadow: '0 0 20px rgba(255,69,0,0.8), 0 0 40px rgba(255,69,0,0.4)', whiteSpace: 'nowrap', animation: 'volcano-text 1.5s 1s ease-out forwards', opacity: 0 }}>
+        ERUPTION !
+      </div>
+      <style>{`
+        @keyframes volcano-glow { 0% { opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes volcano-shake { 0%, 100% { transform: translateX(-50%) rotate(0deg); } 25% { transform: translateX(-48%) rotate(-2deg); } 75% { transform: translateX(-52%) rotate(2deg); } }
+        @keyframes volcano-lava { 0% { opacity: 1; transform: translate(-50%, 0) scale(1); } 60% { opacity: 0.8; } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), var(--dy)) scale(0.2); } }
+        @keyframes volcano-ash-cloud { 0% { opacity: 0; width: 50px; height: 50px; } 40% { opacity: 0.6; } 100% { opacity: 0; width: 80vw; height: 80vw; } }
+        @keyframes volcano-ash-fall { 0% { opacity: 0.6; transform: translateY(0) translateX(0); } 100% { opacity: 0; transform: translateY(80vh) translateX(var(--dx)); } }
+        @keyframes volcano-text { 0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3); } 40% { opacity: 1; transform: translate(-50%,-50%) scale(1.3); } 70% { opacity: 1; transform: translate(-50%,-50%) scale(1); } 100% { opacity: 0; transform: translate(-50%,-50%) scale(0.8) translateY(-30px); } }
+      `}</style>
+    </div>
+  )
+}
+
+// 🕳️ BlackHole — singularity warping with spiraling particles
+function BlackHoleAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 4500); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const spiralParticles = Array.from({ length: 40 }, (_, i) => {
+    const angle = (i / 40) * Math.PI * 4
+    const dist = 150 + Math.random() * 250
+    return {
+      id: i,
+      sx: Math.cos(angle) * dist,
+      sy: Math.sin(angle) * dist,
+      delay: i * 0.05,
+      size: 2 + Math.random() * 5,
+      color: ['#a855f7', '#7c3aed', '#6366f1', '#818cf8', '#c084fc', '#f472b6', '#fbbf24'][Math.floor(Math.random() * 7)],
+      duration: 2 + Math.random() * 1.5,
+    }
+  })
+  const stretchLines = Array.from({ length: 8 }, (_, i) => {
+    const angle = (i / 8) * Math.PI * 2
+    return { id: i, angle: angle * (180 / Math.PI), delay: 0.5 + i * 0.1 }
+  })
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Dark vignette */}
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 45%, transparent 5%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.6) 100%)', animation: 'bh-darken 4s ease-in-out forwards' }} />
+      {/* Accretion disk rings */}
+      {[0,1,2,3].map(i => (
+        <div key={i} style={{
+          position: 'absolute', top: '45%', left: '50%',
+          width: `${60 + i * 40}px`, height: `${20 + i * 12}px`,
+          borderRadius: '50%',
+          border: `2px solid rgba(168,85,247,${0.6 - i * 0.12})`,
+          boxShadow: `0 0 ${8 + i * 4}px rgba(168,85,247,${0.3 - i * 0.05}), inset 0 0 ${5 + i * 3}px rgba(168,85,247,0.1)`,
+          transform: 'translate(-50%,-50%) rotateX(70deg)',
+          animation: `bh-disk ${1.5 + i * 0.4}s ${0.3 + i * 0.1}s linear infinite`,
+          opacity: 0,
+        }} />
+      ))}
+      {/* Central singularity */}
+      <div style={{
+        position: 'absolute', top: '45%', left: '50%',
+        width: '30px', height: '30px', borderRadius: '50%',
+        background: 'radial-gradient(circle, #000 60%, rgba(168,85,247,0.3) 100%)',
+        boxShadow: '0 0 30px rgba(0,0,0,0.8), 0 0 60px rgba(168,85,247,0.3)',
+        transform: 'translate(-50%,-50%)',
+        animation: 'bh-singularity 4s ease-in-out forwards',
+      }} />
+      {/* Spaghettification stretch lines */}
+      {stretchLines.map(s => (
+        <div key={s.id} style={{
+          position: 'absolute', top: '45%', left: '50%',
+          width: '2px', height: '100px',
+          background: `linear-gradient(to bottom, transparent, rgba(168,85,247,0.4), transparent)`,
+          transformOrigin: 'top center',
+          transform: `translate(-50%, 0) rotate(${s.angle}deg)`,
+          animation: `bh-stretch 2s ${s.delay}s ease-in forwards`,
+          opacity: 0,
+        }} />
+      ))}
+      {/* Spiraling particles being sucked in */}
+      {spiralParticles.map(p => (
+        <div key={p.id} style={{
+          position: 'absolute', top: '45%', left: '50%',
+          width: `${p.size}px`, height: `${p.size}px`,
+          borderRadius: '50%',
+          backgroundColor: p.color,
+          boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
+          animation: `bh-spiral ${p.duration}s ${p.delay}s ease-in forwards`,
+          opacity: 0,
+          '--sx': `${p.sx}px`, '--sy': `${p.sy}px`,
+        }} />
+      ))}
+      <style>{`
+        @keyframes bh-darken { 0% { opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes bh-disk { 0% { transform: translate(-50%,-50%) rotateX(70deg) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translate(-50%,-50%) rotateX(70deg) rotate(360deg); opacity: 0; } }
+        @keyframes bh-singularity { 0% { transform: translate(-50%,-50%) scale(0); } 20% { transform: translate(-50%,-50%) scale(1); } 80% { transform: translate(-50%,-50%) scale(1.2); } 100% { transform: translate(-50%,-50%) scale(0); } }
+        @keyframes bh-stretch { 0% { opacity: 0; height: 0; } 50% { opacity: 0.6; height: 200px; } 100% { opacity: 0; height: 0; } }
+        @keyframes bh-spiral { 0% { opacity: 1; transform: translate(calc(-50% + var(--sx)), calc(-50% + var(--sy))) scale(1); } 70% { opacity: 0.8; } 100% { opacity: 0; transform: translate(-50%,-50%) scale(0) rotate(720deg); } }
+      `}</style>
+    </div>
+  )
+}
+
+// 🦋 Butterfly — colorful butterflies flutter across screen
+function ButterflyAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 5000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const butterflies = Array.from({ length: 18 }, (_, i) => ({
+    id: i,
+    startX: -10 + Math.random() * 30,
+    startY: 20 + Math.random() * 60,
+    delay: Math.random() * 2,
+    duration: 3 + Math.random() * 2.5,
+    size: 1.8 + Math.random() * 2,
+    sineAmp: 30 + Math.random() * 50,
+    sineFreq: 2 + Math.random() * 3,
+  }))
+  const flowers = ['🌸', '🌺', '🌻', '🌷', '🌼', '💐']
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Soft green/spring tint */}
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 80%, rgba(144,238,144,0.08) 0%, transparent 70%)', animation: 'butterfly-tint 4.5s ease-in-out forwards' }} />
+      {/* Butterflies */}
+      {butterflies.map(b => (
+        <div key={b.id} style={{
+          position: 'absolute',
+          left: `${b.startX}%`,
+          top: `${b.startY}%`,
+          fontSize: `${b.size}rem`,
+          animation: `butterfly-fly-${b.id} ${b.duration}s ${b.delay}s ease-in-out forwards`,
+          opacity: 0,
+        }}>
+          <div style={{ animation: `butterfly-flap 0.3s ease-in-out infinite alternate` }}>
+            🦋
+          </div>
+        </div>
+      ))}
+      {/* A few flowers popping up at the bottom */}
+      {flowers.map((f, i) => (
+        <div key={i} style={{
+          position: 'absolute',
+          bottom: '5%',
+          left: `${8 + i * 16}%`,
+          fontSize: '2.5rem',
+          animation: `butterfly-flower 1s ${0.5 + i * 0.2}s ease-out forwards`,
+          opacity: 0,
+        }}>{f}</div>
+      ))}
+      <style>{`
+        @keyframes butterfly-tint { 0% { opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes butterfly-flap { 0% { transform: scaleX(1) rotate(-5deg); } 100% { transform: scaleX(0.3) rotate(5deg); } }
+        @keyframes butterfly-flower { 0% { opacity: 0; transform: translateY(30px) scale(0); } 60% { opacity: 1; transform: translateY(-10px) scale(1.2); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        ${butterflies.map(b => `
+          @keyframes butterfly-fly-${b.id} {
+            0% { left: ${b.startX}%; top: ${b.startY}%; opacity: 0; }
+            10% { opacity: 1; }
+            25% { left: ${b.startX + 25}%; top: ${b.startY + Math.sin(1) * 15}%; }
+            50% { left: ${b.startX + 55}%; top: ${b.startY + Math.sin(2.5) * 20}%; }
+            75% { left: ${b.startX + 80}%; top: ${b.startY + Math.sin(4) * 15}%; }
+            90% { opacity: 1; }
+            100% { left: ${b.startX + 110}%; top: ${b.startY + Math.sin(5.5) * 10}%; opacity: 0; }
+          }
+        `).join('')}
+      `}</style>
+    </div>
+  )
+}
+
+// 🎰 Casino — slot machine with jackpot coins
+function CasinoAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 4500); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const slotEmojis = ['🍒', '🍋', '7️⃣', '💎', '🍀', '⭐', '🔔']
+  const col1 = Array.from({ length: 8 }, () => slotEmojis[Math.floor(Math.random() * slotEmojis.length)])
+  const col2 = Array.from({ length: 8 }, () => slotEmojis[Math.floor(Math.random() * slotEmojis.length)])
+  const col3 = Array.from({ length: 8 }, () => slotEmojis[Math.floor(Math.random() * slotEmojis.length)])
+  col1[col1.length - 1] = '7️⃣'; col2[col2.length - 1] = '7️⃣'; col3[col3.length - 1] = '7️⃣'
+  const coins = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    x: 10 + Math.random() * 80,
+    delay: 2.5 + Math.random() * 1.5,
+    duration: 1.5 + Math.random() * 1.5,
+    size: 1 + Math.random() * 1.5,
+    emoji: ['🪙', '💰', '💵', '🤑'][Math.floor(Math.random() * 4)],
+  }))
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Dark overlay with sparkle */}
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 40%, rgba(0,0,0,0) 20%, rgba(0,0,0,0.4) 100%)', animation: 'casino-dark 4s ease-in-out forwards' }} />
+      {/* Slot machine frame */}
+      <div style={{ position: 'absolute', top: '25%', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '10px', background: 'rgba(30,30,30,0.9)', borderRadius: '16px', padding: '15px 20px', border: '3px solid #ffd700', boxShadow: '0 0 30px rgba(255,215,0,0.4)', animation: 'casino-appear 0.8s ease-out forwards', opacity: 0 }}>
+        {[col1, col2, col3].map((col, ci) => (
+          <div key={ci} style={{ width: '60px', height: '60px', overflow: 'hidden', borderRadius: '8px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,215,0,0.3)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', animation: `casino-spin-${ci} ${1.5 + ci * 0.4}s 0.5s cubic-bezier(0.2, 0, 0.2, 1) forwards` }}>
+              {col.map((e, ei) => (
+                <div key={ei} style={{ fontSize: '2.5rem', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '60px', flexShrink: 0 }}>{e}</div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      {/* JACKPOT text */}
+      <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '3rem', fontWeight: 900, color: '#ffd700', textShadow: '0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.4), 2px 2px 0 #b8860b', whiteSpace: 'nowrap', animation: 'casino-jackpot 1.5s 2.5s ease-out forwards', opacity: 0, letterSpacing: '8px' }}>
+        JACKPOT !
+      </div>
+      {/* Falling coins */}
+      {coins.map(c => (
+        <div key={c.id} style={{
+          position: 'absolute', top: '-5%', left: `${c.x}%`,
+          fontSize: `${c.size}rem`,
+          animation: `casino-coins ${c.duration}s ${c.delay}s ease-in forwards`,
+          opacity: 0,
+        }}>{c.emoji}</div>
+      ))}
+      <style>{`
+        @keyframes casino-dark { 0% { opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes casino-appear { 0% { opacity: 0; transform: translateX(-50%) scale(0.5) rotate(-5deg); } 60% { transform: translateX(-50%) scale(1.05) rotate(1deg); } 100% { opacity: 1; transform: translateX(-50%) scale(1) rotate(0deg); } }
+        @keyframes casino-spin-0 { 0% { transform: translateY(0); } 100% { transform: translateY(calc(-100% + 60px)); } }
+        @keyframes casino-spin-1 { 0% { transform: translateY(0); } 100% { transform: translateY(calc(-100% + 60px)); } }
+        @keyframes casino-spin-2 { 0% { transform: translateY(0); } 100% { transform: translateY(calc(-100% + 60px)); } }
+        @keyframes casino-jackpot { 0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3); } 40% { opacity: 1; transform: translate(-50%,-50%) scale(1.4); } 60% { transform: translate(-50%,-50%) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%,-50%) scale(1.2) translateY(-20px); } }
+        @keyframes casino-coins { 0% { opacity: 1; transform: translateY(0) rotate(0deg); } 100% { opacity: 0; transform: translateY(110vh) rotate(720deg); } }
+      `}</style>
+    </div>
+  )
+}
+
+// 🥷 Ninja — smoke poof, shuriken, ninja slide
+function NinjaAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 4000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const smokeParticles = Array.from({ length: 12 }, (_, i) => ({
+    id: i,
+    dx: (Math.random() - 0.5) * 200,
+    dy: (Math.random() - 0.5) * 200,
+    size: 20 + Math.random() * 40,
+    delay: Math.random() * 0.3,
+  }))
+  const shurikenCorners = [
+    { x: '10%', y: '10%' },
+    { x: '90%', y: '10%' },
+    { x: '10%', y: '85%' },
+    { x: '90%', y: '85%' },
+  ]
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Dark flash */}
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', animation: 'ninja-dark 0.6s ease-out forwards' }} />
+      {/* Smoke poof at center */}
+      {smokeParticles.map(s => (
+        <div key={s.id} style={{
+          position: 'absolute', top: '45%', left: '50%',
+          width: `${s.size}px`, height: `${s.size}px`,
+          borderRadius: '50%',
+          background: `radial-gradient(circle, rgba(150,150,150,0.6) 0%, transparent 70%)`,
+          animation: `ninja-smoke 1s ${s.delay}s ease-out forwards`,
+          opacity: 0,
+          '--dx': `${s.dx}px`, '--dy': `${s.dy}px`,
+        }} />
+      ))}
+      {/* Shuriken flying to corners */}
+      {shurikenCorners.map((corner, i) => (
+        <div key={i} style={{
+          position: 'absolute', top: '45%', left: '50%',
+          fontSize: '2.5rem',
+          color: '#c0c0c0',
+          textShadow: '0 0 10px rgba(192,192,192,0.6)',
+          animation: `ninja-shuriken-${i} 1s ${0.5 + i * 0.1}s ease-out forwards`,
+          opacity: 0,
+        }}>✦</div>
+      ))}
+      {/* Ninja sliding across */}
+      <div style={{
+        position: 'absolute', top: '40%', left: '-10%',
+        fontSize: '5rem',
+        animation: 'ninja-slide 1.5s 1.2s ease-in-out forwards',
+        opacity: 0,
+      }}>🥷</div>
+      {/* Slash effect */}
+      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+        <line x1="20%" y1="30%" x2="80%" y2="60%"
+          stroke="rgba(255,255,255,0.6)" strokeWidth="2"
+          strokeLinecap="round"
+          style={{ strokeDasharray: 2000, strokeDashoffset: 2000, animation: 'ninja-slash 0.4s 2s ease-out forwards', filter: 'drop-shadow(0 0 5px rgba(255,255,255,0.8))' }}
+        />
+      </svg>
+      <style>{`
+        @keyframes ninja-dark { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes ninja-smoke { 0% { opacity: 0.8; transform: translate(-50%,-50%) scale(0.5); } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(2); } }
+        @keyframes ninja-shuriken-0 { 0% { opacity: 1; transform: translate(-50%,-50%) rotate(0deg); } 100% { opacity: 0; left: 10%; top: 10%; transform: rotate(1080deg) scale(0.5); } }
+        @keyframes ninja-shuriken-1 { 0% { opacity: 1; transform: translate(-50%,-50%) rotate(0deg); } 100% { opacity: 0; left: 90%; top: 10%; transform: rotate(1080deg) scale(0.5); } }
+        @keyframes ninja-shuriken-2 { 0% { opacity: 1; transform: translate(-50%,-50%) rotate(0deg); } 100% { opacity: 0; left: 10%; top: 85%; transform: rotate(1080deg) scale(0.5); } }
+        @keyframes ninja-shuriken-3 { 0% { opacity: 1; transform: translate(-50%,-50%) rotate(0deg); } 100% { opacity: 0; left: 90%; top: 85%; transform: rotate(1080deg) scale(0.5); } }
+        @keyframes ninja-slide { 0% { left: -10%; opacity: 0; } 15% { opacity: 1; } 50% { left: 45%; top: 40%; } 85% { opacity: 1; } 100% { left: 110%; top: 35%; opacity: 0; } }
+        @keyframes ninja-slash { to { stroke-dashoffset: 0; } }
       `}</style>
     </div>
   )

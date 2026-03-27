@@ -179,8 +179,8 @@ def main():
             rank = 999 - rank_idx if rank_idx < 1000 else None
             vocab_dict[word] = [round(sim, 2), rank]
 
-        # Keep top 50K — covers all common French words
-        top_items = list(vocab_dict.items())[:50000]
+        # Keep top 20K — covers all common French words, fits Render free tier
+        top_items = list(vocab_dict.items())[:20000]
         vocab_dict = dict(top_items)
 
         # Save with safe filename

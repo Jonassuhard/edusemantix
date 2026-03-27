@@ -11,6 +11,8 @@ import HelpModal from './components/HelpModal'
 import HintBar from './components/HintBar'
 import ConnectionStatus from './components/ConnectionStatus'
 import FunMessage from './components/FunMessage'
+import EasterEggOverlay from './components/EasterEggOverlay'
+import Confetti from './components/Confetti'
 
 const STORAGE_KEY = 'edusemantix'
 const MAX_ROUNDS = 3
@@ -59,6 +61,9 @@ export default function App() {
   const [yesterdayWords, setYesterdayWords] = useState([])
   const [hints, setHints] = useState([null, null, null])
   const [darkMode, setDarkMode] = useState(true)
+  const [easterEggAnim, setEasterEggAnim] = useState(null)
+  const [easterEggKey, setEasterEggKey] = useState(0)
+  const [showConfetti, setShowConfetti] = useState(false)
 
   const guesses = guessesPerRound[round] || []
   const found = foundPerRound[round]
@@ -230,7 +235,7 @@ export default function App() {
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-4 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
         <div className="flex flex-col gap-3">
           <GuessInput onGuess={handleGuess} error={error} disabled={found} />
-          <FunMessage guesses={guesses} lastResult={lastResult} round={round} foundPerRound={foundPerRound} />
+          <FunMessage guesses={guesses} lastResult={lastResult} round={round} foundPerRound={foundPerRound} onEasterEgg={(anim) => { setEasterEggAnim(anim); setEasterEggKey(k => k + 1) }} onBingo={() => setShowConfetti(true)} />
           <EmojiSummary guesses={guesses} />
           <TemperatureBar bestScore={guesses.length > 0 ? Math.max(...guesses.map(g => g.score)) : null} />
           {showLegend && <TempLegend />}
@@ -260,6 +265,8 @@ export default function App() {
       )}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
       <ConnectionStatus />
+      <EasterEggOverlay anim={easterEggAnim} animKey={easterEggKey} />
+      {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
     </div>
   )
 }

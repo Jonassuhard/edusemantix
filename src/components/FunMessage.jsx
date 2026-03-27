@@ -386,7 +386,7 @@ const TYPE_STYLES = {
   easter: 'bg-accent-violet/20 border-accent-violet/40 text-white',
 }
 
-export default function FunMessage({ guesses, lastResult, round, foundPerRound }) {
+export default function FunMessage({ guesses, lastResult, round, foundPerRound, onEasterEgg, onBingo }) {
   const [message, setMessage] = useState(null)
   const [visible, setVisible] = useState(false)
   const [animKey, setAnimKey] = useState(0)
@@ -396,10 +396,17 @@ export default function FunMessage({ guesses, lastResult, round, foundPerRound }
     if (msg) {
       setMessage(msg)
       setVisible(true)
-      setAnimKey(k => k + 1) // Force re-trigger animation
+      setAnimKey(k => k + 1)
+      // Trigger overlay animation for easter eggs
+      if (msg.anim && onEasterEgg) onEasterEgg(msg.anim)
+      // Trigger confetti on bingo
+      if (lastResult?.found && onBingo) onBingo()
       const duration = msg.anim === 'plane' || msg.anim === 'snow' ? 3000 : 4000
       const timer = setTimeout(() => setVisible(false), duration)
       return () => clearTimeout(timer)
+    } else if (lastResult?.found && onBingo) {
+      // Still show confetti even without a fun message
+      onBingo()
     }
   }, [lastResult])
 

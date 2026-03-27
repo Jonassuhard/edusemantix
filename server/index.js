@@ -155,6 +155,7 @@ io.on('connection', (socket) => {
         game.getHints(2)
       ]
     }
+    joinData.firebaseConnected = firebaseEnabled
     // Attach persistent stats if Firebase is available
     if (firebaseEnabled) {
       try {
@@ -206,6 +207,8 @@ io.on('connection', (socket) => {
           savePlayerResult(playerName, today, r, result.word, guessCount, 0, true)
             .catch(() => {})
           updatePlayerAfterGame(playerName, true, guessCount)
+            .then(() => getAllTimeLeaderboard())
+            .then((lb) => io.emit('alltime-leaderboard', lb))
             .catch(() => {})
         }
       }

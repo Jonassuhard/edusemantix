@@ -55,6 +55,8 @@ export default function App() {
   const [foundPerRound, setFoundPerRound] = useState([false, false, false])
   const [topWordsPerRound, setTopWordsPerRound] = useState([[], [], []])
   const [leaderboard, setLeaderboard] = useState([])
+  const [allTimeLeaderboard, setAllTimeLeaderboard] = useState([])
+  const [firebaseConnected, setFirebaseConnected] = useState(false)
   const [playerCount, setPlayerCount] = useState(0)
   const [day, setDay] = useState(0)
   const [error, setError] = useState('')
@@ -112,7 +114,14 @@ export default function App() {
       setYesterdayWords(data.yesterdayWords || [])
       setRoundCount(data.roundCount || 3)
       setHints(data.hints || [null, null, null])
+      setFirebaseConnected(!!data.firebaseConnected)
       setScreen('game')
+      socket.emit('get-alltime-leaderboard')
+    })
+
+    socket.on('alltime-leaderboard', (data) => {
+      setAllTimeLeaderboard(data || [])
+      if (data && data.length > 0) setFirebaseConnected(true)
     })
 
     socket.on('guess-result', (result) => {
@@ -164,6 +173,8 @@ export default function App() {
         stats.totalGuesses += result.guessNumber
         stats.avgGuesses = Math.round(stats.totalGuesses / stats.won)
         saveStats(stats)
+        // Refresh all-time leaderboard after finding a word
+        socket.emit('get-alltime-leaderboard')
       }
     })
 
@@ -182,6 +193,7 @@ export default function App() {
       socket.off('leaderboard')
       socket.off('player-count')
       socket.off('player-found')
+      socket.off('alltime-leaderboard')
     }
   }, [username, round])
 
@@ -282,7 +294,7 @@ export default function App() {
         </div>
 
         <aside className="lg:sticky lg:top-4 lg:self-start flex flex-col gap-4">
-          <Leaderboard players={leaderboard} currentUser={username} />
+          <Leaderboard players={leaderboard} currentUser={username} allTimeLeaderboard={allTimeLeaderboard} firebaseConnected={firebaseConnected} />
           {yesterdayWords.length > 0 && <YesterdayWords words={yesterdayWords} />}
           <FeedbackBox />
           <ServerNotice />

@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "edusemantix",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server/index.js"],
+      "port": 3210,
+      "cwd": "/Users/asterion/Desktop/EDUSEMANTIX"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, existsSync } from 'fs'
+import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
 
 export class GameEngine {
@@ -13,10 +13,8 @@ export class GameEngine {
     this.vecDim = 0
     this.vocabWords = []
 
-    // Current round cache
-    this.cachedWord = null
-    this.cachedVec = null
-    this.cachedTopRanked = null
+    // Per-round cache (fixes race condition with multiple rounds)
+    this.roundCache = [null, null, null] // { word, vec, topRanked } per round
 
     this.loadData()
   }
@@ -102,9 +100,8 @@ export class GameEngine {
     const words = this.getTodayWords()
     const word = words[round] || words[0]
 
-    if (word === this.cachedWord) return
-    this.cachedWord = word
-
+    // Check per-round cache
+    if (this.roundCache[round] && this.roundCache[round].word === word) return
     if (!this.vectors) return
 
     const idx = this.wordIndex[word]
@@ -114,7 +111,7 @@ export class GameEngine {
     }
 
     const start = idx * this.vecDim
-    this.cachedVec = this.vectors.slice(start, start + this.vecDim)
+    const vec = this.vectors.slice(start, start + this.vecDim)
 
     // Compute top 1000 rankings
     console.log(`Computing rankings for '${word}' (round ${round + 1})...`)
@@ -124,29 +121,39 @@ export class GameEngine {
       const vStart = i * this.vecDim
       let dot = 0
       for (let d = 0; d < this.vecDim; d++) {
-        dot += this.cachedVec[d] * this.vectors[vStart + d]
+        dot += vec[d] * this.vectors[vStart + d]
       }
       scores.push([i, dot * 100])
     }
     scores.sort((a, b) => b[1] - a[1])
-    this.cachedTopRanked = new Map()
+    const topRanked = new Map()
     for (let r = 0; r < Math.min(1000, scores.length); r++) {
-      this.cachedTopRanked.set(this.vocabWords[scores[r][0]], 999 - r)
+      topRanked.set(this.vocabWords[scores[r][0]], 999 - r)
     }
+
+    // Store in per-round cache
+    this.roundCache[round] = { word, vec, topRanked }
     console.log(`Rankings ready. Top: ${this.vocabWords[scores[0][0]]} (${scores[0][1].toFixed(1)})`)
   }
 
-  computeSimilarity(word) {
-    if (!this.vectors || !this.cachedVec) return null
+  computeSimilarity(word, round) {
+    const cache = this.roundCache[round]
+    if (!this.vectors || !cache) return null
     const idx = this.wordIndex[word]
     if (idx === undefined) return null
 
     const start = idx * this.vecDim
     let dot = 0
     for (let d = 0; d < this.vecDim; d++) {
-      dot += this.cachedVec[d] * this.vectors[start + d]
+      dot += cache.vec[d] * this.vectors[start + d]
     }
-    return { score: dot * 100, rank: this.cachedTopRanked?.get(word) ?? null }
+    return { score: dot * 100, rank: cache.topRanked?.get(word) ?? null }
+  }
+
+  resetDaily() {
+    console.log('Daily reset: clearing players and round cache')
+    this.players.clear()
+    this.roundCache = [null, null, null]
   }
 
   getHints(round) {
@@ -159,11 +166,12 @@ export class GameEngine {
     }
   }
 
-  getTopWords(count = 10) {
-    if (!this.cachedTopRanked) return []
-    const entries = Array.from(this.cachedTopRanked.entries())
+  getTopWords(round, count = 10) {
+    const cache = this.roundCache[round]
+    if (!cache || !cache.topRanked) return []
+    const entries = Array.from(cache.topRanked.entries())
     entries.sort((a, b) => b[1] - a[1])
-    return entries.slice(0, count).map(([word, rank]) => ({ word, rank }))
+    return entries.slice(0, count).map(([word, rank]) => ({ word, rank: 1000 - rank }))
   }
 
   getWordCategory(word) {
@@ -337,7 +345,7 @@ export class GameEngine {
         word: target, known: true, score: 100, rank: 1000,
         emoji: '\u{1F973}', found: true,
         guessNumber: player?.guesses[round] || 0,
-        topWords: this.getTopWords(10),
+        topWords: this.getTopWords(round, 10),
         round
       }
     }
@@ -345,9 +353,9 @@ export class GameEngine {
     // Resolve word (try exact, then accent fallback)
     const resolved = this.resolveWord(word)
 
-    // Vector similarity
+    // Vector similarity with resolved word
     if (this.vectors && resolved) {
-      const result = this.computeSimilarity(resolved)
+      const result = this.computeSimilarity(resolved, round)
       if (result) {
         const { score, rank } = result
         const emoji = this.getEmoji(score, rank)
@@ -368,9 +376,9 @@ export class GameEngine {
       }
     }
 
-    // Try direct similarity as last resort (word might be in vectors but not resolved)
+    // Try direct similarity as last resort
     if (this.vectors) {
-      const result = this.computeSimilarity(word)
+      const result = this.computeSimilarity(word, round)
       if (result) {
         const { score, rank } = result
         const emoji = this.getEmoji(score, rank)

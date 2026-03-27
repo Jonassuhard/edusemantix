@@ -1,10 +1,9 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function WinModal({ guessCount, guesses, stats, topWords, round, roundCount, hasNextRound, onNextRound, onClose, elapsedTime, targetWord }) {
   const [visible, setVisible] = useState(false)
   const [definition, setDefinition] = useState(null)
   const [defLoading, setDefLoading] = useState(false)
-  const canvasRef = useRef(null)
 
   useEffect(() => {
     setTimeout(() => setVisible(true), 300)
@@ -22,69 +21,6 @@ export default function WinModal({ guessCount, guesses, stats, topWords, round, 
       })
       .catch(() => { setDefinition(null); setDefLoading(false) })
   }, [targetWord])
-
-  // Confetti animation
-  useEffect(() => {
-    if (!visible || !canvasRef.current) return
-
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-
-    const colors = ['#eab308', '#f97316', '#8b5cf6', '#3b82f6', '#22c55e', '#ef4444', '#ec4899', '#06b6d4']
-    const confetti = []
-
-    for (let i = 0; i < 150; i++) {
-      confetti.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height - canvas.height,
-        w: Math.random() * 10 + 5,
-        h: Math.random() * 6 + 3,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        vx: (Math.random() - 0.5) * 4,
-        vy: Math.random() * 3 + 2,
-        rot: Math.random() * 360,
-        rotSpeed: (Math.random() - 0.5) * 10,
-        opacity: 1
-      })
-    }
-
-    let animId
-    let frame = 0
-    const maxFrames = 300
-
-    function draw() {
-      frame++
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      for (const c of confetti) {
-        c.x += c.vx
-        c.vy += 0.05
-        c.y += c.vy
-        c.rot += c.rotSpeed
-
-        if (frame > maxFrames - 60) {
-          c.opacity = Math.max(0, c.opacity - 0.02)
-        }
-
-        ctx.save()
-        ctx.translate(c.x, c.y)
-        ctx.rotate((c.rot * Math.PI) / 180)
-        ctx.globalAlpha = c.opacity
-        ctx.fillStyle = c.color
-        ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h)
-        ctx.restore()
-      }
-
-      if (frame < maxFrames) {
-        animId = requestAnimationFrame(draw)
-      }
-    }
-
-    draw()
-    return () => cancelAnimationFrame(animId)
-  }, [visible])
 
   if (!visible) return null
 
@@ -104,8 +40,6 @@ export default function WinModal({ guessCount, guesses, stats, topWords, round, 
 
   return (
     <>
-      <canvas ref={canvasRef} className="fixed inset-0 z-50 pointer-events-none" />
-
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
@@ -235,10 +169,9 @@ function ShareButton({ guessCount, emojiStr, timeStr, round }) {
     text += `Trouvé en ${guessCount} essai${guessCount > 1 ? 's' : ''}`
     if (timeStr) text += ` (${timeStr})`
     text += `\n${emojiStr}\nhttps://edusemantix.onrender.com`
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
+    navigator.clipboard.writeText(text)
+      .then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000) })
+      .catch(() => { /* Clipboard not available */ })
   }
 
   return (
@@ -259,10 +192,9 @@ function ShareTeamsButton({ guessCount, emojiStr, timeStr }) {
     text += `J'ai trouvé en ${guessCount} essai${guessCount > 1 ? 's' : ''}`
     if (timeStr) text += ` (⏱️ ${timeStr})`
     text += ` !\n${emojiStr}\nA toi → edusemantix.onrender.com`
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
+    navigator.clipboard.writeText(text)
+      .then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000) })
+      .catch(() => { /* Clipboard not available */ })
   }
 
   return (

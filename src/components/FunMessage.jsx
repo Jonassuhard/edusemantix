@@ -277,9 +277,12 @@ function getFunMessage(guesses, lastResult, round, foundPerRound) {
   const rank = lastResult.rank
   const emoji = lastResult.emoji
 
+  // Sort by guessNumber for streak detection (guesses array is sorted by score)
+  const chronological = [...guesses].sort((a, b) => a.guessNumber - b.guessNumber)
+
   // 5 hot words in a row
   if (guessCount >= 5) {
-    const last5 = guesses.slice(-5).map(g => g.emoji)
+    const last5 = chronological.slice(-5).map(g => g.emoji)
     if (last5.every(e => e === '🥵' || e === '🔥' || e === '😱')) {
       return { text: pick(MESSAGES.fiveHot), type: 'fire' }
     }
@@ -321,7 +324,7 @@ function getFunMessage(guesses, lastResult, round, foundPerRound) {
 
   // 3 negative scores in a row
   if (guessCount >= 3) {
-    const last3 = guesses.slice(-3).map(g => g.score)
+    const last3 = chronological.slice(-3).map(g => g.score)
     if (last3.every(s => s < 0)) {
       return { text: pick(MESSAGES.threeNegatives), type: 'cold' }
     }
@@ -329,7 +332,7 @@ function getFunMessage(guesses, lastResult, round, foundPerRound) {
 
   // 10 cold in a row
   if (guessCount >= 10) {
-    const last10 = guesses.slice(-10).map(g => g.emoji)
+    const last10 = chronological.slice(-10).map(g => g.emoji)
     if (last10.every(e => e === '🥶' || e === '🧊')) {
       return { text: pick(MESSAGES.tenCold), type: 'cold' }
     }
@@ -337,7 +340,7 @@ function getFunMessage(guesses, lastResult, round, foundPerRound) {
 
   // 5 cold in a row
   if (guessCount >= 5) {
-    const last5 = guesses.slice(-5).map(g => g.emoji)
+    const last5 = chronological.slice(-5).map(g => g.emoji)
     if (last5.every(e => e === '🥶' || e === '🧊')) {
       return { text: pick(MESSAGES.fiveCold), type: 'cold' }
     }
@@ -345,7 +348,7 @@ function getFunMessage(guesses, lastResult, round, foundPerRound) {
 
   // First hot word after cold streak
   if ((emoji === '🥵' || emoji === '🔥' || emoji === '😱') && guessCount >= 5) {
-    const prevGuesses = guesses.slice(-6, -1)
+    const prevGuesses = chronological.slice(-6, -1)
     const prevCold = prevGuesses.filter(g => g.emoji === '🥶' || g.emoji === '🧊').length
     if (prevCold >= 3) {
       return { text: pick(MESSAGES.firstHotAfterCold), type: 'warm' }
@@ -354,7 +357,7 @@ function getFunMessage(guesses, lastResult, round, foundPerRound) {
 
   // Big score jump (>20 points improvement)
   if (guessCount >= 2) {
-    const prevBest = Math.max(...guesses.slice(0, -1).map(g => g.score))
+    const prevBest = Math.max(...chronological.slice(0, -1).map(g => g.score))
     if (score > prevBest + 20) {
       return { text: pick(MESSAGES.bigScoreJump), type: 'warm' }
     }
@@ -362,7 +365,7 @@ function getFunMessage(guesses, lastResult, round, foundPerRound) {
 
   // Close then far away
   if (guessCount >= 2) {
-    const prev = guesses[guesses.length - 2]
+    const prev = chronological[chronological.length - 2]
     if (prev && prev.rank && prev.rank >= 900 && (!rank || rank < 100)) {
       return { text: pick(MESSAGES.closeToFar), type: 'cold' }
     }

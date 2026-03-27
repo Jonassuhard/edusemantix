@@ -3,25 +3,24 @@ import { useState, useEffect, useRef } from 'react'
 export default function useTimer(isRunning) {
   const [elapsed, setElapsed] = useState(0)
   const startRef = useRef(null)
-  const frameRef = useRef(null)
+  const intervalRef = useRef(null)
 
   useEffect(() => {
     if (isRunning) {
       if (!startRef.current) startRef.current = Date.now()
 
-      const tick = () => {
+      intervalRef.current = setInterval(() => {
         setElapsed(Math.floor((Date.now() - startRef.current) / 1000))
-        frameRef.current = requestAnimationFrame(tick)
-      }
-      frameRef.current = requestAnimationFrame(tick)
+      }, 1000)
 
-      return () => cancelAnimationFrame(frameRef.current)
+      return () => clearInterval(intervalRef.current)
     }
   }, [isRunning])
 
   const reset = () => {
     startRef.current = null
     setElapsed(0)
+    clearInterval(intervalRef.current)
   }
 
   const formatTime = (secs) => {

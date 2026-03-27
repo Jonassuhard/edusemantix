@@ -1,40 +1,44 @@
-export default function HintBar({ guessCount, found }) {
-  if (found || guessCount === 0) return null
+export default function HintBar({ guessCount, found, hints }) {
+  if (found || guessCount === 0 || !hints) return null
 
-  // Progressive hints based on guess count
-  const hints = []
+  const items = []
 
+  // Hint 1: letter count at 30 guesses
   if (guessCount >= 30) {
-    hints.push({ icon: '📏', label: 'Indice disponible apres 30 essais', unlocked: true })
+    items.push({ icon: '📏', text: `${hints.letterCount} lettres`, unlocked: true })
   } else if (guessCount >= 20) {
-    hints.push({ icon: '🔒', label: `Indice dans ${30 - guessCount} essais`, unlocked: false })
+    items.push({ icon: '🔒', text: `Nombre de lettres dans ${30 - guessCount} essais`, unlocked: false })
   }
 
+  // Hint 2: first letter at 50 guesses
   if (guessCount >= 50) {
-    hints.push({ icon: '🔤', label: 'Indice disponible apres 50 essais', unlocked: true })
+    items.push({ icon: '🔤', text: `Commence par "${hints.firstLetter}"`, unlocked: true })
   } else if (guessCount >= 35) {
-    hints.push({ icon: '🔒', label: `Indice dans ${50 - guessCount} essais`, unlocked: false })
+    items.push({ icon: '🔒', text: `Premiere lettre dans ${50 - guessCount} essais`, unlocked: false })
   }
 
+  // Hint 3: category at 80 guesses
   if (guessCount >= 80) {
-    hints.push({ icon: '📂', label: 'Indice disponible apres 80 essais', unlocked: true })
+    items.push({ icon: '📂', text: `Categorie : ${hints.category}`, unlocked: true })
   } else if (guessCount >= 60) {
-    hints.push({ icon: '🔒', label: `Indice dans ${80 - guessCount} essais`, unlocked: false })
+    items.push({ icon: '🔒', text: `Categorie dans ${80 - guessCount} essais`, unlocked: false })
   }
 
-  if (hints.length === 0) return null
+  if (items.length === 0) return null
 
   return (
     <div className="flex gap-2 flex-wrap">
-      {hints.map((hint, i) => (
+      {items.map((item, i) => (
         <div
           key={i}
-          className={`glass rounded-lg px-3 py-1.5 text-xs flex items-center gap-1.5 ${
-            hint.unlocked ? 'text-accent-violet border-accent-violet/20' : 'text-gray-600'
+          className={`glass rounded-lg px-3 py-1.5 text-xs flex items-center gap-1.5 transition-all ${
+            item.unlocked
+              ? 'text-accent-violet border border-accent-violet/20 bg-accent-violet/5'
+              : 'text-gray-600'
           }`}
         >
-          <span>{hint.icon}</span>
-          <span>{hint.label}</span>
+          <span>{item.icon}</span>
+          <span className={item.unlocked ? 'font-medium' : ''}>{item.text}</span>
         </div>
       ))}
     </div>

@@ -8,21 +8,21 @@ export class GameEngine {
     this.dataDir = dataDir
 
     // Vector data
-    this.wordIndex = {}   // word -> position in vectors file
-    this.vectors = null    // Float32Array of all vectors
+    this.wordIndex = {}
+    this.vectors = null
     this.vecDim = 0
     this.vocabWords = []
 
-    // Current day
-    this.currentWord = null
-    this.currentVec = null
-    this.topRanked = null  // pre-sorted top 1000 for rank assignment
+    // Current round cache
+    this.cachedWord = null
+    this.cachedVec = null
+    this.cachedTopRanked = null
 
     this.loadData()
   }
 
   loadData() {
-    // Load schedule
+    // Load schedule (array of [word1, word2, word3])
     try {
       const raw = readFileSync(join(this.dataDir, 'schedule.json'), 'utf-8')
       this.schedule = JSON.parse(raw)
@@ -39,12 +39,11 @@ export class GameEngine {
       this.vocabWords = data.words
       this.vecDim = data.dim
 
-      // Build word -> index lookup
       for (let i = 0; i < this.vocabWords.length; i++) {
         this.wordIndex[this.vocabWords[i]] = i
       }
 
-      // Load binary vectors (may be split into parts)
+      // Load binary vectors (split files)
       const vecPath = join(this.dataDir, 'vectors.bin')
       const vecPathA = join(this.dataDir, 'vectors_a.bin')
       const vecPathB = join(this.dataDir, 'vectors_b.bin')
@@ -62,118 +61,168 @@ export class GameEngine {
       if (this.vectors) {
         console.log(`Loaded ${this.vocabWords.length} word vectors (${this.vecDim}d)`)
       }
-    } else {
-      console.log('No vector index found, falling back to JSON files...')
-      this.loadJsonFallback()
     }
 
     if (this.schedule.length === 0) {
-      this.schedule = ['parapluie']
+      this.schedule = [['parapluie', 'stagiaire', 'chocolat']]
     }
 
-    this.loadTodayWord()
-    console.log(`Schedule: ${this.schedule.length} day(s)`)
+    console.log(`Schedule: ${this.schedule.length} day(s), 3 rounds each`)
   }
 
-  loadJsonFallback() {
-    // Fallback: load pre-computed JSON files
-    this.jsonVocabs = {}
-    const wordsDir = join(this.dataDir, 'words')
-    if (!existsSync(wordsDir)) return
-    try {
-      const files = readdirSync(wordsDir).filter(f => f.endsWith('.json'))
-      for (const file of files) {
-        const raw = readFileSync(join(wordsDir, file), 'utf-8')
-        const data = JSON.parse(raw)
-        this.jsonVocabs[data.word] = data.vocab
-      }
-      if (this.schedule.length === 0) {
-        this.schedule = Object.keys(this.jsonVocabs)
-      }
-      console.log(`Loaded ${Object.keys(this.jsonVocabs).length} JSON word file(s)`)
-    } catch (e) {
-      console.error('Error loading JSON fallback:', e.message)
-    }
+  getDayIndex() {
+    const epoch = new Date('2026-03-27')
+    const now = new Date()
+    const day = Math.floor((now - epoch) / 86400000)
+    return ((day % this.schedule.length) + this.schedule.length) % this.schedule.length
   }
 
-  loadTodayWord() {
-    const word = this.getTodayWord()
-    if (word === this.currentWord) return
-    this.currentWord = word
+  getDayNumber() {
+    const epoch = new Date('2026-03-27')
+    const now = new Date()
+    return Math.floor((now - epoch) / 86400000) + 1
+  }
 
-    if (this.vectors) {
-      // Vector mode: get target vector and pre-compute top 1000
-      const idx = this.wordIndex[word]
-      if (idx === undefined) {
-        console.error(`Target word '${word}' not in vector index`)
-        return
-      }
-      const start = idx * this.vecDim
-      this.currentVec = this.vectors.slice(start, start + this.vecDim)
+  getTodayWords() {
+    const idx = this.getDayIndex()
+    const entry = this.schedule[idx]
+    return Array.isArray(entry) ? entry : [entry]
+  }
 
-      // Pre-compute top 1000 for rank assignment
-      console.log(`Computing rankings for '${word}'...`)
-      const scores = []
-      for (let i = 0; i < this.vocabWords.length; i++) {
-        if (this.vocabWords[i] === word) continue
-        const vStart = i * this.vecDim
-        let dot = 0
-        for (let d = 0; d < this.vecDim; d++) {
-          dot += this.currentVec[d] * this.vectors[vStart + d]
-        }
-        scores.push([i, dot * 100])
-      }
-      scores.sort((a, b) => b[1] - a[1])
-      this.topRanked = new Map()
-      for (let r = 0; r < Math.min(1000, scores.length); r++) {
-        this.topRanked.set(this.vocabWords[scores[r][0]], 999 - r)
-      }
-      console.log(`Rankings ready. Top word: ${this.vocabWords[scores[0][0]]} (${scores[0][1].toFixed(1)})`)
+  getYesterdayWords() {
+    const epoch = new Date('2026-03-27')
+    const now = new Date()
+    const day = Math.floor((now - epoch) / 86400000) - 1
+    const idx = ((day % this.schedule.length) + this.schedule.length) % this.schedule.length
+    const entry = this.schedule[idx]
+    return Array.isArray(entry) ? entry : [entry]
+  }
+
+  loadWordForRound(round) {
+    const words = this.getTodayWords()
+    const word = words[round] || words[0]
+
+    if (word === this.cachedWord) return
+    this.cachedWord = word
+
+    if (!this.vectors) return
+
+    const idx = this.wordIndex[word]
+    if (idx === undefined) {
+      console.error(`Word '${word}' not in vector index`)
+      return
     }
+
+    const start = idx * this.vecDim
+    this.cachedVec = this.vectors.slice(start, start + this.vecDim)
+
+    // Compute top 1000 rankings
+    console.log(`Computing rankings for '${word}' (round ${round + 1})...`)
+    const scores = []
+    for (let i = 0; i < this.vocabWords.length; i++) {
+      if (this.vocabWords[i] === word) continue
+      const vStart = i * this.vecDim
+      let dot = 0
+      for (let d = 0; d < this.vecDim; d++) {
+        dot += this.cachedVec[d] * this.vectors[vStart + d]
+      }
+      scores.push([i, dot * 100])
+    }
+    scores.sort((a, b) => b[1] - a[1])
+    this.cachedTopRanked = new Map()
+    for (let r = 0; r < Math.min(1000, scores.length); r++) {
+      this.cachedTopRanked.set(this.vocabWords[scores[r][0]], 999 - r)
+    }
+    console.log(`Rankings ready. Top: ${this.vocabWords[scores[0][0]]} (${scores[0][1].toFixed(1)})`)
   }
 
   computeSimilarity(word) {
-    if (!this.vectors || !this.currentVec) return null
-
+    if (!this.vectors || !this.cachedVec) return null
     const idx = this.wordIndex[word]
     if (idx === undefined) return null
 
     const start = idx * this.vecDim
     let dot = 0
     for (let d = 0; d < this.vecDim; d++) {
-      dot += this.currentVec[d] * this.vectors[start + d]
+      dot += this.cachedVec[d] * this.vectors[start + d]
     }
-    const score = dot * 100
-    const rank = this.topRanked?.get(word) ?? null
-
-    return { score, rank }
+    return { score: dot * 100, rank: this.cachedTopRanked?.get(word) ?? null }
   }
 
-  getTodayWord() {
-    const epoch = new Date('2026-03-28')
-    const now = new Date()
-    const day = Math.floor((now - epoch) / 86400000)
-    const index = ((day % this.schedule.length) + this.schedule.length) % this.schedule.length
-    return this.schedule[index]
+  getHints(round) {
+    const words = this.getTodayWords()
+    const word = words[round] || words[0]
+    return {
+      letterCount: word.length,
+      firstLetter: word[0].toUpperCase(),
+      category: this.getWordCategory(word)
+    }
   }
 
-  getYesterdayWord() {
-    const epoch = new Date('2026-03-28')
-    const now = new Date()
-    const day = Math.floor((now - epoch) / 86400000) - 1
-    const index = ((day % this.schedule.length) + this.schedule.length) % this.schedule.length
-    return this.schedule[index]
+  getTopWords(count = 10) {
+    if (!this.cachedTopRanked) return []
+    const entries = Array.from(this.cachedTopRanked.entries())
+    entries.sort((a, b) => b[1] - a[1])
+    return entries.slice(0, count).map(([word, rank]) => ({ word, rank }))
+  }
+
+  getWordCategory(word) {
+    const categories = {
+      parapluie: 'objet', réfrigérateur: 'objet', escalier: 'architecture',
+      miroir: 'objet', bougie: 'objet', horloge: 'objet',
+      serviette: 'objet', ceinture: 'accessoire',
+      papillon: 'animal', volcan: 'nature', corail: 'nature marine',
+      hérisson: 'animal', avalanche: 'phenomene naturel', orchidée: 'plante',
+      méduse: 'animal marin', caméléon: 'animal',
+      croissant: 'nourriture', moutarde: 'condiment', champignon: 'nourriture',
+      cannelle: 'epice', anchois: 'nourriture', brioche: 'nourriture',
+      ratatouille: 'nourriture', pistache: 'nourriture',
+      satellite: 'science', microscope: 'science', molécule: 'science',
+      gravité: 'science', galaxie: 'astronomie', fossile: 'science',
+      pendule: 'objet', oxygène: 'science',
+      cathédrale: 'architecture', gladiateur: 'histoire', pharaon: 'histoire',
+      samurai: 'histoire', labyrinthe: 'lieu', calligraphie: 'art',
+      mosaïque: 'art', troubadour: 'histoire',
+      nostalgie: 'emotion', vertige: 'sensation', silence: 'concept',
+      crépuscule: 'moment', paradoxe: 'concept', éphémère: 'concept',
+      harmonie: 'concept', mystère: 'concept',
+      trampoline: 'objet', kaléidoscope: 'objet', boussole: 'objet',
+      sablier: 'objet', toboggan: 'objet', catapulte: 'objet',
+      origami: 'art', télescope: 'objet scientifique',
+      apiculteur: 'metier', marionnettiste: 'metier', souffleur: 'metier',
+      funambule: 'metier', forgeron: 'metier', cartographe: 'metier',
+      horloger: 'metier', artificier: 'metier',
+      phare: 'lieu', grotte: 'lieu naturel', oasis: 'lieu naturel',
+      archipel: 'geographie', catacombes: 'lieu', observatoire: 'lieu',
+      aquarium: 'lieu', citadelle: 'architecture',
+      métamorphose: 'concept', ventriloque: 'metier', contrebande: 'activite',
+      naufrage: 'evenement', stratagème: 'concept', prestidigitation: 'art',
+      vagabond: 'personne', épopée: 'litterature',
+      // Eduservices
+      photocopieuse: 'bureau', stagiaire: 'vie pro', cantine: 'bureau',
+      alternance: 'formation', cafétéria: 'bureau', réunion: 'vie pro',
+      marketing: 'metier', newsletter: 'communication', présentation: 'vie pro',
+      brochure: 'communication', graphisme: 'metier', diaporama: 'outil',
+      événement: 'communication', rédaction: 'metier', référencement: 'digital',
+      campus: 'formation', diplôme: 'formation', soutenance: 'formation',
+      mémoire: 'formation', portfolio: 'creation', imprimante: 'bureau',
+      ascenseur: 'lieu', badge: 'objet bureau', publication: 'communication',
+      communication: 'metier', illustration: 'art', basketball: 'sport',
+      entrepreneur: 'vie pro', animation: 'art', deadline: 'vie pro',
+      voilier: 'sport', création: 'art', courage: 'qualite',
+      patience: 'qualite', ordinateur: 'objet', maladroit: 'qualite',
+      retardataire: 'qualite', gourmandise: 'defaut', cinéphile: 'loisir',
+      astronaute: 'metier', dinosaure: 'animal'
+    }
+    return categories[word] || 'mot courant'
   }
 
   getTodayInfo() {
-    this.loadTodayWord()
-    const epoch = new Date('2026-03-28')
-    const now = new Date()
-    const day = Math.floor((now - epoch) / 86400000) + 1
     return {
-      day,
-      totalWords: this.vocabWords.length || (this.jsonVocabs?.[this.currentWord] ? Object.keys(this.jsonVocabs[this.currentWord]).length : 0),
-      yesterdayWord: this.getYesterdayWord()
+      day: this.getDayNumber(),
+      totalWords: this.vocabWords.length,
+      yesterdayWords: this.getYesterdayWords(),
+      roundCount: this.getTodayWords().length
     }
   }
 
@@ -181,79 +230,61 @@ export class GameEngine {
     if (!this.players.has(name)) {
       this.players.set(name, {
         name,
-        guesses: 0,
-        bestScore: -Infinity,
-        bestRank: null,
-        found: false
+        round: 0,
+        guesses: [0, 0, 0],
+        bestScore: [-Infinity, -Infinity, -Infinity],
+        bestRank: [null, null, null],
+        found: [false, false, false]
       })
     }
   }
 
-  processGuess(playerName, word) {
-    this.loadTodayWord()
-    const target = this.currentWord
+  processGuess(playerName, word, round) {
+    const words = this.getTodayWords()
+    const target = words[round]
+    if (!target) return { word, known: false, error: 'Round invalide' }
+
+    // Load vectors for this round
+    this.loadWordForRound(round)
+
+    const player = this.players.get(playerName)
 
     // Exact match
     if (word === target) {
-      const player = this.players.get(playerName)
       if (player) {
-        player.guesses++
-        player.bestScore = 100
-        player.bestRank = 1000
-        player.found = true
+        player.guesses[round]++
+        player.bestScore[round] = 100
+        player.bestRank[round] = 1000
+        player.found[round] = true
       }
       return {
         word, known: true, score: 100, rank: 1000,
         emoji: '\u{1F973}', found: true,
-        guessNumber: player?.guesses || 0
+        guessNumber: player?.guesses[round] || 0,
+        topWords: this.getTopWords(10),
+        round
       }
     }
 
-    // Try vector computation first
+    // Vector similarity
     if (this.vectors) {
       const result = this.computeSimilarity(word)
       if (result) {
         const { score, rank } = result
         const emoji = this.getEmoji(score, rank)
-        const player = this.players.get(playerName)
         if (player) {
-          player.guesses++
-          if (score > player.bestScore) {
-            player.bestScore = score
-            player.bestRank = rank
+          player.guesses[round]++
+          if (score > player.bestScore[round]) {
+            player.bestScore[round] = score
+            player.bestRank[round] = rank
           }
         }
         return {
           word, known: true,
           score: Math.round(score * 100) / 100,
           rank, emoji, found: false,
-          guessNumber: player?.guesses || 0
-        }
-      }
-    }
-
-    // Fallback to JSON
-    if (this.jsonVocabs) {
-      const vocab = this.jsonVocabs[target]
-      if (vocab) {
-        const entry = vocab[word]
-        if (entry) {
-          const [score, rank] = entry
-          const emoji = this.getEmoji(score, rank)
-          const player = this.players.get(playerName)
-          if (player) {
-            player.guesses++
-            if (score > player.bestScore) {
-              player.bestScore = score
-              player.bestRank = rank
-            }
-          }
-          return {
-            word, known: true,
-            score: Math.round(score * 100) / 100,
-            rank, emoji, found: false,
-            guessNumber: player?.guesses || 0
-          }
+          guessNumber: player?.guesses[round] || 0,
+          round
         }
       }
     }
@@ -273,18 +304,25 @@ export class GameEngine {
 
   getLeaderboard() {
     return Array.from(this.players.values())
-      .map(p => ({
-        name: p.name,
-        guesses: p.guesses,
-        bestScore: p.bestScore === -Infinity ? null : Math.round(p.bestScore * 100) / 100,
-        bestRank: p.bestRank,
-        found: p.found,
-        emoji: p.bestScore === -Infinity ? '' : this.getEmoji(p.bestScore, p.bestRank)
-      }))
+      .map(p => {
+        // Overall best across rounds
+        const maxScore = Math.max(...p.bestScore.filter(s => s !== -Infinity), -Infinity)
+        const roundsFound = p.found.filter(Boolean).length
+        const totalGuesses = p.guesses.reduce((a, b) => a + b, 0)
+        const bestRoundIdx = p.bestScore.indexOf(Math.max(...p.bestScore))
+        return {
+          name: p.name,
+          guesses: totalGuesses,
+          bestScore: maxScore === -Infinity ? null : Math.round(maxScore * 100) / 100,
+          bestRank: p.bestRank[bestRoundIdx],
+          found: roundsFound,
+          roundsTotal: this.getTodayWords().length,
+          emoji: maxScore === -Infinity ? '' : this.getEmoji(maxScore, p.bestRank[bestRoundIdx])
+        }
+      })
       .sort((a, b) => {
-        if (a.found && !b.found) return -1
-        if (!a.found && b.found) return 1
-        if (a.found && b.found) return a.guesses - b.guesses
+        if (a.found !== b.found) return b.found - a.found
+        if (a.found > 0 && b.found > 0) return a.guesses - b.guesses
         return (b.bestScore || -999) - (a.bestScore || -999)
       })
   }

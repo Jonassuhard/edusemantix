@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 
-export default function WinModal({ guessCount, guesses, stats, onClose }) {
+export default function WinModal({ guessCount, guesses, stats, topWords, round, roundCount, hasNextRound, onNextRound, onClose }) {
   const [visible, setVisible] = useState(false)
   const canvasRef = useRef(null)
 
@@ -132,9 +132,37 @@ export default function WinModal({ guessCount, guesses, stats, onClose }) {
             <ShareButton guessCount={guessCount} emojiStr={emojiStr} />
           </div>
 
+          {/* Top closest words */}
+          {topWords && topWords.length > 0 && (
+            <div className="glass rounded-xl p-3 mb-4 text-left">
+              <p className="text-xs text-gray-500 mb-2 text-center">Les 10 mots les plus proches</p>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                {topWords.map((tw, i) => (
+                  <div key={i} className="flex justify-between">
+                    <span className="text-gray-300 truncate">{tw.word}</span>
+                    <span className="text-gray-500 font-mono ml-1">#{tw.rank}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {hasNextRound ? (
+            <button
+              onClick={onNextRound}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-accent-violet to-accent-orange text-white font-semibold hover:opacity-90 active:scale-95 transition-all"
+            >
+              Mot suivant ({round + 2}/{roundCount}) →
+            </button>
+          ) : (
+            <p className="text-sm text-temp-bingo font-medium">
+              Tu as trouve les {roundCount} mots du jour !
+            </p>
+          )}
+
           <button
             onClick={onClose}
-            className="text-xs text-gray-500 hover:text-gray-300 transition-colors underline"
+            className="mt-2 text-xs text-gray-500 hover:text-gray-300 transition-colors underline"
           >
             Fermer et voir mes essais
           </button>

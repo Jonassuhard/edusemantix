@@ -12,27 +12,20 @@ import HintBar from './components/HintBar'
 import ConnectionStatus from './components/ConnectionStatus'
 
 const STORAGE_KEY = 'edusemantix'
+const MAX_ROUNDS = 3
 
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const state = JSON.parse(raw)
-    // Check if same day
-    const today = new Date().toDateString()
-    if (state.date !== today) return null
+    if (state.date !== new Date().toDateString()) return null
     return state
   } catch { return null }
 }
 
-function saveState(username, guesses, found, day) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({
-    date: new Date().toDateString(),
-    username,
-    guesses,
-    found,
-    day
-  }))
+function saveState(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...data, date: new Date().toDateString() }))
 }
 
 function loadStats() {
@@ -49,40 +42,52 @@ function saveStats(stats) {
 export default function App() {
   const [screen, setScreen] = useState('login')
   const [username, setUsername] = useState('')
-  const [guesses, setGuesses] = useState([])
+  const [round, setRound] = useState(0)
+  const [roundCount, setRoundCount] = useState(3)
+  const [guessesPerRound, setGuessesPerRound] = useState([[], [], []])
+  const [foundPerRound, setFoundPerRound] = useState([false, false, false])
+  const [topWordsPerRound, setTopWordsPerRound] = useState([[], [], []])
   const [leaderboard, setLeaderboard] = useState([])
   const [playerCount, setPlayerCount] = useState(0)
   const [day, setDay] = useState(0)
-  const [found, setFound] = useState(false)
   const [error, setError] = useState('')
   const [lastResult, setLastResult] = useState(null)
   const [showHelp, setShowHelp] = useState(false)
   const [showLegend, setShowLegend] = useState(false)
   const [showWin, setShowWin] = useState(false)
-  const [yesterdayWord, setYesterdayWord] = useState('')
+  const [yesterdayWords, setYesterdayWords] = useState([])
+  const [hints, setHints] = useState([null, null, null])
+  const [darkMode, setDarkMode] = useState(true)
 
-  // Restore from localStorage on mount
+  const guesses = guessesPerRound[round] || []
+  const found = foundPerRound[round]
+
+  // Restore from localStorage
   useEffect(() => {
     const saved = loadState()
     if (saved) {
-      setUsername(saved.username)
-      setGuesses(saved.guesses)
-      setFound(saved.found)
-      setDay(saved.day)
+      setUsername(saved.username || '')
+      setGuessesPerRound(saved.guessesPerRound || [[], [], []])
+      setFoundPerRound(saved.foundPerRound || [false, false, false])
+      setTopWordsPerRound(saved.topWordsPerRound || [[], [], []])
+      setRound(saved.round || 0)
+      setDay(saved.day || 0)
     }
   }, [])
 
-  // Save to localStorage on changes
+  // Save to localStorage
   useEffect(() => {
     if (username && screen === 'game') {
-      saveState(username, guesses, found, day)
+      saveState({ username, guessesPerRound, foundPerRound, topWordsPerRound, round, day })
     }
-  }, [guesses, found, username, day, screen])
+  }, [guessesPerRound, foundPerRound, topWordsPerRound, round, username, day, screen])
 
   useEffect(() => {
     socket.on('joined', (data) => {
       setDay(data.day)
-      setYesterdayWord(data.yesterdayWord || '')
+      setYesterdayWords(data.yesterdayWords || [])
+      setRoundCount(data.roundCount || 3)
+      setHints(data.hints || [null, null, null])
       setScreen('game')
     })
 
@@ -94,15 +99,30 @@ export default function App() {
         return
       }
       setError('')
-      setGuesses(prev => {
-        const exists = prev.find(g => g.word === result.word)
-        if (exists) return prev
-        return [...prev, result].sort((a, b) => b.score - a.score)
+      const r = result.round ?? round
+      setGuessesPerRound(prev => {
+        const copy = [...prev]
+        const roundGuesses = [...(copy[r] || [])]
+        if (roundGuesses.find(g => g.word === result.word)) return prev
+        roundGuesses.push(result)
+        roundGuesses.sort((a, b) => b.score - a.score)
+        copy[r] = roundGuesses
+        return copy
       })
       if (result.found) {
-        setFound(true)
+        setFoundPerRound(prev => {
+          const copy = [...prev]
+          copy[r] = true
+          return copy
+        })
+        if (result.topWords) {
+          setTopWordsPerRound(prev => {
+            const copy = [...prev]
+            copy[r] = result.topWords
+            return copy
+          })
+        }
         setShowWin(true)
-        // Update stats
         const stats = loadStats()
         stats.played++
         stats.won++
@@ -117,9 +137,8 @@ export default function App() {
     socket.on('leaderboard', setLeaderboard)
     socket.on('player-count', setPlayerCount)
     socket.on('player-found', (data) => {
-      // Toast notification when someone finds the word
       if (data.name !== username) {
-        setError(`${data.name} a trouvé le mot !`)
+        setError(`${data.name} a trouve le mot ${data.round + 1} !`)
         setTimeout(() => setError(''), 3000)
       }
     })
@@ -131,7 +150,7 @@ export default function App() {
       socket.off('player-count')
       socket.off('player-found')
     }
-  }, [username])
+  }, [username, round])
 
   const handleLogin = useCallback((name) => {
     if (!name.trim()) return
@@ -148,22 +167,63 @@ export default function App() {
       setTimeout(() => setError(''), 1500)
       return
     }
-    socket.emit('guess', cleaned)
-  }, [found, guesses])
+    socket.emit('guess', { word: cleaned, round })
+  }, [found, guesses, round])
+
+  const handleNextRound = () => {
+    if (round < roundCount - 1) {
+      setRound(round + 1)
+      setShowWin(false)
+      setLastResult(null)
+    }
+  }
 
   if (screen === 'login') {
     return <LoginScreen onLogin={handleLogin} savedName={loadState()?.username} />
   }
 
+  const totalGuesses = guessesPerRound.reduce((sum, g) => sum + g.length, 0)
+  const roundLabels = ['Mot 1', 'Mot 2 (Eduservices)', 'Mot 3']
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header
         day={day}
-        guessCount={guesses.length}
+        guessCount={totalGuesses}
         playerCount={playerCount}
         onHelp={() => setShowHelp(true)}
         onLegend={() => setShowLegend(!showLegend)}
+        darkMode={darkMode}
+        onToggleTheme={() => { setDarkMode(!darkMode); document.documentElement.classList.toggle('light') }}
       />
+
+      {/* Round tabs */}
+      <div className="max-w-6xl mx-auto w-full px-4 pt-3">
+        <div className="flex gap-2">
+          {Array.from({ length: roundCount }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => { if (i === 0 || foundPerRound[i - 1]) setRound(i) }}
+              disabled={i > 0 && !foundPerRound[i - 1]}
+              className={`
+                flex-1 py-2 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-1.5
+                ${round === i
+                  ? 'bg-gradient-to-r from-accent-violet to-accent-orange text-white'
+                  : foundPerRound[i]
+                    ? 'glass text-temp-bingo'
+                    : i > 0 && !foundPerRound[i - 1]
+                      ? 'glass text-gray-600 opacity-50 cursor-not-allowed'
+                      : 'glass text-gray-400 hover:text-white'
+                }
+              `}
+            >
+              {foundPerRound[i] ? '🥳' : i > 0 && !foundPerRound[i - 1] ? '🔒' : ''}
+              <span className="hidden sm:inline">{roundLabels[i] || `Mot ${i + 1}`}</span>
+              <span className="sm:hidden">{i + 1}/3</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-4 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
         <div className="flex flex-col gap-3">
@@ -171,18 +231,30 @@ export default function App() {
           <EmojiSummary guesses={guesses} />
           <TemperatureBar bestScore={guesses.length > 0 ? Math.max(...guesses.map(g => g.score)) : null} />
           {showLegend && <TempLegend />}
-          <HintBar guessCount={guesses.length} found={found} />
+          <HintBar guessCount={guesses.length} found={found} hints={hints[round]} />
           <GuessList guesses={guesses} lastResult={lastResult} />
         </div>
 
         <aside className="lg:sticky lg:top-4 lg:self-start flex flex-col gap-4">
           <Leaderboard players={leaderboard} currentUser={username} />
-          {yesterdayWord && <YesterdayWord word={yesterdayWord} />}
+          {yesterdayWords.length > 0 && <YesterdayWords words={yesterdayWords} />}
           <ServerNotice />
         </aside>
       </main>
 
-      {showWin && <WinModal guessCount={guesses.length} guesses={guesses} stats={loadStats()} onClose={() => setShowWin(false)} />}
+      {showWin && (
+        <WinModal
+          guessCount={guesses.length}
+          guesses={guesses}
+          stats={loadStats()}
+          topWords={topWordsPerRound[round]}
+          round={round}
+          roundCount={roundCount}
+          hasNextRound={round < roundCount - 1}
+          onNextRound={handleNextRound}
+          onClose={() => setShowWin(false)}
+        />
+      )}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
       <ConnectionStatus />
     </div>
@@ -191,11 +263,6 @@ export default function App() {
 
 function LoginScreen({ onLogin, savedName }) {
   const [name, setName] = useState(savedName || '')
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    onLogin(name)
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -207,24 +274,17 @@ function LoginScreen({ onLogin, savedName }) {
           </span>
         </h1>
         <p className="text-gray-400 mb-6 text-sm">
-          Trouve le mot du jour par proximite semantique
+          3 mots a trouver par jour — par proximite semantique
         </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form onSubmit={e => { e.preventDefault(); onLogin(name) }} className="flex flex-col gap-3">
           <input
-            type="text"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="Ton prenom..."
-            maxLength={20}
-            autoFocus
+            type="text" value={name} onChange={e => setName(e.target.value)}
+            placeholder="Ton prenom..." maxLength={20} autoFocus
             className="w-full px-4 py-3 rounded-xl bg-bg-primary border border-white/10 text-white placeholder-gray-500 text-center text-lg focus:border-accent-violet/50 transition-colors"
           />
-          <button
-            type="submit"
-            disabled={!name.trim()}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-accent-violet to-accent-orange text-white font-semibold text-lg disabled:opacity-30 hover:opacity-90 transition-opacity"
-          >
+          <button type="submit" disabled={!name.trim()}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-accent-violet to-accent-orange text-white font-semibold text-lg disabled:opacity-30 hover:opacity-90 transition-opacity">
             Jouer
           </button>
         </form>
@@ -232,28 +292,29 @@ function LoginScreen({ onLogin, savedName }) {
         <div className="mt-6 text-xs text-gray-500 space-y-2">
           <p>Tape un mot et decouvre sa proximite avec le mot secret</p>
           <div className="flex flex-wrap justify-center gap-1">
-            <span>🧊 froid</span><span>·</span>
-            <span>🥶 frais</span><span>·</span>
-            <span>😎 tiede</span><span>·</span>
-            <span>🥵 chaud</span><span>·</span>
-            <span>🔥 brulant</span><span>·</span>
-            <span>😱 proche</span><span>·</span>
+            <span>🧊 froid</span><span>·</span><span>🥶 frais</span><span>·</span>
+            <span>😎 tiede</span><span>·</span><span>🥵 chaud</span><span>·</span>
+            <span>🔥 brulant</span><span>·</span><span>😱 proche</span><span>·</span>
             <span>🥳 trouve !</span>
           </div>
-          <p className="text-gray-600 mt-2">Noms communs uniquement — pas de noms propres ni de conjugaisons</p>
+          <p className="text-gray-600 mt-2">342 000+ mots francais — noms communs uniquement</p>
         </div>
       </div>
     </div>
   )
 }
 
-function YesterdayWord({ word }) {
+function YesterdayWords({ words }) {
   return (
     <div className="glass rounded-xl px-4 py-3 text-center">
-      <p className="text-[11px] text-gray-500 mb-1">Le mot d'hier etait</p>
-      <p className="text-lg font-bold bg-gradient-to-r from-accent-violet to-accent-orange bg-clip-text text-transparent">
-        {word}
-      </p>
+      <p className="text-[11px] text-gray-500 mb-1">Les mots d'hier</p>
+      <div className="flex flex-wrap justify-center gap-2">
+        {words.map((w, i) => (
+          <span key={i} className="text-sm font-bold bg-gradient-to-r from-accent-violet to-accent-orange bg-clip-text text-transparent">
+            {w}
+          </span>
+        ))}
+      </div>
     </div>
   )
 }
@@ -272,7 +333,6 @@ function ServerNotice() {
 
 function TemperatureBar({ bestScore }) {
   const pct = bestScore != null ? Math.max(0, Math.min(100, (bestScore + 10) / 110 * 100)) : 0
-
   return (
     <div className="glass rounded-xl p-3">
       <div className="flex justify-between text-xs text-gray-500 mb-1.5">
@@ -282,11 +342,8 @@ function TemperatureBar({ bestScore }) {
         </span>
         <span>Brulant 🔥</span>
       </div>
-      <div className="h-3 rounded-full bg-bg-primary overflow-hidden">
-        <div
-          className="h-full temp-gradient rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${pct}%` }}
-        />
+      <div className="h-4 rounded-full bg-bg-primary overflow-hidden">
+        <div className="h-full temp-gradient rounded-full transition-all duration-500 ease-out" style={{ width: `${pct}%` }} />
       </div>
     </div>
   )

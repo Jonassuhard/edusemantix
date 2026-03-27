@@ -13,7 +13,7 @@ const TEMP_COLORS = {
 function ScoreBar({ score }) {
   const pct = Math.max(0, Math.min(100, (score + 10) / 110 * 100))
   return (
-    <div className="w-16 sm:w-20 h-1.5 rounded-full bg-white/5 overflow-hidden">
+    <div className="w-16 sm:w-20 h-2.5 rounded-full bg-white/5 overflow-hidden">
       <div
         className="h-full temp-gradient rounded-full transition-all duration-300"
         style={{ width: `${pct}%` }}

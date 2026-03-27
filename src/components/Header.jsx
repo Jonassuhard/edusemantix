@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-export default function Header({ day, guessCount, playerCount, onHelp, onLegend }) {
+export default function Header({ day, guessCount, playerCount, onHelp, onLegend, darkMode, onToggleTheme }) {
   const [nextWord, setNextWord] = useState('')
 
   useEffect(() => {
@@ -53,6 +53,13 @@ export default function Header({ day, guessCount, playerCount, onHelp, onLegend 
             <span className="font-mono">{playerCount}</span>
             <span className="text-gray-600 text-xs hidden sm:inline">en ligne</span>
           </div>
+          <button
+            onClick={onToggleTheme}
+            className="text-gray-500 hover:text-gray-300 transition-colors text-base"
+            title={darkMode ? 'Mode clair' : 'Mode sombre'}
+          >
+            {darkMode ? '☀️' : '🌙'}
+          </button>
           <button
             onClick={onLegend}
             className="text-gray-500 hover:text-gray-300 transition-colors text-base"

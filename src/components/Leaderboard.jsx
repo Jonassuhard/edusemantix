@@ -41,7 +41,7 @@ export default function Leaderboard({ players, currentUser }) {
                     {player.name}
                     {isMe && <span className="text-[10px] text-gray-500 ml-1">(toi)</span>}
                   </span>
-                  {player.found && <span className="text-xs">🥳</span>}
+                  {player.found > 0 && <span className="text-xs">{player.found}/{player.roundsTotal || 3} 🥳</span>}
                 </div>
                 <div className="flex items-center gap-2 text-[11px] text-gray-500 mt-0.5">
                   <span>{player.guesses} essai{player.guesses !== 1 ? 's' : ''}</span>

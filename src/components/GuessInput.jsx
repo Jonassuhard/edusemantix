@@ -17,6 +17,9 @@ export default function GuessInput({ onGuess, error, disabled }) {
 
   return (
     <div>
+      <p className="text-[11px] text-gray-600 mb-1.5 px-1">
+        Noms communs, adjectifs, verbes a l'infinitif — pas de noms propres, conjugaisons ou pluriels rares
+      </p>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <div className="flex-1 relative">
           <input

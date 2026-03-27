@@ -270,7 +270,14 @@ export default function App() {
           <EmojiSummary guesses={guesses} />
           <TemperatureBar bestScore={guesses.length > 0 ? Math.max(...guesses.map(g => g.score)) : null} />
           {showLegend && <TempLegend />}
-          <HintBar guessCount={guesses.length} found={found} hints={hints[round]} />
+          <HintBar guessCount={guesses.length} found={found} hints={hints[round]} coldStreak={(() => {
+            let count = 0
+            for (let j = guesses.length - 1; j >= 0; j--) {
+              if (guesses[j].emoji === '🥶' || guesses[j].emoji === '🧊') count++
+              else break
+            }
+            return count
+          })()} />
           <GuessList guesses={guesses} lastResult={lastResult} />
         </div>
 

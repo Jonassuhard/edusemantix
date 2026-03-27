@@ -37,27 +37,70 @@ def word_quality_score(word):
     elif len(w) > 20:
         score -= 20
 
-    # Penalize likely conjugations/derivations (long suffixes)
-    conj_suffixes = ['eraient', 'assions', 'assiez', 'erions', 'issons',
-                     'issent', 'irions', 'iraient', 'issions', 'erait',
-                     'erons', 'eront', 'eriez', 'asses', 'assent',
-                     'issez', 'irent', 'èrent', 'aient', 'ions']
-    for suf in conj_suffixes:
-        if w.endswith(suf) and len(w) > len(suf) + 3:
-            score -= 15
+    # ── AGGRESSIVE verb conjugation filter ──
+    # These suffixes are almost always verb conjugations, penalize hard (-25)
+    hard_conj_suffixes = [
+        # Passé simple
+        'âmes', 'âtes', 'èrent',
+        # Subjonctif imparfait circumflex
+        'ât', 'ît', 'ût',
+        # Futur simple
+        'erai', 'eras', 'era', 'erez', 'erons', 'eront',
+        # Conditionnel
+        'erais', 'erait', 'eriez', 'erions',
+        # Subjonctif imparfait -asse group
+        'asse', 'asses', 'assent', 'assiez', 'assions',
+        # Subjonctif imparfait -isse group
+        'isse', 'isses', 'issent', 'issiez', 'issions',
+        # Subjonctif imparfait -usse group
+        'usse', 'usses', 'ussent', 'ussiez', 'ussions',
+    ]
+    is_conjugation = False
+    for suf in hard_conj_suffixes:
+        if w.endswith(suf) and len(w) > len(suf) + 2:
+            score -= 25
+            is_conjugation = True
             break
+
+    # Secondary conjugation suffixes (original list, still -25 for consistency)
+    if not is_conjugation:
+        conj_suffixes = ['eraient', 'iraient', 'irions',
+                         'issons', 'issez', 'irent', 'aient', 'ions']
+        for suf in conj_suffixes:
+            if w.endswith(suf) and len(w) > len(suf) + 3:
+                score -= 25
+                is_conjugation = True
+                break
+
+    # Penalize long words ending in short verb-like suffixes (compound conjugations)
+    if not is_conjugation and len(w) > 8:
+        short_verb_endings = ('ai', 'ais', 'ait', 'iez', 'ions')
+        if w.endswith(short_verb_endings):
+            score -= 10
+            is_conjugation = True
 
     # Penalize participles/gerunds
     if w.endswith('ant') and len(w) > 5:
         score -= 5
+        is_conjugation = True
     if w.endswith('ants') and len(w) > 6:
         score -= 8
+        is_conjugation = True
 
     # Prefer base forms (no -s, -es, -ées, -és plurals)
     if w.endswith('s') and len(w) > 4:
         score -= 3
 
-    # Bonus for likely base/common words
+    # ── BONUS for likely nouns/adjectives ──
+    # Words that survived all conjugation checks get a bonus
+    if not is_conjugation:
+        score += 8  # Likely noun or adjective — boost it
+
+    # Bonus for short words that don't look like verbs
+    if 4 <= len(w) <= 8 and not is_conjugation:
+        score += 5
+
+    # Bonus for likely base/common words (kept from original)
     if len(w) <= 8:
         score += 5
 

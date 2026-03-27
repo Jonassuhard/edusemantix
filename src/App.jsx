@@ -248,15 +248,15 @@ export default function App() {
       />
 
       {/* Round tabs */}
-      <div className="max-w-6xl mx-auto w-full px-4 pt-3">
-        <div className="flex gap-2">
+      <div className="max-w-6xl mx-auto w-full px-2 sm:px-4 pt-3">
+        <div className="flex gap-1.5 sm:gap-2">
           {Array.from({ length: roundCount }, (_, i) => (
             <button
               key={i}
               onClick={() => { if (i === 0 || foundPerRound[i - 1]) setRound(i) }}
               disabled={i > 0 && !foundPerRound[i - 1]}
               className={`
-                flex-1 py-2 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-1.5
+                flex-1 py-2.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1 sm:gap-1.5 min-h-[44px]
                 ${round === i
                   ? 'bg-gradient-to-r from-accent-violet to-accent-orange text-white'
                   : foundPerRound[i]
@@ -275,7 +275,7 @@ export default function App() {
         </div>
       </div>
 
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-4 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
+      <main className="flex-1 max-w-6xl mx-auto w-full px-2 sm:px-4 py-3 sm:py-4 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-3 sm:gap-4">
         <div className="flex flex-col gap-3">
           <GuessInput onGuess={handleGuess} error={error} disabled={found} />
           <FunMessage guesses={guesses} lastResult={lastResult} round={round} foundPerRound={foundPerRound} onEasterEgg={(anim) => { setEasterEggAnim(anim); setEasterEggKey(k => k + 1) }} onBingo={() => setShowConfetti(true)} />
@@ -328,11 +328,11 @@ function LoginScreen({ onLogin, savedName }) {
   const [name, setName] = useState(savedName || '')
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative">
+    <div className="min-h-screen flex items-center justify-center px-3 sm:px-4 relative">
       <FloatingWords />
-      <div className="glass-strong rounded-2xl p-8 max-w-md w-full text-center relative z-10">
-        <div className="text-5xl mb-4">🔤</div>
-        <h1 className="text-3xl font-bold mb-2">
+      <div className="glass-strong rounded-2xl p-5 sm:p-8 max-w-md w-full text-center relative z-10">
+        <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">🔤</div>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">
           <span className="bg-gradient-to-r from-accent-violet to-accent-orange bg-clip-text text-transparent">
             EduSemantix
           </span>

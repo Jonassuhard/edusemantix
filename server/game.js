@@ -310,8 +310,9 @@ export class GameEngine {
     this.accentMap = {}
     for (const w of this.vocabWords) {
       const stripped = this.stripAccents(w)
-      // Only store the first (most common) accented version
-      if (!this.accentMap[stripped]) {
+      if (stripped === w) continue // Skip words that have no accents
+      // Prefer the accented version over any existing mapping
+      if (!this.accentMap[stripped] || w.length <= this.accentMap[stripped].length) {
         this.accentMap[stripped] = w
       }
     }

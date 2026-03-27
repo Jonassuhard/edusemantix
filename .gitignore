@@ -6,3 +6,5 @@ __pycache__/
 firebase-key.json
 *.gz
 data/vectors.bin
+numberbatch-fr.txt
+data/vectors_fasttext_backup/

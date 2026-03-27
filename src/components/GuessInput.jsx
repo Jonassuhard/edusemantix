@@ -53,7 +53,8 @@ export default function GuessInput({ onGuess, error, disabled }) {
         <button
           type="submit"
           disabled={!value.trim() || disabled}
-          className="px-6 rounded-xl bg-gradient-to-r from-accent-violet to-accent-orange text-white font-semibold
+          aria-label="Envoyer"
+          className="min-w-[48px] min-h-[48px] px-5 rounded-xl bg-gradient-to-r from-accent-violet to-accent-orange text-white font-semibold
             disabled:opacity-20 hover:opacity-90 active:scale-95 transition-all text-lg"
         >
           →

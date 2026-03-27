@@ -64,38 +64,42 @@ export default function Header({ day, guessCount, playerCount, onHelp, onLegend,
           </div>
         </div>
 
-        {/* Bottom row: action buttons with labels */}
-        <div className="flex gap-2">
+        {/* Bottom row: action buttons — min 44px touch targets on mobile */}
+        <div className="flex gap-1.5 sm:gap-2">
           <button
             onClick={onToggleTheme}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium glass hover:bg-white/[0.05] transition-all text-gray-400 hover:text-white"
+            className="flex items-center justify-center gap-1.5 min-w-[44px] min-h-[44px] px-3 py-2 rounded-lg text-xs font-medium glass hover:bg-white/[0.05] active:bg-white/[0.08] transition-all text-gray-400 hover:text-white"
             title={darkMode ? 'Mode clair' : 'Mode sombre'}
+            aria-label={darkMode ? 'Mode clair' : 'Mode sombre'}
           >
-            <span>{darkMode ? '☀️' : '🌙'}</span>
+            <span className="text-base">{darkMode ? '☀️' : '🌙'}</span>
             <span className="hidden sm:inline">{darkMode ? 'Clair' : 'Sombre'}</span>
           </button>
           <button
             onClick={onToggleSound}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium glass hover:bg-white/[0.05] transition-all ${soundEnabled ? 'text-accent-violet' : 'text-gray-500'}`}
+            className={`flex items-center justify-center gap-1.5 min-w-[44px] min-h-[44px] px-3 py-2 rounded-lg text-xs font-medium glass hover:bg-white/[0.05] active:bg-white/[0.08] transition-all ${soundEnabled ? 'text-accent-violet' : 'text-gray-500'}`}
             title={soundEnabled ? 'Couper le son' : 'Activer le son'}
+            aria-label={soundEnabled ? 'Couper le son' : 'Activer le son'}
           >
-            <span>{soundEnabled ? '🔊' : '🔇'}</span>
+            <span className="text-base">{soundEnabled ? '🔊' : '🔇'}</span>
             <span className="hidden sm:inline">{soundEnabled ? 'Son' : 'Muet'}</span>
           </button>
           <button
             onClick={onLegend}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium glass hover:bg-white/[0.05] transition-all text-gray-400 hover:text-white"
+            className="flex items-center justify-center gap-1.5 min-w-[44px] min-h-[44px] px-3 py-2 rounded-lg text-xs font-medium glass hover:bg-white/[0.05] active:bg-white/[0.08] transition-all text-gray-400 hover:text-white"
             title="Échelle de température"
+            aria-label="Échelle de température"
           >
-            <span>🌡</span>
+            <span className="text-base">🌡</span>
             <span className="hidden sm:inline">Échelle</span>
           </button>
           <button
             onClick={onHelp}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium glass hover:bg-white/[0.05] transition-all text-gray-400 hover:text-white"
+            className="flex items-center justify-center gap-1.5 min-w-[44px] min-h-[44px] px-3 py-2 rounded-lg text-xs font-medium glass hover:bg-white/[0.05] active:bg-white/[0.08] transition-all text-gray-400 hover:text-white"
             title="Règles du jeu"
+            aria-label="Règles du jeu"
           >
-            <span>❓</span>
+            <span className="text-base">❓</span>
             <span className="hidden sm:inline">Règles</span>
           </button>
         </div>

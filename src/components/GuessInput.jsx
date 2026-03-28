@@ -13,6 +13,8 @@ export default function GuessInput({ onGuess, error, disabled }) {
     if (!value.trim() || disabled) return
     onGuess(value)
     setValue('')
+    // Re-focus immediately so keyboard stays open on mobile
+    requestAnimationFrame(() => inputRef.current?.focus())
   }
 
   return (

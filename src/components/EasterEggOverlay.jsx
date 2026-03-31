@@ -49,6 +49,7 @@ const ANIMATIONS = {
   seoLoud: SeoLoudAnimation,
   olafDisney: OlafDisneyAnimation,
   bossNathalie: BossNathalieAnimation,
+  edusemantixMeta: EdusemantixMetaAnimation,
 }
 
 export default function EasterEggOverlay({ anim, animKey }) {
@@ -3448,6 +3449,180 @@ function BossNathalieAnimation() {
           0% { opacity: 0; transform: scale(0) rotate(0deg); }
           50% { opacity: 1; transform: scale(1.3) rotate(180deg); }
           100% { opacity: 0; transform: scale(0) rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// 🔤 META — easter egg EduSemantix (le jeu s'invoque lui-même)
+function EdusemantixMetaAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 9000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const letters = 'EDUSEMANTIX'.split('')
+  const glitchColors = ['#818cf8', '#f472b6', '#fb923c', '#34d399', '#fbbf24', '#60a5fa']
+  const particles = Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    angle: (i / 50) * Math.PI * 2,
+    dist: 30 + Math.random() * 25,
+    delay: 4 + i * 0.03,
+    size: 0.6 + Math.random() * 1,
+    emoji: ['🔤', '🔠', '🔡', '💬', '📝', '🧩', '🧠', '💡', '⚡', '✨'][Math.floor(Math.random() * 10)],
+  }))
+  const codeLines = [
+    '<EduSemantix />',
+    'socket.emit("guess", "edusemantix")',
+    '// 4th wall: broken',
+    'console.log("🤯")',
+    'while(meta) { meta++ }',
+    'import self from "self"',
+  ]
+  const matrixChars = Array.from({ length: 20 }, (_, i) => ({
+    id: i, left: Math.random() * 100, delay: Math.random() * 3,
+    speed: 2 + Math.random() * 2,
+    chars: 'EDUSEMANTIX'.split('').sort(() => Math.random() - 0.5).join(''),
+  }))
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Glitch bg */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(circle at 50% 50%, rgba(99,102,241,0.1) 0%, rgba(0,0,0,0.3) 60%)',
+        animation: 'meta-bg 9s ease-in-out forwards',
+      }} />
+      {/* Matrix rain of scrambled letters */}
+      {matrixChars.map(m => (
+        <div key={`mx-${m.id}`} style={{
+          position: 'absolute', left: `${m.left}%`, top: '-10%',
+          fontFamily: 'monospace', fontSize: '0.8rem',
+          color: 'rgba(129,140,248,0.4)', writingMode: 'vertical-rl',
+          animation: `meta-rain ${m.speed}s ${m.delay}s linear forwards`,
+          letterSpacing: '4px',
+        }}>{m.chars}</div>
+      ))}
+      {/* Phase 1: Letters assemble one by one */}
+      <div style={{
+        position: 'absolute', top: '28%', left: '50%', transform: 'translateX(-50%)',
+        display: 'flex', gap: '2px',
+      }}>
+        {letters.map((l, i) => (
+          <div key={i} style={{
+            fontSize: '3rem', fontWeight: 'bold',
+            color: glitchColors[i % glitchColors.length],
+            textShadow: `0 0 15px ${glitchColors[i % glitchColors.length]}60`,
+            animation: `meta-letter 0.3s ${0.8 + i * 0.15}s ease-out forwards`,
+            opacity: 0, transform: 'translateY(-30px)',
+          }}>{l}</div>
+        ))}
+      </div>
+      {/* Glitch flicker over the assembled word */}
+      <div style={{
+        position: 'absolute', top: '27.5%', left: '50%', transform: 'translateX(-50%)',
+        width: '400px', height: '60px',
+        animation: 'meta-glitch-overlay 0.15s 3s ease-in-out 6',
+        opacity: 0,
+        background: 'linear-gradient(90deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)',
+      }} />
+      {/* "4th wall broken" crack effect */}
+      <svg style={{
+        position: 'absolute', inset: 0, width: '100%', height: '100%',
+        animation: 'meta-crack 5s 3.5s ease-out forwards', opacity: 0,
+      }}>
+        <line x1="50%" y1="0" x2="48%" y2="35%" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+        <line x1="48%" y1="35%" x2="52%" y2="42%" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+        <line x1="52%" y1="42%" x2="47%" y2="55%" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        <line x1="47%" y1="55%" x2="53%" y2="70%" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <line x1="53%" y1="70%" x2="50%" y2="100%" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+      </svg>
+      {/* Code snippets floating */}
+      {codeLines.map((c, i) => (
+        <div key={`code-${i}`} style={{
+          position: 'absolute',
+          left: `${8 + (i % 3) * 32}%`,
+          top: `${50 + Math.floor(i / 3) * 18}%`,
+          fontFamily: 'monospace', fontSize: '0.6rem',
+          color: 'rgba(129,140,248,0.5)',
+          animation: `meta-code 2s ${2.5 + i * 0.5}s ease-out forwards`, opacity: 0,
+        }}>{c}</div>
+      ))}
+      {/* Center message */}
+      <div style={{
+        position: 'absolute', top: '45%', left: '50%',
+        transform: 'translate(-50%,-50%)', textAlign: 'center',
+        animation: 'meta-msg 5s 3.5s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{ fontSize: '0.9rem', color: '#818cf8', fontFamily: 'monospace' }}>
+          {'> '}le jeu se regarde jouer...
+        </div>
+        <div style={{ fontSize: '2.5rem', marginTop: '8px', animation: 'meta-emoji-spin 2s linear infinite' }}>
+          🤯
+        </div>
+        <div style={{ fontSize: '0.65rem', color: '#6366f1', marginTop: '6px', letterSpacing: '4px' }}>
+          4TH WALL BROKEN
+        </div>
+      </div>
+      {/* Phase 2: explosion of letter particles */}
+      {particles.map(p => (
+        <div key={`p-${p.id}`} style={{
+          position: 'absolute', top: '50%', left: '50%',
+          fontSize: `${p.size}rem`,
+          '--px': `${Math.cos(p.angle) * p.dist}vw`,
+          '--py': `${Math.sin(p.angle) * p.dist}vh`,
+          animation: `meta-explode 1.5s ${p.delay}s ease-out forwards`, opacity: 0,
+        }}>{p.emoji}</div>
+      ))}
+      {/* Shockwave */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+        width: '10px', height: '10px', borderRadius: '50%',
+        border: '2px solid rgba(129,140,248,0.5)',
+        animation: 'meta-shock 1.5s 4s ease-out forwards', opacity: 0,
+      }} />
+      <style>{`
+        @keyframes meta-bg { 0% { opacity: 0; } 5% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes meta-rain { 0% { top: -10%; opacity: 0.4; } 100% { top: 110%; opacity: 0; } }
+        @keyframes meta-letter {
+          0% { opacity: 0; transform: translateY(-30px) scale(0.5) rotate(-10deg); }
+          60% { opacity: 1; transform: translateY(5px) scale(1.15) rotate(3deg); }
+          100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+        }
+        @keyframes meta-glitch-overlay {
+          0% { opacity: 0; transform: translateX(-50%) translateX(-5px); }
+          50% { opacity: 0.6; transform: translateX(-50%) translateX(5px); }
+          100% { opacity: 0; transform: translateX(-50%) translateX(-3px); }
+        }
+        @keyframes meta-crack {
+          0% { opacity: 0; } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { opacity: 0; }
+        }
+        @keyframes meta-code {
+          0% { opacity: 0; transform: translateY(5px); }
+          20% { opacity: 0.6; transform: translateY(0); }
+          80% { opacity: 0.4; }
+          100% { opacity: 0; }
+        }
+        @keyframes meta-msg {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          15% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+          25% { transform: translate(-50%,-50%) scale(1); }
+          80% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes meta-emoji-spin {
+          0% { transform: rotate(0deg) scale(1); }
+          25% { transform: rotate(5deg) scale(1.1); }
+          50% { transform: rotate(0deg) scale(1); }
+          75% { transform: rotate(-5deg) scale(1.1); }
+          100% { transform: rotate(0deg) scale(1); }
+        }
+        @keyframes meta-explode {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3); }
+          15% { opacity: 1; }
+          100% { opacity: 0; transform: translate(calc(-50% + var(--px)), calc(-50% + var(--py))) scale(0.4) rotate(360deg); }
+        }
+        @keyframes meta-shock {
+          0% { opacity: 0.7; width: 10px; height: 10px; }
+          100% { opacity: 0; width: 120vw; height: 120vw; }
         }
       `}</style>
     </div>

@@ -228,6 +228,7 @@ const EASTER_EGGS = {
   'melanie': { text: "Melanie + Olaf = ❄️☀️ warm hugs !", anim: 'olafDisney' },
   'mélanie': { text: "Mélanie + Olaf = ❄️☀️ warm hugs !", anim: 'olafDisney' },
   'nathalie': { text: "LA BIG BOSS EST LÀ 👑💼", anim: 'bossNathalie' },
+  'edusemantix': { text: "🔤 LE MOT INTERDIT 🔤 Tu as invoqué le jeu lui-même !", anim: 'edusemantixMeta' },
   'clementine': { text: "Clémentine vitaminée 🍊🏅", anim: 'orangeSport' },
   'clémentine': { text: "Clémentine vitaminée 🍊🏅", anim: 'orangeSport' },
   'clemantine': { text: "Clémentine vitaminée 🍊🏅", anim: 'orangeSport' },

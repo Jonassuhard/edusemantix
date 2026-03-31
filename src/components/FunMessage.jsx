@@ -229,7 +229,7 @@ const EASTER_EGGS = {
   'clémentine': { text: "Clémentine vitaminée 🍊🏅", anim: 'orangeSport' },
   'clemantine': { text: "Clémentine vitaminée 🍊🏅", anim: 'orangeSport' },
   'claire': { text: "Claire fire sign energy 🔥🔮", anim: 'flameAstro' },
-  'yassine': { text: "Le gardien du serveur 🔐", anim: 'glitch' },
+  'yassine': { text: "YASSINE EST LÀ. TOUT LE MONDE L'A ENTENDU. 📢🔍", anim: 'seoLoud' },
   'michel': { text: "Michel ? Il est là ? ...à moitié 👻💻", anim: 'ghostDev' },
   'tuer': { text: "Quintuple ⚔️", anim: 'shake-gold' },
   'tue': { text: "Quintuple ⚔️", anim: 'shake-gold' },

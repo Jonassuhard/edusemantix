@@ -46,6 +46,7 @@ const ANIMATIONS = {
   adventureThomas: AdventureThomasAnimation,
   spiralJonas: SpiralJonasAnimation,
   ghostDev: GhostDevAnimation,
+  seoLoud: SeoLoudAnimation,
 }
 
 export default function EasterEggOverlay({ anim, animKey }) {
@@ -2988,6 +2989,198 @@ function GhostDevAnimation() {
         }
         @keyframes michel-status-item {
           0% { opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// 📢🔍 SEO mystérieux qui parle fort — easter egg Yassine
+function SeoLoudAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 8000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const seoTerms = [
+    'BACKLINKS', 'H1', 'META DESC', 'SERP', 'CRAWL', 'INDEXATION',
+    'CANONICAL', 'SITEMAP.XML', 'SCHEMA.ORG', 'CORE WEB VITALS',
+    'ALT TEXT', '301 REDIRECT', 'ROBOTS.TXT', 'KEYWORD DENSITY',
+    'FEATURED SNIPPET', 'E-E-A-T', 'PAGE RANK', 'NOFOLLOW',
+  ]
+  const shouts = [
+    'MAIS ATTENDS !!!', 'NON MAIS LÀ C\'EST GRAVE !', 'TU M\'ENTENDS ?!',
+    'FAUT OPTIMISER ÇA !!!', 'LE TITLE TAG !!', 'J\'AI DIT QUOI ?!',
+  ]
+  const floatingTerms = seoTerms.map((t, i) => ({
+    id: i, text: t,
+    startX: Math.random() * 100, startY: Math.random() * 100,
+    delay: 0.5 + Math.random() * 4, size: 0.55 + Math.random() * 0.4,
+  }))
+  const soundWaves = Array.from({ length: 5 }, (_, i) => ({
+    id: i, delay: 1.5 + i * 0.8,
+  }))
+  const mysterySymbols = Array.from({ length: 12 }, (_, i) => ({
+    id: i, left: Math.random() * 100, top: Math.random() * 100,
+    delay: 1 + Math.random() * 5,
+    symbol: ['👁️', '🔮', '🌙', '⚗️', '🗝️', '🔺'][Math.floor(Math.random() * 6)],
+  }))
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Dark mysterious bg */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(circle at 50% 50%, rgba(20,0,40,0.3) 0%, rgba(0,10,0,0.2) 60%, transparent 85%)',
+        animation: 'yass-bg 8s ease-in-out forwards',
+      }} />
+      {/* Mystery symbols fading in/out */}
+      {mysterySymbols.map(m => (
+        <div key={`mys-${m.id}`} style={{
+          position: 'absolute', left: `${m.left}%`, top: `${m.top}%`,
+          fontSize: '1.5rem', opacity: 0,
+          animation: `yass-mystery 2.5s ${m.delay}s ease-in-out forwards`,
+        }}>{m.symbol}</div>
+      ))}
+      {/* Google search bar at top */}
+      <div style={{
+        position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)',
+        background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
+        borderRadius: '24px', padding: '8px 20px', width: '280px',
+        animation: 'yass-search 7s 0.5s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '1rem' }}>🔍</span>
+          <span style={{
+            fontFamily: 'monospace', fontSize: '0.75rem', color: '#4ade80',
+            overflow: 'hidden', whiteSpace: 'nowrap',
+            animation: 'yass-typing 3s 1s steps(20) forwards', width: 0,
+          }}>yassine seo expert secrets</span>
+        </div>
+        <div style={{
+          fontSize: '0.55rem', color: '#22c55e', marginTop: '4px',
+          animation: 'yass-results 5s 3s ease-out forwards', opacity: 0,
+        }}>
+          #1 sur Google — 1 340 000 résultats (0.02s)
+        </div>
+      </div>
+      {/* Center: Yassine speaking LOUD */}
+      <div style={{
+        position: 'absolute', top: '38%', left: '50%', transform: 'translate(-50%,-50%)',
+        textAlign: 'center',
+        animation: 'yass-center 7s 0.8s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{
+          fontSize: '4rem',
+          animation: 'yass-shake 0.15s ease-in-out infinite alternate',
+        }}>🗣️</div>
+      </div>
+      {/* Sound waves emanating */}
+      {soundWaves.map(w => (
+        <div key={`wave-${w.id}`} style={{
+          position: 'absolute', top: '36%', left: '50%', transform: 'translate(-50%,-50%)',
+          width: '20px', height: '20px', borderRadius: '50%',
+          border: '2px solid rgba(239,68,68,0.5)',
+          animation: `yass-wave 1s ${w.delay}s ease-out forwards`, opacity: 0,
+        }} />
+      ))}
+      {/* Shout bubbles popping up */}
+      {shouts.map((s, i) => (
+        <div key={`shout-${i}`} style={{
+          position: 'absolute',
+          left: `${15 + (i % 3) * 30}%`,
+          top: `${25 + Math.floor(i / 3) * 35}%`,
+          background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)',
+          borderRadius: '12px', padding: '4px 10px',
+          fontSize: '0.7rem', fontWeight: 'bold', color: '#ef4444',
+          animation: `yass-shout 1.5s ${2 + i * 0.7}s ease-out forwards`, opacity: 0,
+          whiteSpace: 'nowrap',
+        }}>{s}</div>
+      ))}
+      {/* Name */}
+      <div style={{
+        position: 'absolute', top: '55%', left: '50%',
+        transform: 'translate(-50%,-50%)', textAlign: 'center',
+        animation: 'yass-name 6s 1.5s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{
+          fontSize: '2rem', fontWeight: 'bold',
+          background: 'linear-gradient(90deg, #4ade80, #22d3ee, #a78bfa)',
+          backgroundSize: '200% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          animation: 'yass-gradient 2s linear infinite',
+        }}>YASSINE 📢</div>
+        <div style={{ fontSize: '0.7rem', color: '#4ade80', marginTop: '3px', letterSpacing: '2px' }}>
+          SEO SORCERER 🔮 · VOLUME: MAX 🔊
+        </div>
+      </div>
+      {/* Floating SEO terms */}
+      {floatingTerms.map(t => (
+        <div key={`seo-${t.id}`} style={{
+          position: 'absolute', left: `${t.startX}%`, top: `${t.startY}%`,
+          fontFamily: 'monospace', fontSize: `${t.size}rem`, fontWeight: 'bold',
+          color: 'rgba(74,222,128,0.35)',
+          animation: `yass-term 2s ${t.delay}s ease-in-out forwards`, opacity: 0,
+        }}>{t.text}</div>
+      ))}
+      {/* Screen shake on shout */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        animation: 'yass-screenshake 0.1s 2.5s ease-in-out 8',
+      }} />
+      <style>{`
+        @keyframes yass-bg { 0% { opacity: 0; } 5% { opacity: 1; } 88% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes yass-mystery {
+          0% { opacity: 0; transform: scale(0.5) rotate(-20deg); }
+          40% { opacity: 0.4; transform: scale(1.1) rotate(5deg); }
+          100% { opacity: 0; transform: scale(0.8) rotate(20deg); }
+        }
+        @keyframes yass-search {
+          0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+          10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+          85% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes yass-typing { 0% { width: 0; } 100% { width: 180px; } }
+        @keyframes yass-results { 0% { opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes yass-center {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3); }
+          10% { opacity: 1; transform: translate(-50%,-50%) scale(1.2); }
+          15% { transform: translate(-50%,-50%) scale(1); }
+          85% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes yass-shake {
+          0% { transform: scale(1) rotate(-2deg); }
+          100% { transform: scale(1.08) rotate(2deg); }
+        }
+        @keyframes yass-wave {
+          0% { opacity: 0.7; width: 20px; height: 20px; border-width: 2px; }
+          100% { opacity: 0; width: 60vw; height: 60vw; border-width: 1px; }
+        }
+        @keyframes yass-shout {
+          0% { opacity: 0; transform: scale(0.5); }
+          20% { opacity: 1; transform: scale(1.15); }
+          30% { transform: scale(1); }
+          70% { opacity: 1; }
+          100% { opacity: 0; transform: scale(0.9); }
+        }
+        @keyframes yass-name {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          10% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+          18% { transform: translate(-50%,-50%) scale(1); }
+          82% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes yass-gradient { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+        @keyframes yass-term {
+          0% { opacity: 0; transform: translateY(5px); }
+          30% { opacity: 0.4; transform: translateY(0); }
+          70% { opacity: 0.25; }
+          100% { opacity: 0; transform: translateY(-8px); }
+        }
+        @keyframes yass-screenshake {
+          0% { transform: translate(0,0); }
+          25% { transform: translate(-3px, 2px); }
+          50% { transform: translate(3px, -2px); }
+          75% { transform: translate(-2px, -1px); }
+          100% { transform: translate(0,0); }
         }
       `}</style>
     </div>

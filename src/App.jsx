@@ -238,12 +238,14 @@ export default function App() {
     const cleaned = word.trim().toLowerCase()
     if (guesses.find(g => g.word === cleaned)) {
       triggerEasterEgg(cleaned)
+      setGuessLoading(false)
       const dupeMessages = ['Déjà tenté chef 🫡', 'Alzheimer ? 🤔', 'Tu l\'as déjà mis celui-là 😅', 'Ctrl+Z mental 🔄', 'Déjà vu ! Littéralement.']
       setError(dupeMessages[Math.floor(Math.random() * dupeMessages.length)])
       setTimeout(() => setError(''), 2000)
       return
     }
     setGuessLoading(true)
+    setTimeout(() => setGuessLoading(false), 8000)
     socket.emit('guess', { word: cleaned, round })
   }, [found, guesses, round, triggerEasterEgg])
 

@@ -50,6 +50,8 @@ const ANIMATIONS = {
   olafDisney: OlafDisneyAnimation,
   bossNathalie: BossNathalieAnimation,
   edusemantixMeta: EdusemantixMetaAnimation,
+  moneyRain: MoneyRainAnimation,
+  marketingRocket: MarketingRocketAnimation,
 }
 
 export default function EasterEggOverlay({ anim, animKey }) {
@@ -3624,6 +3626,109 @@ function EdusemantixMetaAnimation() {
           0% { opacity: 0.7; width: 10px; height: 10px; }
           100% { opacity: 0; width: 120vw; height: 120vw; }
         }
+      `}</style>
+    </div>
+  )
+}
+
+// 💰 Pluie de billets — pour les mots business/argent
+function MoneyRainAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 6000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const bills = Array.from({ length: 40 }, (_, i) => ({
+    id: i, left: Math.random() * 100, delay: Math.random() * 3,
+    size: 1 + Math.random() * 1.5, speed: 2.5 + Math.random() * 2,
+    emoji: ['💵', '💶', '💷', '💰', '🤑', '💎', '💸'][Math.floor(Math.random() * 7)],
+    wobble: (Math.random() - 0.5) * 50,
+    spin: 180 + Math.random() * 360,
+  }))
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(circle at 50% 30%, rgba(34,197,94,0.1) 0%, transparent 60%)',
+        animation: 'money-bg 6s ease-in-out forwards',
+      }} />
+      {bills.map(b => (
+        <div key={b.id} style={{
+          position: 'absolute', left: `${b.left}%`, top: '-40px',
+          fontSize: `${b.size}rem`,
+          animation: `money-fall ${b.speed}s ${b.delay}s ease-in forwards`,
+          opacity: 0, '--wobble': `${b.wobble}px`, '--spin': `${b.spin}deg`,
+        }}>{b.emoji}</div>
+      ))}
+      <style>{`
+        @keyframes money-bg { 0% { opacity: 0; } 10% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes money-fall {
+          0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+          10% { opacity: 1; }
+          50% { transform: translateY(50vh) translateX(var(--wobble)) rotate(calc(var(--spin) * 0.5)); }
+          100% { transform: translateY(110vh) translateX(calc(var(--wobble) * -0.3)) rotate(var(--spin)); opacity: 0; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// 🚀📈 Marketing rocket — pour les mots stratégie/croissance
+function MarketingRocketAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 6500); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const kpis = ['📈', '📊', '💡', '🎯', '🔥', '⚡', '💰', '🏆']
+  const buzzwords = ['ROI', 'KPI', 'GROWTH', 'LEAD', 'FUNNEL', 'CTA', 'B2B', 'SEO', 'BRANDING', 'VIRAL']
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(180deg, rgba(99,102,241,0.08) 0%, rgba(16,185,129,0.08) 100%)',
+        animation: 'mktg-bg 6.5s ease-in-out forwards',
+      }} />
+      {/* Graph line going up */}
+      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', animation: 'mktg-graph 5s 0.5s ease-out forwards', opacity: 0 }}>
+        <polyline points="5%,85% 20%,75% 35%,70% 45%,55% 55%,45% 65%,30% 75%,20% 85%,8%"
+          fill="none" stroke="rgba(16,185,129,0.4)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+          strokeDasharray="2000" strokeDashoffset="2000"
+          style={{ animation: 'mktg-draw 2s 1s ease-out forwards' }}
+        />
+      </svg>
+      {/* Rocket going up along the graph */}
+      <div style={{
+        position: 'absolute', bottom: '15%', left: '10%',
+        fontSize: '2.5rem',
+        animation: 'mktg-rocket 3s 1.5s ease-in-out forwards', opacity: 0,
+      }}>🚀</div>
+      {/* KPI emojis popping along the graph */}
+      {kpis.map((k, i) => (
+        <div key={i} style={{
+          position: 'absolute',
+          left: `${10 + i * 11}%`, bottom: `${15 + i * 9}%`,
+          fontSize: '1.5rem',
+          animation: `mktg-kpi 0.5s ${1.5 + i * 0.3}s ease-out forwards`, opacity: 0,
+        }}>{k}</div>
+      ))}
+      {/* Buzzwords floating */}
+      {buzzwords.map((b, i) => (
+        <div key={`bz-${i}`} style={{
+          position: 'absolute',
+          left: `${5 + Math.random() * 85}%`, top: `${10 + Math.random() * 75}%`,
+          fontFamily: 'monospace', fontSize: '0.6rem', fontWeight: 'bold',
+          color: 'rgba(16,185,129,0.35)', letterSpacing: '2px',
+          animation: `mktg-buzz 2s ${0.5 + i * 0.3}s ease-in-out forwards`, opacity: 0,
+        }}>{b}</div>
+      ))}
+      <style>{`
+        @keyframes mktg-bg { 0% { opacity: 0; } 8% { opacity: 1; } 88% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes mktg-graph { 0% { opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes mktg-draw { 0% { stroke-dashoffset: 2000; } 100% { stroke-dashoffset: 0; } }
+        @keyframes mktg-rocket {
+          0% { opacity: 0; left: 10%; bottom: 15%; transform: rotate(-45deg); }
+          15% { opacity: 1; }
+          100% { left: 85%; bottom: 88%; opacity: 0; transform: rotate(-45deg) scale(0.8); }
+        }
+        @keyframes mktg-kpi { 0% { opacity: 0; transform: scale(0); } 60% { opacity: 1; transform: scale(1.3); } 100% { opacity: 0.7; transform: scale(1); } }
+        @keyframes mktg-buzz { 0% { opacity: 0; } 20% { opacity: 0.4; } 80% { opacity: 0.3; } 100% { opacity: 0; } }
       `}</style>
     </div>
   )

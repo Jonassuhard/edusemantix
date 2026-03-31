@@ -58,7 +58,23 @@ export default function EasterEggOverlay({ anim, animKey }) {
   if (!anim) return null
   const Component = ANIMATIONS[anim]
   if (!Component) return null
-  return <Component key={animKey} />
+  return (
+    <>
+      <style>{`
+        .ee-overlay {
+          contain: layout style;
+          isolation: isolate;
+        }
+        .ee-overlay * {
+          will-change: transform, opacity;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          transform: translateZ(0);
+        }
+      `}</style>
+      <div className="ee-overlay"><Component key={animKey} /></div>
+    </>
+  )
 }
 
 // ✈️ Avion qui fait des loopings

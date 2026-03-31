@@ -45,6 +45,7 @@ const ANIMATIONS = {
   cyberJade: CyberJadeAnimation,
   adventureThomas: AdventureThomasAnimation,
   spiralJonas: SpiralJonasAnimation,
+  ghostDev: GhostDevAnimation,
 }
 
 export default function EasterEggOverlay({ anim, animKey }) {
@@ -2835,6 +2836,159 @@ function SpiralJonasAnimation() {
           100% { opacity: 0; }
         }
         @keyframes jonas-rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 400% 50%; } }
+      `}</style>
+    </div>
+  )
+}
+
+// 👻💻 Dev fantôme — easter egg Michel
+function GhostDevAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 8000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const codeSnippets = [
+    'git commit -m "fix"', 'npm install', 'console.log("ici")',
+    'TODO: finir ça', '// Michel was here', 'git stash',
+    'sudo rm -rf node_modules', 'localhost:3000', 'CTRL+Z CTRL+Z',
+    '¯\\_(ツ)_/¯', 'merge conflict 💀', 'git blame michel',
+  ]
+  const ghosts = Array.from({ length: 8 }, (_, i) => ({
+    id: i,
+    left: 10 + Math.random() * 80,
+    top: 10 + Math.random() * 70,
+    delay: 0.5 + Math.random() * 4,
+    size: 1.5 + Math.random() * 2,
+    duration: 2 + Math.random() * 2,
+  }))
+  const statusMessages = [
+    '🟡 En réunion', '🔴 Absent', '🟡 Revient dans 5 min',
+    '🔴 En télétravail (peut-être)', '🟡 Pause café (depuis 2h)',
+    '🔴 "Mon micro marche pas"',
+  ]
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Glitchy bg */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(30,30,50,0.15) 100%)',
+        animation: 'michel-bg 8s ease-in-out forwards',
+      }} />
+      {/* Michel appearing and disappearing — half opacity */}
+      <div style={{
+        position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%,-50%)',
+        fontSize: '5rem',
+        animation: 'michel-appear 8s 0.5s ease-in-out forwards', opacity: 0,
+      }}>
+        <div style={{ animation: 'michel-flicker 0.3s ease-in-out infinite alternate' }}>👨‍💻</div>
+      </div>
+      {/* "À moitié là" — literally half visible */}
+      <div style={{
+        position: 'absolute', top: '48%', left: '50%', transform: 'translate(-50%,-50%)',
+        overflow: 'hidden', animation: 'michel-name 7s 1s ease-out forwards', opacity: 0,
+        textAlign: 'center',
+      }}>
+        <div style={{
+          fontSize: '2rem', fontWeight: 'bold', color: '#a0a0a0',
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.9) 50%, transparent 50%, transparent 100%)',
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+        }}>Michel</div>
+        <div style={{ fontSize: '0.7rem', color: '#666', marginTop: '2px' }}>
+          50% présent, 100% dev
+        </div>
+      </div>
+      {/* Ghost copies drifting */}
+      {ghosts.map(g => (
+        <div key={g.id} style={{
+          position: 'absolute', left: `${g.left}%`, top: `${g.top}%`,
+          fontSize: `${g.size}rem`,
+          animation: `michel-ghost ${g.duration}s ${g.delay}s ease-in-out forwards`,
+          opacity: 0,
+        }}>👻</div>
+      ))}
+      {/* Floating code snippets */}
+      {codeSnippets.map((s, i) => (
+        <div key={`code-${i}`} style={{
+          position: 'absolute',
+          left: `${5 + Math.random() * 85}%`,
+          top: `${10 + Math.random() * 75}%`,
+          fontFamily: 'monospace', fontSize: '0.65rem',
+          color: 'rgba(0,255,100,0.5)',
+          animation: `michel-code 2s ${1.5 + i * 0.4}s ease-out forwards`,
+          opacity: 0, whiteSpace: 'nowrap',
+        }}>{s}</div>
+      ))}
+      {/* Status popup cycling */}
+      <div style={{
+        position: 'absolute', top: '65%', left: '50%', transform: 'translateX(-50%)',
+        background: 'rgba(30,30,40,0.8)', border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: '8px', padding: '6px 14px',
+        animation: 'michel-status 7s 2s ease-in-out forwards', opacity: 0,
+      }}>
+        <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: '2px' }}>Statut Teams :</div>
+        <div style={{
+          fontSize: '0.85rem', color: '#ccc',
+          animation: 'michel-status-cycle 6s 2.5s steps(6) forwards',
+        }}>
+          {statusMessages.map((m, i) => (
+            <div key={i} style={{
+              position: i === 0 ? 'relative' : 'absolute', top: 0, left: 0,
+              animation: `michel-status-item 1s ${2.5 + i}s ease-in-out forwards`,
+              opacity: i === 0 ? 1 : 0,
+            }}>{m}</div>
+          ))}
+        </div>
+      </div>
+      <style>{`
+        @keyframes michel-bg { 0% { opacity: 0; } 5% { opacity: 1; } 88% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes michel-appear {
+          0% { opacity: 0; }
+          10% { opacity: 0.5; }
+          20% { opacity: 0.15; }
+          30% { opacity: 0.5; }
+          40% { opacity: 0.1; }
+          50% { opacity: 0.5; }
+          60% { opacity: 0.2; }
+          70% { opacity: 0.5; }
+          80% { opacity: 0.1; }
+          85% { opacity: 0.4; }
+          90% { opacity: 0; }
+          100% { opacity: 0; }
+        }
+        @keyframes michel-flicker {
+          0% { transform: scale(1) translateX(0); filter: blur(0); }
+          100% { transform: scale(1.02) translateX(2px); filter: blur(0.5px); }
+        }
+        @keyframes michel-name {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          12% { opacity: 0.8; transform: translate(-50%,-50%) scale(1.05); }
+          20% { opacity: 0.5; }
+          30% { opacity: 0.8; }
+          40% { opacity: 0.3; }
+          50% { opacity: 0.7; }
+          80% { opacity: 0.5; }
+          100% { opacity: 0; }
+        }
+        @keyframes michel-ghost {
+          0% { opacity: 0; transform: scale(0.5); }
+          30% { opacity: 0.4; transform: scale(1) translateY(-10px); }
+          70% { opacity: 0.2; transform: scale(0.9) translateY(-30px); }
+          100% { opacity: 0; transform: scale(0.5) translateY(-50px); }
+        }
+        @keyframes michel-code {
+          0% { opacity: 0; transform: translateY(5px); }
+          30% { opacity: 0.6; transform: translateY(0); }
+          70% { opacity: 0.4; }
+          100% { opacity: 0; transform: translateY(-10px); }
+        }
+        @keyframes michel-status {
+          0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+          10% { opacity: 0.9; transform: translateX(-50%) translateY(0); }
+          85% { opacity: 0.9; }
+          100% { opacity: 0; }
+        }
+        @keyframes michel-status-item {
+          0% { opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; }
+        }
       `}</style>
     </div>
   )

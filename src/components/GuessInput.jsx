@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 
-export default function GuessInput({ onGuess, error, disabled }) {
+export default function GuessInput({ onGuess, error, disabled, loading }) {
   const [value, setValue] = useState('')
   const inputRef = useRef(null)
 
@@ -10,7 +10,7 @@ export default function GuessInput({ onGuess, error, disabled }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!value.trim() || disabled) return
+    if (!value.trim() || disabled || loading) return
     onGuess(value)
     setValue('')
     // Re-focus immediately so keyboard stays open on mobile
@@ -52,12 +52,12 @@ export default function GuessInput({ onGuess, error, disabled }) {
         </div>
         <button
           type="submit"
-          disabled={!value.trim() || disabled}
+          disabled={!value.trim() || disabled || loading}
           aria-label="Envoyer"
           className="min-w-[48px] min-h-[48px] px-5 rounded-xl bg-gradient-to-r from-accent-violet to-accent-orange text-white font-semibold
             disabled:opacity-20 hover:opacity-90 active:scale-95 transition-all text-lg"
         >
-          →
+          {loading ? <span className="inline-block animate-spin">⏳</span> : '→'}
         </button>
       </form>
     </div>

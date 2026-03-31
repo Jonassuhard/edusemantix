@@ -187,7 +187,7 @@ const MESSAGES = {
 
 // Easter egg messages triggered by specific words
 // { text, anim } — anim maps to CSS class .egg-{anim}
-const EASTER_EGGS = {
+export const EASTER_EGGS = {
   'infirmiere': { text: "Coquinou 😏", anim: 'wiggle' },
   'infirmière': { text: "Coquinou 😏", anim: 'wiggle' },
   'docteur': { text: "Coquinou 😏", anim: 'wiggle' },

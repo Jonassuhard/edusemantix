@@ -10,7 +10,7 @@ import TempLegend from './components/TempLegend'
 import HelpModal from './components/HelpModal'
 import HintBar from './components/HintBar'
 import ConnectionStatus from './components/ConnectionStatus'
-import FunMessage from './components/FunMessage'
+import FunMessage, { EASTER_EGGS } from './components/FunMessage'
 import EasterEggOverlay from './components/EasterEggOverlay'
 import FeedbackBox from './components/FeedbackBox'
 import FloatingWords from './components/FloatingWords'
@@ -61,6 +61,7 @@ export default function App() {
   const [day, setDay] = useState(0)
   const [error, setError] = useState('')
   const [lastResult, setLastResult] = useState(null)
+  const [guessLoading, setGuessLoading] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [showLegend, setShowLegend] = useState(false)
   const [showWin, setShowWin] = useState(false)
@@ -125,6 +126,7 @@ export default function App() {
     })
 
     socket.on('guess-result', (result) => {
+      setGuessLoading(false)
       setLastResult(result)
       if (!result.known) {
         setError(result.error || 'Mot inconnu')
@@ -222,17 +224,28 @@ export default function App() {
     socket.emit('join', name.trim())
   }, [])
 
+  const triggerEasterEgg = useCallback((word) => {
+    const norm = word.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    const egg = EASTER_EGGS[word] || EASTER_EGGS[norm]
+    if (egg?.anim) {
+      setEasterEggAnim(egg.anim)
+      setEasterEggKey(k => k + 1)
+    }
+  }, [])
+
   const handleGuess = useCallback((word) => {
     if (!word.trim() || found) return
     const cleaned = word.trim().toLowerCase()
     if (guesses.find(g => g.word === cleaned)) {
+      triggerEasterEgg(cleaned)
       const dupeMessages = ['Déjà tenté chef 🫡', 'Alzheimer ? 🤔', 'Tu l\'as déjà mis celui-là 😅', 'Ctrl+Z mental 🔄', 'Déjà vu ! Littéralement.']
       setError(dupeMessages[Math.floor(Math.random() * dupeMessages.length)])
       setTimeout(() => setError(''), 2000)
       return
     }
+    setGuessLoading(true)
     socket.emit('guess', { word: cleaned, round })
-  }, [found, guesses, round])
+  }, [found, guesses, round, triggerEasterEgg])
 
   const handleNextRound = () => {
     if (round < roundCount - 1) {
@@ -295,7 +308,7 @@ export default function App() {
 
       <main className="flex-1 max-w-6xl mx-auto w-full px-2 sm:px-4 py-3 sm:py-4 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-3 sm:gap-4">
         <div className="flex flex-col gap-3">
-          <GuessInput onGuess={handleGuess} error={error} disabled={found} />
+          <GuessInput onGuess={handleGuess} error={error} disabled={found} loading={guessLoading} />
           <FunMessage guesses={guesses} lastResult={lastResult} round={round} foundPerRound={foundPerRound} onEasterEgg={(anim) => { setEasterEggAnim(anim); setEasterEggKey(k => k + 1) }} onBingo={() => setShowConfetti(true)} />
           <EmojiSummary guesses={guesses} />
           <TemperatureBar bestScore={guesses.length > 0 ? Math.max(...guesses.map(g => g.score)) : null} />
@@ -344,6 +357,14 @@ export default function App() {
 
 function LoginScreen({ onLogin, savedName }) {
   const [name, setName] = useState(savedName || '')
+  const [connecting, setConnecting] = useState(false)
+
+  const handlePlay = (e) => {
+    e.preventDefault()
+    if (!name.trim() || connecting) return
+    setConnecting(true)
+    onLogin(name)
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-3 sm:px-4 relative">
@@ -359,15 +380,15 @@ function LoginScreen({ onLogin, savedName }) {
           3 mots a trouver par jour — par proximite semantique
         </p>
 
-        <form onSubmit={e => { e.preventDefault(); onLogin(name) }} className="flex flex-col gap-3">
+        <form onSubmit={handlePlay} className="flex flex-col gap-3">
           <input
             type="text" value={name} onChange={e => setName(e.target.value)}
-            placeholder="Ton prenom..." maxLength={20} autoFocus
+            placeholder="Ton prenom..." maxLength={20} autoFocus disabled={connecting}
             className="w-full px-4 py-3 rounded-xl bg-bg-primary border border-white/10 text-white placeholder-gray-500 text-center text-lg focus:border-accent-violet/50 transition-colors"
           />
-          <button type="submit" disabled={!name.trim()}
+          <button type="submit" disabled={!name.trim() || connecting}
             className="w-full py-3 rounded-xl bg-gradient-to-r from-accent-violet to-accent-orange text-white font-semibold text-lg disabled:opacity-30 hover:opacity-90 transition-opacity">
-            Jouer
+            {connecting ? '⏳ Connexion...' : 'Jouer'}
           </button>
         </form>
 

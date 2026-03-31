@@ -71,6 +71,20 @@ export default function EasterEggOverlay({ anim, animKey }) {
           -webkit-backface-visibility: hidden;
           transform: translateZ(0);
         }
+        @media (max-width: 640px) {
+          .ee-overlay { font-size: 0.75em; }
+          .ee-overlay div[style*="fontSize: 4rem"],
+          .ee-overlay div[style*="fontSize: 5rem"],
+          .ee-overlay div[style*="fontSize: 4.5rem"] { font-size: 2.5rem !important; }
+          .ee-overlay div[style*="fontSize: 3.5rem"],
+          .ee-overlay div[style*="fontSize: 3rem"] { font-size: 2rem !important; }
+          .ee-overlay div[style*="fontSize: 2.8rem"],
+          .ee-overlay div[style*="fontSize: 2.5rem"] { font-size: 1.8rem !important; }
+          .ee-overlay div[style*="fontSize: 2.2rem"],
+          .ee-overlay div[style*="fontSize: 2rem"] { font-size: 1.4rem !important; }
+          .ee-overlay div[style*="fontSize: 1.8rem"] { font-size: 1.2rem !important; }
+          .ee-overlay div[style*="fontSize: 1.5rem"] { font-size: 1rem !important; }
+        }
       `}</style>
       <div className="ee-overlay"><Component key={animKey} /></div>
     </>

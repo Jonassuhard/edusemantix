@@ -2649,7 +2649,7 @@ function AdventureThomasAnimation() {
   )
 }
 
-// 🌀 Spirale d'emojis — easter egg Jonas
+// 🌀 Siphon d'emojis — easter egg Jonas
 function SpiralJonasAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 9000); return () => clearTimeout(t) }, [])
@@ -2660,146 +2660,181 @@ function SpiralJonasAnimation() {
     '🌍','🎯','💡','🎮','🏆','⚡','🌊','🌸','🍊','🎵','🪐','🔮',
     '🦖','🐱','🐶','🦅','🐙','🦋','🌻','🍉','🎪','🏔️','🌙','☀️',
     '🎲','🃏','💣','🧲','🔱','⚔️','🛡️','🪄','💫','✨','🎆','🎇',
-    '🧊','🔥','💧','🌪️','☄️','🌠','🏴‍☠️','🎭','🎨','📡','💻','🕹️',
+    '🧊','💧','🌪️','☄️','🌠','🏴‍☠️','🎭','🎨','📡','💻','🕹️','🫠',
   ]
-  const spiralCount = 72
-  const spiral = Array.from({ length: spiralCount }, (_, i) => {
-    const angle = i * 0.45
-    const radius = 8 + i * 3.2
-    const x = 50 + Math.cos(angle) * radius * 0.5
-    const y = 50 + Math.sin(angle) * radius * 0.5
+  // Phase 1: emojis spawn at edges and get sucked into center (siphon)
+  const siphonCount = 50
+  const siphon = Array.from({ length: siphonCount }, (_, i) => {
+    const angle = Math.random() * Math.PI * 2
+    const dist = 50 + Math.random() * 20
     return {
-      id: i, x, y,
-      emoji: allEmojis[i % allEmojis.length],
-      delay: i * 0.06,
-      size: 0.8 + (i / spiralCount) * 1.2,
+      id: i,
+      startX: 50 + Math.cos(angle) * dist,
+      startY: 50 + Math.sin(angle) * dist,
+      emoji: allEmojis[Math.floor(Math.random() * allEmojis.length)],
+      delay: i * 0.08,
+      size: 1 + Math.random() * 1.5,
+      rotations: 2 + Math.floor(Math.random() * 4),
     }
   })
-  const outerRing = Array.from({ length: 24 }, (_, i) => {
-    const angle = (i / 24) * Math.PI * 2
+  // Phase 2: explosion outward from center
+  const explodeCount = 60
+  const explode = Array.from({ length: explodeCount }, (_, i) => {
+    const angle = (i / explodeCount) * Math.PI * 2 + Math.random() * 0.3
+    const dist = 40 + Math.random() * 20
     return {
-      id: i, emoji: allEmojis[(i * 3) % allEmojis.length],
-      x: 50 + Math.cos(angle) * 45,
-      y: 50 + Math.sin(angle) * 45,
-      delay: 3 + i * 0.08,
+      id: i,
+      emoji: allEmojis[Math.floor(Math.random() * allEmojis.length)],
+      endX: Math.cos(angle) * dist,
+      endY: Math.sin(angle) * dist,
+      delay: i * 0.02,
+      size: 0.8 + Math.random() * 1.8,
+      spin: 360 + Math.random() * 720,
     }
   })
   return (
     <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
-      {/* Cosmic vortex bg */}
+      {/* Vortex bg */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'radial-gradient(circle at 50% 50%, rgba(99,102,241,0.15) 0%, rgba(15,5,30,0.3) 50%, transparent 80%)',
+        background: 'radial-gradient(circle at 50% 50%, rgba(99,102,241,0.12) 0%, rgba(10,0,20,0.3) 50%, transparent 80%)',
         animation: 'jonas-bg 9s ease-in-out forwards',
       }} />
-      {/* Rotating glow ring */}
-      <div style={{
-        position: 'absolute', top: '50%', left: '50%',
-        width: '300px', height: '300px', transform: 'translate(-50%,-50%)',
-        borderRadius: '50%',
-        background: 'conic-gradient(from 0deg, rgba(99,102,241,0.2), rgba(236,72,153,0.2), rgba(245,158,11,0.2), rgba(16,185,129,0.2), rgba(99,102,241,0.2))',
-        animation: 'jonas-glow-ring 4s linear infinite',
-        opacity: 0.5,
-      }} />
-      {/* Spiral emojis appearing one by one */}
-      {spiral.map(s => (
-        <div key={s.id} style={{
+      {/* Spinning vortex rings */}
+      {[200, 280, 360].map((size, i) => (
+        <div key={`ring-${i}`} style={{
+          position: 'absolute', top: '50%', left: '50%',
+          width: `${size}px`, height: `${size}px`,
+          transform: 'translate(-50%,-50%)',
+          borderRadius: '50%',
+          border: `1px solid rgba(${100 + i * 60},${100 + i * 40},${241 - i * 50},${0.15 + i * 0.05})`,
+          animation: `jonas-ring-spin ${3 - i * 0.5}s linear infinite${i % 2 ? ' reverse' : ''}`,
+        }} />
+      ))}
+      {/* Phase 1: Siphon — emojis spiral INTO center */}
+      {siphon.map(s => (
+        <div key={`s-${s.id}`} style={{
           position: 'absolute',
-          left: `${s.x}%`, top: `${s.y}%`,
+          left: `${s.startX}%`, top: `${s.startY}%`,
           fontSize: `${s.size}rem`,
-          transform: 'translate(-50%,-50%) scale(0)',
-          animation: `jonas-spiral-pop 0.4s ${s.delay}s ease-out forwards`,
+          '--sx': `${s.startX}%`, '--sy': `${s.startY}%`,
+          '--rot': `${s.rotations * 360}deg`,
+          animation: `jonas-siphon 2.5s ${s.delay}s cubic-bezier(0.4, 0, 0.2, 1) forwards`,
           opacity: 0,
         }}>{s.emoji}</div>
       ))}
-      {/* Outer ring burst */}
-      {outerRing.map(r => (
-        <div key={`ring-${r.id}`} style={{
-          position: 'absolute',
-          left: `${r.x}%`, top: `${r.y}%`,
-          fontSize: '1.5rem',
-          transform: 'translate(-50%,-50%) scale(0)',
-          animation: `jonas-ring-burst 0.5s ${r.delay}s ease-out forwards`,
-          opacity: 0,
-        }}>{r.emoji}</div>
-      ))}
-      {/* Center vortex */}
+      {/* Center black hole pulse */}
       <div style={{
-        position: 'absolute', top: '50%', left: '50%',
-        transform: 'translate(-50%,-50%)',
-        animation: 'jonas-center 8s 0.3s ease-out forwards', opacity: 0,
+        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+        width: '60px', height: '60px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(99,102,241,0.6) 0%, rgba(30,0,60,0.8) 60%, transparent 80%)',
+        animation: 'jonas-hole 8s 0.5s ease-in-out forwards', opacity: 0,
+        boxShadow: '0 0 40px rgba(99,102,241,0.4), 0 0 80px rgba(99,102,241,0.2)',
+      }} />
+      {/* Center 🌀 spinning fast */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+        fontSize: '3.5rem',
+        animation: 'jonas-vortex 8s 0.3s ease-in-out forwards', opacity: 0,
       }}>
-        <div style={{
-          fontSize: '3rem',
-          animation: 'jonas-vortex-spin 3s linear infinite',
-        }}>🌀</div>
+        <div style={{ animation: 'jonas-fast-spin 0.8s linear infinite' }}>🌀</div>
       </div>
-      {/* Name */}
+      {/* Phase 2: EXPLOSION outward */}
+      {explode.map(e => (
+        <div key={`e-${e.id}`} style={{
+          position: 'absolute', top: '50%', left: '50%',
+          fontSize: `${e.size}rem`,
+          '--ex': `${e.endX}vw`, '--ey': `${e.endY}vh`, '--espin': `${e.spin}deg`,
+          animation: `jonas-explode 1.8s ${5.5 + e.delay}s cubic-bezier(0, 0.5, 0.3, 1) forwards`,
+          opacity: 0,
+        }}>{e.emoji}</div>
+      ))}
+      {/* Shockwave ring on explosion */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+        width: '10px', height: '10px', borderRadius: '50%',
+        border: '3px solid rgba(255,255,255,0.6)',
+        animation: 'jonas-shockwave 1.2s 5.5s ease-out forwards', opacity: 0,
+      }} />
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+        width: '10px', height: '10px', borderRadius: '50%',
+        border: '2px solid rgba(99,102,241,0.5)',
+        animation: 'jonas-shockwave 1.5s 5.7s ease-out forwards', opacity: 0,
+      }} />
+      {/* Flash on explosion */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, transparent 50%)',
+        animation: 'jonas-flash 0.4s 5.45s ease-out forwards', opacity: 0,
+      }} />
+      {/* Name appears after explosion */}
       <div style={{
         position: 'absolute', top: '50%', left: '50%',
         transform: 'translate(-50%,-50%)', textAlign: 'center',
-        animation: 'jonas-name 5s 4.5s ease-out forwards', opacity: 0,
+        animation: 'jonas-name 3s 6.5s ease-out forwards', opacity: 0,
       }}>
         <div style={{
           fontSize: '2.2rem', fontWeight: 'bold',
           background: 'linear-gradient(90deg, #6366f1, #ec4899, #f59e0b, #10b981, #6366f1)',
           backgroundSize: '400% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           animation: 'jonas-rainbow 2s linear infinite',
-          textShadow: 'none',
         }}>Jonas 🌀</div>
         <div style={{ fontSize: '0.75rem', color: '#a78bfa', marginTop: '4px' }}>
           the one who built this 🛠️
         </div>
       </div>
-      {/* Final explosion of emojis outward */}
-      {allEmojis.slice(0, 36).map((e, i) => {
-        const angle = (i / 36) * Math.PI * 2
-        return (
-          <div key={`exp-${i}`} style={{
-            position: 'absolute', top: '50%', left: '50%',
-            fontSize: '1.3rem',
-            animation: `jonas-explode 1.5s ${6.5 + i * 0.03}s ease-out forwards`,
-            opacity: 0,
-            '--ex': `${Math.cos(angle) * 55}vw`,
-            '--ey': `${Math.sin(angle) * 55}vh`,
-          }}>{e}</div>
-        )
-      })}
       <style>{`
-        @keyframes jonas-bg { 0% { opacity: 0; } 5% { opacity: 1; } 88% { opacity: 1; } 100% { opacity: 0; } }
-        @keyframes jonas-glow-ring { 0% { transform: translate(-50%,-50%) rotate(0deg); } 100% { transform: translate(-50%,-50%) rotate(360deg); } }
-        @keyframes jonas-spiral-pop {
-          0% { opacity: 0; transform: translate(-50%,-50%) scale(0) rotate(-180deg); }
-          60% { opacity: 1; transform: translate(-50%,-50%) scale(1.3) rotate(10deg); }
-          100% { opacity: 0.9; transform: translate(-50%,-50%) scale(1) rotate(0deg); }
+        @keyframes jonas-bg { 0% { opacity: 0; } 5% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes jonas-ring-spin { 0% { transform: translate(-50%,-50%) rotate(0deg); } 100% { transform: translate(-50%,-50%) rotate(360deg); } }
+        @keyframes jonas-siphon {
+          0% { opacity: 0; transform: translate(0, 0) scale(1) rotate(0deg); }
+          10% { opacity: 1; }
+          70% { opacity: 0.9; }
+          100% {
+            opacity: 0;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%) scale(0) rotate(var(--rot));
+          }
         }
-        @keyframes jonas-ring-burst {
-          0% { opacity: 0; transform: translate(-50%,-50%) scale(0); }
-          50% { opacity: 1; transform: translate(-50%,-50%) scale(1.4); }
-          100% { opacity: 0.7; transform: translate(-50%,-50%) scale(1); }
-        }
-        @keyframes jonas-center {
-          0% { opacity: 0; transform: translate(-50%,-50%) scale(0); }
-          15% { opacity: 1; transform: translate(-50%,-50%) scale(1.2); }
-          20% { transform: translate(-50%,-50%) scale(1); }
-          55% { opacity: 1; }
-          65% { opacity: 0; }
+        @keyframes jonas-hole {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          15% { opacity: 0.8; transform: translate(-50%,-50%) scale(1); }
+          50% { transform: translate(-50%,-50%) scale(1.3); box-shadow: 0 0 60px rgba(99,102,241,0.6); }
+          58% { transform: translate(-50%,-50%) scale(2); opacity: 1; }
+          62% { opacity: 0; transform: translate(-50%,-50%) scale(0); }
           100% { opacity: 0; }
         }
-        @keyframes jonas-vortex-spin { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.15); } 100% { transform: rotate(360deg) scale(1); } }
+        @keyframes jonas-vortex {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0); }
+          10% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+          55% { opacity: 1; transform: translate(-50%,-50%) scale(1.3); }
+          62% { opacity: 0; transform: translate(-50%,-50%) scale(3); }
+          100% { opacity: 0; }
+        }
+        @keyframes jonas-fast-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes jonas-explode {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3) rotate(0deg); }
+          15% { opacity: 1; transform: translate(-50%,-50%) scale(1.2) rotate(calc(var(--espin) * 0.2)); }
+          100% { opacity: 0; transform: translate(calc(-50% + var(--ex)), calc(-50% + var(--ey))) scale(0.4) rotate(var(--espin)); }
+        }
+        @keyframes jonas-shockwave {
+          0% { opacity: 0.8; width: 10px; height: 10px; border-width: 3px; }
+          100% { opacity: 0; width: 150vw; height: 150vw; border-width: 1px; }
+        }
+        @keyframes jonas-flash {
+          0% { opacity: 0; }
+          30% { opacity: 0.9; }
+          100% { opacity: 0; }
+        }
         @keyframes jonas-name {
           0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3); }
-          15% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
-          25% { transform: translate(-50%,-50%) scale(1); }
+          20% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
+          30% { transform: translate(-50%,-50%) scale(1); }
           80% { opacity: 1; }
           100% { opacity: 0; }
         }
         @keyframes jonas-rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 400% 50%; } }
-        @keyframes jonas-explode {
-          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
-          20% { opacity: 1; }
-          100% { opacity: 0; transform: translate(calc(-50% + var(--ex)), calc(-50% + var(--ey))) scale(0.3) rotate(360deg); }
-        }
       `}</style>
     </div>
   )

@@ -54,6 +54,11 @@ const ANIMATIONS = {
   marketingRocket: MarketingRocketAnimation,
 }
 
+// Mobile detection + particle reduction
+const IS_MOBILE = typeof window !== 'undefined' && window.innerWidth < 640
+const MOB_SCALE = IS_MOBILE ? 0.6 : 1
+const MOB_COUNT = (n) => IS_MOBILE ? Math.ceil(n * 0.4) : n
+
 export default function EasterEggOverlay({ anim, animKey }) {
   if (!anim) return null
   const Component = ANIMATIONS[anim]
@@ -62,6 +67,8 @@ export default function EasterEggOverlay({ anim, animKey }) {
     <>
       <style>{`
         .ee-overlay {
+          position: fixed; inset: 0; z-index: 9999;
+          pointer-events: none; overflow: hidden;
           contain: layout style;
           isolation: isolate;
         }
@@ -69,27 +76,14 @@ export default function EasterEggOverlay({ anim, animKey }) {
           will-change: transform, opacity;
           backface-visibility: hidden;
           -webkit-backface-visibility: hidden;
-          transform: translateZ(0);
-        }
-        @media (max-width: 640px) {
-          .ee-overlay { font-size: 0.75em; }
-          .ee-overlay div[style*="fontSize: 4rem"],
-          .ee-overlay div[style*="fontSize: 5rem"],
-          .ee-overlay div[style*="fontSize: 4.5rem"] { font-size: 2.5rem !important; }
-          .ee-overlay div[style*="fontSize: 3.5rem"],
-          .ee-overlay div[style*="fontSize: 3rem"] { font-size: 2rem !important; }
-          .ee-overlay div[style*="fontSize: 2.8rem"],
-          .ee-overlay div[style*="fontSize: 2.5rem"] { font-size: 1.8rem !important; }
-          .ee-overlay div[style*="fontSize: 2.2rem"],
-          .ee-overlay div[style*="fontSize: 2rem"] { font-size: 1.4rem !important; }
-          .ee-overlay div[style*="fontSize: 1.8rem"] { font-size: 1.2rem !important; }
-          .ee-overlay div[style*="fontSize: 1.5rem"] { font-size: 1rem !important; }
         }
       `}</style>
       <div className="ee-overlay"><Component key={animKey} /></div>
     </>
   )
 }
+
+export { IS_MOBILE, MOB_SCALE, MOB_COUNT }
 
 // ✈️ Avion qui fait des loopings
 function PlaneAnimation() {
@@ -100,7 +94,7 @@ function PlaneAnimation() {
     <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
       <div style={{
         position: 'absolute',
-        fontSize: '4rem',
+        fontSize: `${4.0 * MOB_SCALE}rem`,
         animation: 'plane-looping 4s ease-in-out forwards',
       }}>
         ✈️
@@ -129,7 +123,7 @@ function SnowAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 4000); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const flakes = Array.from({ length: 30 }, (_, i) => ({
+  const flakes = Array.from({ length: MOB_COUNT(30) }, (_, i) => ({
     id: i,
     left: Math.random() * 100,
     delay: Math.random() * 2,
@@ -144,7 +138,7 @@ function SnowAnimation() {
           position: 'absolute',
           left: `${f.left}%`,
           top: '-40px',
-          fontSize: `${f.size}rem`,
+          fontSize: `${f.size * MOB_SCALE}rem`,
           animation: `snow-drop ${f.duration}s ${f.delay}s ease-in forwards`,
           opacity: 0,
         }}>
@@ -180,7 +174,7 @@ function RainbowAnimation() {
       {['🏳️‍🌈', '🌈', '✨', '🦄', '🏳️‍🌈', '🌈'].map((e, i) => (
         <div key={i} style={{
           position: 'absolute',
-          fontSize: '3rem',
+          fontSize: `${3.0 * MOB_SCALE}rem`,
           left: `${10 + i * 15}%`,
           top: '50%',
           animation: `rainbow-bounce 0.8s ${i * 0.1}s ease-out forwards`,
@@ -215,9 +209,9 @@ function SwordAnimation() {
   return (
     <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ position: 'relative', width: '200px', height: '200px' }}>
-        <div style={{ position: 'absolute', fontSize: '4rem', animation: 'sword-left 0.6s ease-out forwards' }}>⚔️</div>
-        <div style={{ position: 'absolute', fontSize: '6rem', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', animation: 'sword-flash 0.6s 0.3s ease-out forwards', opacity: 0 }}>💥</div>
-        <div style={{ position: 'absolute', fontSize: '2rem', animation: 'pentakill-text 1.5s 0.5s ease-out forwards', opacity: 0, left: '50%', top: '-20px', transform: 'translateX(-50%)', whiteSpace: 'nowrap', color: '#eab308', fontWeight: 900, textShadow: '0 0 20px rgba(234,179,8,0.8)' }}>
+        <div style={{ position: 'absolute', fontSize: `${4.0 * MOB_SCALE}rem`, animation: 'sword-left 0.6s ease-out forwards' }}>⚔️</div>
+        <div style={{ position: 'absolute', fontSize: `${6.0 * MOB_SCALE}rem`, left: '50%', top: '50%', transform: 'translate(-50%,-50%)', animation: 'sword-flash 0.6s 0.3s ease-out forwards', opacity: 0 }}>💥</div>
+        <div style={{ position: 'absolute', fontSize: `${2.0 * MOB_SCALE}rem`, animation: 'pentakill-text 1.5s 0.5s ease-out forwards', opacity: 0, left: '50%', top: '-20px', transform: 'translateX(-50%)', whiteSpace: 'nowrap', color: '#eab308', fontWeight: 900, textShadow: '0 0 20px rgba(234,179,8,0.8)' }}>
           PENTAKILL
         </div>
       </div>
@@ -254,7 +248,7 @@ function BounceEmoji() {
       {emojis.map((e, i) => (
         <div key={i} style={{
           position: 'absolute',
-          fontSize: '3rem',
+          fontSize: `${3.0 * MOB_SCALE}rem`,
           left: `${15 + i * 18}%`,
           bottom: '0',
           animation: `super-bounce 1.5s ${i * 0.15}s ease-out forwards`,
@@ -283,7 +277,7 @@ function HeartAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 3500); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const hearts = Array.from({ length: 15 }, (_, i) => ({
+  const hearts = Array.from({ length: MOB_COUNT(15) }, (_, i) => ({
     id: i,
     left: 10 + Math.random() * 80,
     delay: Math.random() * 1.5,
@@ -297,7 +291,7 @@ function HeartAnimation() {
           position: 'absolute',
           left: `${h.left}%`,
           bottom: '-40px',
-          fontSize: `${h.size}rem`,
+          fontSize: `${h.size * MOB_SCALE}rem`,
           animation: `heart-float 3s ${h.delay}s ease-out forwards`,
           opacity: 0,
         }}>
@@ -328,7 +322,7 @@ function SirenAnimation() {
       }} />
       <div style={{
         position: 'absolute', top: '10%', left: '50%', transform: 'translateX(-50%)',
-        fontSize: '5rem',
+        fontSize: `${5.0 * MOB_SCALE}rem`,
         animation: 'siren-rotate 0.5s ease-in-out 3',
       }}>🚨</div>
       <style>{`
@@ -355,7 +349,7 @@ function PoliticsAnimation() {
     <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
       <div style={{
         position: 'absolute',
-        fontSize: '5rem',
+        fontSize: `${5.0 * MOB_SCALE}rem`,
         right: '-80px',
         top: '30%',
         animation: 'politics-slide 2.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
@@ -365,7 +359,7 @@ function PoliticsAnimation() {
       {['🇫🇷', '📜', '🗳️'].map((e, i) => (
         <div key={i} style={{
           position: 'absolute',
-          fontSize: '2.5rem',
+          fontSize: `${2.5 * MOB_SCALE}rem`,
           left: `${20 + i * 25}%`,
           top: '45%',
           animation: `politics-pop 0.6s ${0.8 + i * 0.2}s ease-out forwards`,
@@ -404,7 +398,7 @@ function GlitchAnimation() {
       }} />
       <div style={{
         position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%,-50%)',
-        fontSize: '5rem',
+        fontSize: `${5.0 * MOB_SCALE}rem`,
         animation: 'glitch-robot 0.3s ease-in-out 3',
       }}>🤖</div>
       <style>{`
@@ -431,7 +425,7 @@ function WiggleAnimation() {
   return (
     <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{
-        fontSize: '5rem',
+        fontSize: `${5.0 * MOB_SCALE}rem`,
         animation: 'wiggle-big 0.8s ease-in-out',
         opacity: 0,
       }}>😏</div>
@@ -465,7 +459,7 @@ function PopAnimation() {
             position: 'absolute',
             left: '50%',
             top: '50%',
-            fontSize: '3rem',
+            fontSize: `${3.0 * MOB_SCALE}rem`,
             animation: `pop-explode 1.5s ${i * 0.1}s ease-out forwards`,
             opacity: 0,
             '--dx': `${Math.cos(rad) * 40}vw`,
@@ -499,7 +493,7 @@ function FloatAnimation() {
           position: 'absolute',
           left: `${20 + i * 20}%`,
           bottom: '-50px',
-          fontSize: '3rem',
+          fontSize: `${3.0 * MOB_SCALE}rem`,
           animation: `float-gentle 3s ${i * 0.3}s ease-out forwards`,
           opacity: 0,
         }}>
@@ -558,13 +552,13 @@ function SpiderAnimation() {
       </svg>
       {/* Spider swinging */}
       <div style={{
-        position: 'absolute', fontSize: '4rem',
+        position: 'absolute', fontSize: `${4.0 * MOB_SCALE}rem`,
         left: '-10%', top: '15%',
         animation: 'spider-swing 2s 0.5s ease-in-out forwards',
       }}>🕷️</div>
       {/* Spiderman emoji swinging */}
       <div style={{
-        position: 'absolute', fontSize: '5rem',
+        position: 'absolute', fontSize: `${5.0 * MOB_SCALE}rem`,
         right: '-10%', top: '40%',
         animation: 'spidey-swing 2.5s 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
       }}>🦸</div>
@@ -622,7 +616,7 @@ function LightningAnimation() {
       <div style={{
         position: 'absolute', top: '35%', left: '50%',
         transform: 'translate(-50%,-50%)',
-        fontSize: '6rem',
+        fontSize: `${6.0 * MOB_SCALE}rem`,
         animation: 'bolt-emoji 1s 0.5s ease-out forwards',
         opacity: 0,
       }}>⚡</div>
@@ -654,7 +648,7 @@ function BatAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 3500); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const bats = Array.from({ length: 20 }, (_, i) => ({
+  const bats = Array.from({ length: MOB_COUNT(20) }, (_, i) => ({
     id: i,
     x: -10 + Math.random() * 20,
     y: 20 + Math.random() * 60,
@@ -674,7 +668,7 @@ function BatAnimation() {
       {/* Bat signal */}
       <div style={{
         position: 'absolute', top: '25%', left: '50%', transform: 'translate(-50%,-50%)',
-        fontSize: '8rem',
+        fontSize: `${8.0 * MOB_SCALE}rem`,
         animation: 'bat-signal 2s ease-out forwards',
         opacity: 0,
         filter: 'drop-shadow(0 0 40px rgba(251,191,36,0.6))',
@@ -684,7 +678,7 @@ function BatAnimation() {
         <div key={b.id} style={{
           position: 'absolute',
           left: `${b.x}%`, top: `${b.y}%`,
-          fontSize: `${b.size}rem`,
+          fontSize: `${b.size * MOB_SCALE}rem`,
           animation: `bat-fly ${b.speed}s ${b.delay}s ease-in forwards`,
           opacity: 0,
         }}>🦇</div>
@@ -722,13 +716,13 @@ function ShieldAnimation() {
     <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
       <div style={{
         position: 'absolute',
-        fontSize: '5rem',
+        fontSize: `${5.0 * MOB_SCALE}rem`,
         animation: 'shield-bounce 2.5s ease-in-out forwards',
       }}>🛡️</div>
       {/* Impact sparks */}
       {[0, 1, 2, 3].map(i => (
         <div key={i} style={{
-          position: 'absolute', fontSize: '2rem',
+          position: 'absolute', fontSize: `${2.0 * MOB_SCALE}rem`,
           animation: `shield-spark 0.4s ${0.5 + i * 0.5}s ease-out forwards`,
           opacity: 0,
         }}>💥</div>
@@ -760,7 +754,7 @@ function SnapAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 4000); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const particles = Array.from({ length: 40 }, (_, i) => ({
+  const particles = Array.from({ length: MOB_COUNT(40) }, (_, i) => ({
     id: i,
     x: 30 + Math.random() * 40,
     y: 20 + Math.random() * 60,
@@ -775,7 +769,7 @@ function SnapAnimation() {
       {/* Gauntlet snap */}
       <div style={{
         position: 'absolute', top: '40%', left: '50%',
-        fontSize: '6rem',
+        fontSize: `${6.0 * MOB_SCALE}rem`,
         animation: 'snap-hand 1.5s ease-out forwards',
         transform: 'translate(-50%,-50%)',
       }}>🫰</div>
@@ -842,20 +836,20 @@ function ForceAnimation() {
       {/* Lightsaber */}
       <div style={{
         position: 'absolute', top: '40%', left: '50%',
-        fontSize: '5rem',
+        fontSize: `${5.0 * MOB_SCALE}rem`,
         animation: 'saber-appear 2s ease-out forwards',
         transform: 'translate(-50%,-50%)',
         opacity: 0,
         filter: 'drop-shadow(0 0 20px rgba(100,200,255,0.8))',
       }}>⚔️</div>
       {/* Stars pushed away */}
-      {Array.from({ length: 12 }, (_, i) => {
+      {Array.from({ length: MOB_COUNT(12) }, (_, i) => {
         const angle = (i / 12) * 360
         const rad = angle * Math.PI / 180
         return (
           <div key={i} style={{
             position: 'absolute', top: '45%', left: '50%',
-            fontSize: '1.2rem',
+            fontSize: `${1.2 * MOB_SCALE}rem`,
             animation: `force-push 1.5s ${0.3 + i * 0.05}s ease-out forwards`,
             opacity: 0,
             '--dx': `${Math.cos(rad) * 50}vw`,
@@ -889,9 +883,9 @@ function MatrixAnimation() {
   useEffect(() => { const t = setTimeout(() => setActive(false), 4000); return () => clearTimeout(t) }, [])
   if (!active) return null
   const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789'
-  const columns = Array.from({ length: 30 }, (_, i) => ({
+  const columns = Array.from({ length: MOB_COUNT(30) }, (_, i) => ({
     id: i, x: (i / 30) * 100, delay: Math.random() * 2, speed: 2 + Math.random() * 3,
-    chars: Array.from({ length: 15 }, () => chars[Math.floor(Math.random() * chars.length)]),
+    chars: Array.from({ length: MOB_COUNT(15) }, () => chars[Math.floor(Math.random() * chars.length)]),
     opacity: 0.3 + Math.random() * 0.7,
   }))
   return (
@@ -904,8 +898,8 @@ function MatrixAnimation() {
         </div>
       ))}
       <div style={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%,-50%)', display: 'flex', gap: '30px', animation: 'matrix-pills 2s 0.5s ease-out forwards', opacity: 0 }}>
-        <span style={{ fontSize: '4rem', filter: 'drop-shadow(0 0 20px rgba(255,0,0,0.8))' }}>🔴</span>
-        <span style={{ fontSize: '4rem', filter: 'drop-shadow(0 0 20px rgba(0,100,255,0.8))' }}>🔵</span>
+        <span style={{ fontSize: `${4.0 * MOB_SCALE}rem`, filter: 'drop-shadow(0 0 20px rgba(255,0,0,0.8))' }}>🔴</span>
+        <span style={{ fontSize: `${4.0 * MOB_SCALE}rem`, filter: 'drop-shadow(0 0 20px rgba(0,100,255,0.8))' }}>🔵</span>
       </div>
       <style>{`
         @keyframes matrix-fall { 0% { top: -20%; opacity: 1; } 100% { top: 110%; opacity: 0; } }
@@ -929,7 +923,7 @@ function FireworkAnimation() {
       {fireworks.map((fw, fi) => (
         <div key={fi} style={{ position: 'absolute', left: `${fw.x}%`, top: `${fw.y}%` }}>
           <div style={{ position: 'absolute', width: '3px', height: '60px', background: `linear-gradient(to top, transparent, ${fw.color})`, left: '50%', bottom: 0, transform: 'translateX(-50%)', animation: `fw-trail 0.4s ${fw.delay}s ease-out forwards`, opacity: 0 }} />
-          {Array.from({ length: 16 }, (_, i) => {
+          {Array.from({ length: MOB_COUNT(16) }, (_, i) => {
             const a = (i / 16) * Math.PI * 2; const d = 60 + Math.random() * 80
             return <div key={i} style={{ position: 'absolute', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: fw.color, boxShadow: `0 0 6px ${fw.color}`, animation: `fw-burst 1.2s ${fw.delay + 0.4}s ease-out forwards`, opacity: 0, '--dx': `${Math.cos(a) * d}px`, '--dy': `${Math.sin(a) * d}px` }} />
           })}
@@ -957,7 +951,7 @@ function TornadoAnimation() {
         ))}
       </div>
       {debris.map((d, i) => (
-        <div key={i} style={{ position: 'absolute', fontSize: '2rem', left: `${30+Math.random()*40}%`, bottom: `${10+Math.random()*60}%`, animation: `tornado-debris ${1.5+Math.random()}s ${Math.random()*1.5}s ease-in-out forwards`, opacity: 0 }}>{d}</div>
+        <div key={i} style={{ position: 'absolute', fontSize: `${2.0 * MOB_SCALE}rem`, left: `${30+Math.random()*40}%`, bottom: `${10+Math.random()*60}%`, animation: `tornado-debris ${1.5+Math.random()}s ${Math.random()*1.5}s ease-in-out forwards`, opacity: 0 }}>{d}</div>
       ))}
       <style>{`
         @keyframes tornado-sway { 0%,100% { transform: translateX(-50%) rotate(-3deg); } 50% { transform: translateX(-40%) rotate(3deg); } }
@@ -978,8 +972,8 @@ function OceanAnimation() {
     <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,100,200,0) 40%, rgba(0,100,200,0.15) 60%, rgba(0,50,150,0.25) 100%)', animation: 'ocean-fade 3.5s ease-in-out forwards' }} />
       {[0,1,2].map(i => <div key={i} style={{ position: 'absolute', bottom: `${45+i*5}%`, left: '-5%', width: '110%', height: '30px', borderRadius: '50% 50% 0 0', background: `rgba(0,${120+i*30},${200+i*20},${0.15-i*0.03})`, animation: `ocean-wave 2s ${i*0.3}s ease-in-out infinite` }} />)}
-      {creatures.map((c, i) => <div key={i} style={{ position: 'absolute', fontSize: `${1.5+Math.random()}rem`, left: '-10%', top: `${50+Math.random()*40}%`, animation: `ocean-swim ${3+Math.random()*2}s ${Math.random()*2}s ease-in-out forwards`, opacity: 0 }}>{c}</div>)}
-      <div style={{ position: 'absolute', fontSize: '5rem', right: '-10%', top: '55%', animation: 'ocean-whale 4s 0.5s ease-in-out forwards', opacity: 0 }}>🐋</div>
+      {creatures.map((c, i) => <div key={i} style={{ position: 'absolute', fontSize: `${(1.5+Math.random()) * MOB_SCALE}rem`, left: '-10%', top: `${50+Math.random()*40}%`, animation: `ocean-swim ${3+Math.random()*2}s ${Math.random()*2}s ease-in-out forwards`, opacity: 0 }}>{c}</div>)}
+      <div style={{ position: 'absolute', fontSize: `${5.0 * MOB_SCALE}rem`, right: '-10%', top: '55%', animation: 'ocean-whale 4s 0.5s ease-in-out forwards', opacity: 0 }}>🐋</div>
       <style>{`
         @keyframes ocean-fade { 0% { opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
         @keyframes ocean-wave { 0%,100% { transform: translateX(0) translateY(0); } 50% { transform: translateX(15px) translateY(-10px); } }
@@ -995,12 +989,12 @@ function RocketAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 3000); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const stars = Array.from({ length: 20 }, (_, i) => ({ id: i, x: Math.random()*100, y: Math.random()*100, size: 0.8+Math.random()*1.5, delay: Math.random() }))
+  const stars = Array.from({ length: MOB_COUNT(20) }, (_, i) => ({ id: i, x: Math.random()*100, y: Math.random()*100, size: 0.8+Math.random()*1.5, delay: Math.random() }))
   return (
     <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
-      {stars.map(s => <div key={s.id} style={{ position: 'absolute', left: `${s.x}%`, top: `${s.y}%`, fontSize: `${s.size}rem`, animation: `rocket-star 1.5s ${s.delay}s linear forwards`, opacity: 0 }}>⭐</div>)}
-      <div style={{ position: 'absolute', bottom: '-10%', left: '50%', fontSize: '5rem', animation: 'rocket-launch 2s 0.3s ease-in forwards', transform: 'translateX(-50%)' }}>🚀</div>
-      {[0,1,2,3,4].map(i => <div key={i} style={{ position: 'absolute', bottom: '-15%', left: `${48+Math.random()*4}%`, fontSize: '3rem', animation: `rocket-flame 2s ${0.3+i*0.15}s ease-in forwards`, opacity: 0 }}>{['🔥','💨','☁️'][i%3]}</div>)}
+      {stars.map(s => <div key={s.id} style={{ position: 'absolute', left: `${s.x}%`, top: `${s.y}%`, fontSize: `${s.size * MOB_SCALE}rem`, animation: `rocket-star 1.5s ${s.delay}s linear forwards`, opacity: 0 }}>⭐</div>)}
+      <div style={{ position: 'absolute', bottom: '-10%', left: '50%', fontSize: `${5.0 * MOB_SCALE}rem`, animation: 'rocket-launch 2s 0.3s ease-in forwards', transform: 'translateX(-50%)' }}>🚀</div>
+      {[0,1,2,3,4].map(i => <div key={i} style={{ position: 'absolute', bottom: '-15%', left: `${48+Math.random()*4}%`, fontSize: `${3.0 * MOB_SCALE}rem`, animation: `rocket-flame 2s ${0.3+i*0.15}s ease-in forwards`, opacity: 0 }}>{['🔥','💨','☁️'][i%3]}</div>)}
       <style>{`
         @keyframes rocket-launch { 0% { bottom: -10%; } 60% { bottom: 50%; } 100% { bottom: 120%; } }
         @keyframes rocket-flame { 0% { opacity: 1; bottom: -15%; } 50% { opacity: 0.8; bottom: 30%; } 100% { opacity: 0; bottom: -20%; transform: scale(2); } }
@@ -1019,9 +1013,9 @@ function DiscoAnimation() {
   return (
     <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', animation: 'disco-dark 3s ease-in-out forwards' }} />
-      <div style={{ position: 'absolute', top: '5%', left: '50%', fontSize: '5rem', transform: 'translateX(-50%)', animation: 'disco-ball 1s linear infinite', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.5))' }}>🪩</div>
+      <div style={{ position: 'absolute', top: '5%', left: '50%', fontSize: `${5.0 * MOB_SCALE}rem`, transform: 'translateX(-50%)', animation: 'disco-ball 1s linear infinite', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.5))' }}>🪩</div>
       {colors.map((c, i) => <div key={i} style={{ position: 'absolute', top: '15%', left: '50%', width: '4px', height: '120vh', background: `linear-gradient(to bottom, ${c}, transparent 70%)`, transformOrigin: 'top center', transform: `rotate(${-60+i*20}deg)`, animation: `disco-beam 2s ${i*0.2}s ease-in-out infinite alternate`, opacity: 0.4 }} />)}
-      {['💃','🕺','💃','🕺'].map((e, i) => <div key={i} style={{ position: 'absolute', bottom: '10%', left: `${15+i*22}%`, fontSize: '3rem', animation: `disco-dance 0.5s ${i*0.1}s ease-in-out infinite alternate` }}>{e}</div>)}
+      {['💃','🕺','💃','🕺'].map((e, i) => <div key={i} style={{ position: 'absolute', bottom: '10%', left: `${15+i*22}%`, fontSize: `${3.0 * MOB_SCALE}rem`, animation: `disco-dance 0.5s ${i*0.1}s ease-in-out infinite alternate` }}>{e}</div>)}
       <style>{`
         @keyframes disco-dark { 0% { opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
         @keyframes disco-ball { from { transform: translateX(-50%) rotate(0deg); } to { transform: translateX(-50%) rotate(360deg); } }
@@ -1037,7 +1031,7 @@ function ExplosionAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 2500); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const shrapnel = Array.from({ length: 25 }, (_, i) => {
+  const shrapnel = Array.from({ length: MOB_COUNT(25) }, (_, i) => {
     const a = (i/25)*Math.PI*2
     return { id: i, dx: Math.cos(a)*(100+Math.random()*150), dy: Math.sin(a)*(100+Math.random()*150), emoji: ['💥','🔥','✨','💫','⚡'][i%5], delay: Math.random()*0.2 }
   })
@@ -1045,8 +1039,8 @@ function ExplosionAnimation() {
     <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, animation: 'explode-flash 0.5s ease-out forwards' }} />
       {[0,1,2].map(i => <div key={i} style={{ position: 'absolute', top: '50%', left: '50%', width: '10px', height: '10px', borderRadius: '50%', border: `3px solid rgba(255,${150+i*30},0,0.5)`, animation: `explode-ring 1s ${i*0.15}s ease-out forwards`, transform: 'translate(-50%,-50%)' }} />)}
-      {shrapnel.map(s => <div key={s.id} style={{ position: 'absolute', top: '50%', left: '50%', fontSize: '1.5rem', animation: `explode-frag 1s ${s.delay}s ease-out forwards`, opacity: 0, '--dx': `${s.dx}px`, '--dy': `${s.dy}px` }}>{s.emoji}</div>)}
-      <div style={{ position: 'absolute', top: '45%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '5rem', animation: 'explode-boom 0.8s 0.1s ease-out forwards', opacity: 0 }}>💥</div>
+      {shrapnel.map(s => <div key={s.id} style={{ position: 'absolute', top: '50%', left: '50%', fontSize: `${1.5 * MOB_SCALE}rem`, animation: `explode-frag 1s ${s.delay}s ease-out forwards`, opacity: 0, '--dx': `${s.dx}px`, '--dy': `${s.dy}px` }}>{s.emoji}</div>)}
+      <div style={{ position: 'absolute', top: '45%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: `${5.0 * MOB_SCALE}rem`, animation: 'explode-boom 0.8s 0.1s ease-out forwards', opacity: 0 }}>💥</div>
       <style>{`
         @keyframes explode-flash { 0% { background: rgba(255,200,0,0.6); } 30% { background: rgba(255,255,255,0.4); } 100% { background: transparent; } }
         @keyframes explode-ring { 0% { width: 10px; height: 10px; opacity: 1; } 100% { width: 150vw; height: 150vw; opacity: 0; } }
@@ -1070,7 +1064,7 @@ function PortalAnimation() {
         </div>
       ))}
       <div style={{ position: 'absolute', top: '45%', left: '50%', width: '60px', height: '60px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(168,85,247,0.6) 0%, transparent 70%)', transform: 'translate(-50%,-50%)', animation: 'portal-glow 1s ease-in-out infinite alternate' }} />
-      {Array.from({ length: 15 }, (_, i) => { const a = (i/15)*Math.PI*2; const d = 200+Math.random()*100; return <div key={i} style={{ position: 'absolute', top: '45%', left: '50%', fontSize: '1rem', animation: `portal-pull 2s ${i*0.1}s ease-in forwards`, opacity: 0, '--sx': `${Math.cos(a)*d}px`, '--sy': `${Math.sin(a)*d}px` }}>✨</div> })}
+      {Array.from({ length: MOB_COUNT(15) }, (_, i) => { const a = (i/15)*Math.PI*2; const d = 200+Math.random()*100; return <div key={i} style={{ position: 'absolute', top: '45%', left: '50%', fontSize: '1rem', animation: `portal-pull 2s ${i*0.1}s ease-in forwards`, opacity: 0, '--sx': `${Math.cos(a)*d}px`, '--sy': `${Math.sin(a)*d}px` }}>✨</div> })}
       <style>{`
         @keyframes portal-spin { 0% { transform: translate(-50%,-50%) rotate(0deg); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-50%,-50%) rotate(360deg); opacity: 0; } }
         @keyframes portal-glow { from { transform: translate(-50%,-50%) scale(1); } to { transform: translate(-50%,-50%) scale(1.5); } }
@@ -1085,7 +1079,7 @@ function TsunamiAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 4500); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const droplets = Array.from({ length: 35 }, (_, i) => ({
+  const droplets = Array.from({ length: MOB_COUNT(35) }, (_, i) => ({
     id: i,
     x: 20 + Math.random() * 70,
     y: 10 + Math.random() * 60,
@@ -1112,7 +1106,7 @@ function TsunamiAnimation() {
       {/* Water droplets scatter after impact */}
       {droplets.map(d => (
         <div key={d.id} style={{
-          position: 'absolute', fontSize: `${d.size}rem`,
+          position: 'absolute', fontSize: `${d.size * MOB_SCALE}rem`,
           left: `${d.x}%`, top: `${d.y}%`,
           animation: `tsunami-droplet 1.5s ${d.delay}s ease-out forwards`,
           opacity: 0,
@@ -1120,7 +1114,7 @@ function TsunamiAnimation() {
         }}>{d.emoji}</div>
       ))}
       {/* Big splash text */}
-      <div style={{ position: 'absolute', top: '35%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '6rem', animation: 'tsunami-splash 1s 1.5s ease-out forwards', opacity: 0 }}>🌊</div>
+      <div style={{ position: 'absolute', top: '35%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: `${6.0 * MOB_SCALE}rem`, animation: 'tsunami-splash 1s 1.5s ease-out forwards', opacity: 0 }}>🌊</div>
       <style>{`
         @keyframes tsunami-tint { 0% { opacity: 0; } 25% { opacity: 1; } 75% { opacity: 1; } 100% { opacity: 0; } }
         @keyframes tsunami-wave { 0% { left: -120%; } 40% { left: -20%; } 100% { left: 120%; } }
@@ -1137,7 +1131,7 @@ function VolcanoAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 4500); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const lavaParticles = Array.from({ length: 30 }, (_, i) => ({
+  const lavaParticles = Array.from({ length: MOB_COUNT(30) }, (_, i) => ({
     id: i,
     dx: (Math.random() - 0.5) * 300,
     dy: -(150 + Math.random() * 350),
@@ -1146,7 +1140,7 @@ function VolcanoAnimation() {
     color: ['#ff4500', '#ff6a00', '#ff8c00', '#ffd700', '#ff2200'][Math.floor(Math.random() * 5)],
     duration: 1.5 + Math.random() * 1.5,
   }))
-  const ashParticles = Array.from({ length: 20 }, (_, i) => ({
+  const ashParticles = Array.from({ length: MOB_COUNT(20) }, (_, i) => ({
     id: i,
     x: 30 + Math.random() * 40,
     delay: 1.5 + Math.random() * 1.5,
@@ -1158,7 +1152,7 @@ function VolcanoAnimation() {
       {/* Red/orange glow from below */}
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 100%, rgba(255,69,0,0.2) 0%, transparent 60%)', animation: 'volcano-glow 4s ease-in-out forwards' }} />
       {/* Mountain silhouette */}
-      <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', fontSize: '8rem', animation: 'volcano-shake 0.3s 0.5s ease-in-out 6' }}>🌋</div>
+      <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', fontSize: `${8.0 * MOB_SCALE}rem`, animation: 'volcano-shake 0.3s 0.5s ease-in-out 6' }}>🌋</div>
       {/* Lava particles shooting up */}
       {lavaParticles.map(p => (
         <div key={p.id} style={{
@@ -1187,7 +1181,7 @@ function VolcanoAnimation() {
         }} />
       ))}
       {/* ERUPTION text */}
-      <div style={{ position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '2rem', fontWeight: 900, color: '#ff4500', textShadow: '0 0 20px rgba(255,69,0,0.8), 0 0 40px rgba(255,69,0,0.4)', whiteSpace: 'nowrap', animation: 'volcano-text 1.5s 1s ease-out forwards', opacity: 0 }}>
+      <div style={{ position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: `${2.0 * MOB_SCALE}rem`, fontWeight: 900, color: '#ff4500', textShadow: '0 0 20px rgba(255,69,0,0.8), 0 0 40px rgba(255,69,0,0.4)', whiteSpace: 'nowrap', animation: 'volcano-text 1.5s 1s ease-out forwards', opacity: 0 }}>
         ERUPTION !
       </div>
       <style>{`
@@ -1207,7 +1201,7 @@ function BlackHoleAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 4500); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const spiralParticles = Array.from({ length: 40 }, (_, i) => {
+  const spiralParticles = Array.from({ length: MOB_COUNT(40) }, (_, i) => {
     const angle = (i / 40) * Math.PI * 4
     const dist = 150 + Math.random() * 250
     return {
@@ -1220,7 +1214,7 @@ function BlackHoleAnimation() {
       duration: 2 + Math.random() * 1.5,
     }
   })
-  const stretchLines = Array.from({ length: 8 }, (_, i) => {
+  const stretchLines = Array.from({ length: MOB_COUNT(8) }, (_, i) => {
     const angle = (i / 8) * Math.PI * 2
     return { id: i, angle: angle * (180 / Math.PI), delay: 0.5 + i * 0.1 }
   })
@@ -1291,7 +1285,7 @@ function ButterflyAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 5000); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const butterflies = Array.from({ length: 18 }, (_, i) => ({
+  const butterflies = Array.from({ length: MOB_COUNT(18) }, (_, i) => ({
     id: i,
     startX: -10 + Math.random() * 30,
     startY: 20 + Math.random() * 60,
@@ -1312,7 +1306,7 @@ function ButterflyAnimation() {
           position: 'absolute',
           left: `${b.startX}%`,
           top: `${b.startY}%`,
-          fontSize: `${b.size}rem`,
+          fontSize: `${b.size * MOB_SCALE}rem`,
           animation: `butterfly-fly-${b.id} ${b.duration}s ${b.delay}s ease-in-out forwards`,
           opacity: 0,
         }}>
@@ -1327,7 +1321,7 @@ function ButterflyAnimation() {
           position: 'absolute',
           bottom: '5%',
           left: `${8 + i * 16}%`,
-          fontSize: '2.5rem',
+          fontSize: `${2.5 * MOB_SCALE}rem`,
           animation: `butterfly-flower 1s ${0.5 + i * 0.2}s ease-out forwards`,
           opacity: 0,
         }}>{f}</div>
@@ -1358,11 +1352,11 @@ function CasinoAnimation() {
   useEffect(() => { const t = setTimeout(() => setActive(false), 4500); return () => clearTimeout(t) }, [])
   if (!active) return null
   const slotEmojis = ['🍒', '🍋', '7️⃣', '💎', '🍀', '⭐', '🔔']
-  const col1 = Array.from({ length: 8 }, () => slotEmojis[Math.floor(Math.random() * slotEmojis.length)])
-  const col2 = Array.from({ length: 8 }, () => slotEmojis[Math.floor(Math.random() * slotEmojis.length)])
-  const col3 = Array.from({ length: 8 }, () => slotEmojis[Math.floor(Math.random() * slotEmojis.length)])
+  const col1 = Array.from({ length: MOB_COUNT(8) }, () => slotEmojis[Math.floor(Math.random() * slotEmojis.length)])
+  const col2 = Array.from({ length: MOB_COUNT(8) }, () => slotEmojis[Math.floor(Math.random() * slotEmojis.length)])
+  const col3 = Array.from({ length: MOB_COUNT(8) }, () => slotEmojis[Math.floor(Math.random() * slotEmojis.length)])
   col1[col1.length - 1] = '7️⃣'; col2[col2.length - 1] = '7️⃣'; col3[col3.length - 1] = '7️⃣'
-  const coins = Array.from({ length: 30 }, (_, i) => ({
+  const coins = Array.from({ length: MOB_COUNT(30) }, (_, i) => ({
     id: i,
     x: 10 + Math.random() * 80,
     delay: 2.5 + Math.random() * 1.5,
@@ -1380,21 +1374,21 @@ function CasinoAnimation() {
           <div key={ci} style={{ width: '60px', height: '60px', overflow: 'hidden', borderRadius: '8px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,215,0,0.3)' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', animation: `casino-spin-${ci} ${1.5 + ci * 0.4}s 0.5s cubic-bezier(0.2, 0, 0.2, 1) forwards` }}>
               {col.map((e, ei) => (
-                <div key={ei} style={{ fontSize: '2.5rem', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '60px', flexShrink: 0 }}>{e}</div>
+                <div key={ei} style={{ fontSize: `${2.5 * MOB_SCALE}rem`, height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '60px', flexShrink: 0 }}>{e}</div>
               ))}
             </div>
           </div>
         ))}
       </div>
       {/* JACKPOT text */}
-      <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '3rem', fontWeight: 900, color: '#ffd700', textShadow: '0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.4), 2px 2px 0 #b8860b', whiteSpace: 'nowrap', animation: 'casino-jackpot 1.5s 2.5s ease-out forwards', opacity: 0, letterSpacing: '8px' }}>
+      <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: `${3.0 * MOB_SCALE}rem`, fontWeight: 900, color: '#ffd700', textShadow: '0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.4), 2px 2px 0 #b8860b', whiteSpace: 'nowrap', animation: 'casino-jackpot 1.5s 2.5s ease-out forwards', opacity: 0, letterSpacing: '8px' }}>
         JACKPOT !
       </div>
       {/* Falling coins */}
       {coins.map(c => (
         <div key={c.id} style={{
           position: 'absolute', top: '-5%', left: `${c.x}%`,
-          fontSize: `${c.size}rem`,
+          fontSize: `${c.size * MOB_SCALE}rem`,
           animation: `casino-coins ${c.duration}s ${c.delay}s ease-in forwards`,
           opacity: 0,
         }}>{c.emoji}</div>
@@ -1417,7 +1411,7 @@ function NinjaAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 4000); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const smokeParticles = Array.from({ length: 12 }, (_, i) => ({
+  const smokeParticles = Array.from({ length: MOB_COUNT(12) }, (_, i) => ({
     id: i,
     dx: (Math.random() - 0.5) * 200,
     dy: (Math.random() - 0.5) * 200,
@@ -1450,7 +1444,7 @@ function NinjaAnimation() {
       {shurikenCorners.map((corner, i) => (
         <div key={i} style={{
           position: 'absolute', top: '45%', left: '50%',
-          fontSize: '2.5rem',
+          fontSize: `${2.5 * MOB_SCALE}rem`,
           color: '#c0c0c0',
           textShadow: '0 0 10px rgba(192,192,192,0.6)',
           animation: `ninja-shuriken-${i} 1s ${0.5 + i * 0.1}s ease-out forwards`,
@@ -1460,7 +1454,7 @@ function NinjaAnimation() {
       {/* Ninja sliding across */}
       <div style={{
         position: 'absolute', top: '40%', left: '-10%',
-        fontSize: '5rem',
+        fontSize: `${5.0 * MOB_SCALE}rem`,
         animation: 'ninja-slide 1.5s 1.2s ease-in-out forwards',
         opacity: 0,
       }}>🥷</div>
@@ -1491,7 +1485,7 @@ function HeartsZarinaAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 6000); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const hearts = Array.from({ length: 60 }, (_, i) => ({
+  const hearts = Array.from({ length: MOB_COUNT(60) }, (_, i) => ({
     id: i,
     left: Math.random() * 100,
     delay: Math.random() * 3,
@@ -1511,13 +1505,13 @@ function HeartsZarinaAnimation() {
       {/* Central message */}
       <div style={{
         position: 'absolute', top: '38%', left: '50%', transform: 'translate(-50%,-50%)',
-        fontSize: '2.5rem', textAlign: 'center',
+        fontSize: `${2.5 * MOB_SCALE}rem`, textAlign: 'center',
         animation: 'zarina-text 5s 0.5s ease-out forwards', opacity: 0,
         textShadow: '0 0 20px rgba(255,105,180,0.6)',
         fontWeight: 'bold',
       }}>
         💖
-        <div style={{ fontSize: '1.2rem', marginTop: '4px', color: '#ff69b4' }}>Zarina</div>
+        <div style={{ fontSize: `${1.2 * MOB_SCALE}rem`, marginTop: '4px', color: '#ff69b4' }}>Zarina</div>
       </div>
       {/* Cascade of hearts */}
       {hearts.map(h => (
@@ -1525,7 +1519,7 @@ function HeartsZarinaAnimation() {
           position: 'absolute',
           left: `${h.left}%`,
           top: '-50px',
-          fontSize: `${h.size}rem`,
+          fontSize: `${h.size * MOB_SCALE}rem`,
           animation: `zarina-fall ${h.duration}s ${h.delay}s ease-in forwards`,
           opacity: 0,
           '--wobble': `${h.wobble}px`,
@@ -1562,7 +1556,7 @@ function DanceLucieAnimation() {
   useEffect(() => { const t = setTimeout(() => setActive(false), 7000); return () => clearTimeout(t) }, [])
   if (!active) return null
   const dancers = ['💃', '🕺', '💃', '🕺', '💃', '🕺', '💃']
-  const notes = Array.from({ length: 20 }, (_, i) => ({
+  const notes = Array.from({ length: MOB_COUNT(20) }, (_, i) => ({
     id: i,
     left: 5 + Math.random() * 90,
     delay: Math.random() * 4,
@@ -1587,7 +1581,7 @@ function DanceLucieAnimation() {
       {/* Disco ball */}
       <div style={{
         position: 'absolute', top: '5%', left: '50%', transform: 'translateX(-50%)',
-        fontSize: '4rem',
+        fontSize: `${4.0 * MOB_SCALE}rem`,
         animation: 'lucie-ball 2s ease-in-out infinite',
       }}>🪩</div>
       {/* Dancing emojis across the bottom */}
@@ -1598,7 +1592,7 @@ function DanceLucieAnimation() {
       }}>
         {dancers.map((d, i) => (
           <div key={`dancer-${i}`} style={{
-            fontSize: `${2.5 + (i % 2) * 0.8}rem`,
+            fontSize: `${(2.5 + (i % 2) * 0.8) * MOB_SCALE}rem`,
             animation: `lucie-dance-${i % 2 === 0 ? 'a' : 'b'} ${0.5 + Math.random() * 0.3}s ${i * 0.1}s ease-in-out infinite alternate`,
             filter: `hue-rotate(${i * 50}deg)`,
           }}>
@@ -1611,9 +1605,9 @@ function DanceLucieAnimation() {
         position: 'absolute', top: '35%', left: '50%', transform: 'translate(-50%,-50%)',
         textAlign: 'center', animation: 'lucie-name 6s 0.3s ease-out forwards', opacity: 0,
       }}>
-        <div style={{ fontSize: '3rem', animation: 'lucie-bounce 0.6s ease-in-out infinite alternate' }}>💃</div>
+        <div style={{ fontSize: `${3.0 * MOB_SCALE}rem`, animation: 'lucie-bounce 0.6s ease-in-out infinite alternate' }}>💃</div>
         <div style={{
-          fontSize: '1.5rem', fontWeight: 'bold', marginTop: '4px',
+          fontSize: `${1.5 * MOB_SCALE}rem`, fontWeight: 'bold', marginTop: '4px',
           background: 'linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #ff00ff)',
           backgroundSize: '300% 100%',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
@@ -1624,7 +1618,7 @@ function DanceLucieAnimation() {
       {notes.map(n => (
         <div key={n.id} style={{
           position: 'absolute', left: `${n.left}%`, bottom: '15%',
-          fontSize: `${n.size}rem`,
+          fontSize: `${n.size * MOB_SCALE}rem`,
           animation: `lucie-note ${2 + Math.random()}s ${n.delay}s ease-out forwards`,
           opacity: 0,
         }}>{n.emoji}</div>
@@ -1677,10 +1671,10 @@ function NurseTravelerAnimation() {
   useEffect(() => { const t = setTimeout(() => setActive(false), 7000); return () => clearTimeout(t) }, [])
   if (!active) return null
   const landmarks = ['🗼', '🗽', '🏯', '🕌', '🏝️', '🌋', '🎡']
-  const clouds = Array.from({ length: 8 }, (_, i) => ({
+  const clouds = Array.from({ length: MOB_COUNT(8) }, (_, i) => ({
     id: i, top: 5 + Math.random() * 25, size: 2 + Math.random() * 2, delay: Math.random() * 3, speed: 4 + Math.random() * 3,
   }))
-  const sparkles = Array.from({ length: 15 }, (_, i) => ({
+  const sparkles = Array.from({ length: MOB_COUNT(15) }, (_, i) => ({
     id: i, left: Math.random() * 100, top: Math.random() * 100, delay: Math.random() * 5, size: 0.8 + Math.random() * 1,
   }))
   return (
@@ -1695,7 +1689,7 @@ function NurseTravelerAnimation() {
       {clouds.map(c => (
         <div key={c.id} style={{
           position: 'absolute', top: `${c.top}%`, left: '-15%',
-          fontSize: `${c.size}rem`, opacity: 0.7,
+          fontSize: `${c.size * MOB_SCALE}rem`, opacity: 0.7,
           animation: `meigan-cloud ${c.speed}s ${c.delay}s linear forwards`,
         }}>☁️</div>
       ))}
@@ -1708,7 +1702,7 @@ function NurseTravelerAnimation() {
       }}>
         {landmarks.map((l, i) => (
           <div key={i} style={{
-            fontSize: '3rem', marginLeft: `${8 + i * 12}%`, flexShrink: 0,
+            fontSize: `${3.0 * MOB_SCALE}rem`, marginLeft: `${8 + i * 12}%`, flexShrink: 0,
             animation: `meigan-landmark-bob 1.5s ${i * 0.2}s ease-in-out infinite alternate`,
           }}>{l}</div>
         ))}
@@ -1718,10 +1712,10 @@ function NurseTravelerAnimation() {
         position: 'absolute', top: '30%', left: '-15%',
         animation: 'meigan-fly 5s 0.8s ease-in-out forwards', opacity: 0,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '3.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: `${3.5 * MOB_SCALE}rem` }}>
           <span style={{ animation: 'meigan-wave 0.4s ease-in-out infinite alternate' }}>👩‍⚕️</span>
           <span>🧳</span>
-          <span style={{ fontSize: '2rem' }}>✈️</span>
+          <span style={{ fontSize: `${2.0 * MOB_SCALE}rem` }}>✈️</span>
         </div>
       </div>
       {/* Central name */}
@@ -1730,7 +1724,7 @@ function NurseTravelerAnimation() {
         transform: 'translate(-50%,-50%)', textAlign: 'center',
         animation: 'meigan-name 6s 1s ease-out forwards', opacity: 0,
       }}>
-        <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#ff758c', textShadow: '0 0 15px rgba(255,117,140,0.5)' }}>
+        <div style={{ fontSize: `${1.3 * MOB_SCALE}rem`, fontWeight: 'bold', color: '#ff758c', textShadow: '0 0 15px rgba(255,117,140,0.5)' }}>
           Meigan 🌍
         </div>
         <div style={{ fontSize: '0.75rem', color: '#ffb6c1', marginTop: '4px' }}>off to see the world</div>
@@ -1739,7 +1733,7 @@ function NurseTravelerAnimation() {
       {sparkles.map(s => (
         <div key={s.id} style={{
           position: 'absolute', left: `${s.left}%`, top: `${s.top}%`,
-          fontSize: `${s.size}rem`,
+          fontSize: `${s.size * MOB_SCALE}rem`,
           animation: `meigan-sparkle 1.5s ${s.delay}s ease-in-out forwards`,
           opacity: 0,
         }}>✨</div>
@@ -1796,11 +1790,11 @@ function KpopNoemieAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 7000); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const lightsticks = Array.from({ length: 25 }, (_, i) => ({
+  const lightsticks = Array.from({ length: MOB_COUNT(25) }, (_, i) => ({
     id: i, left: Math.random() * 100, delay: Math.random() * 3,
     color: ['#b388ff', '#ea80fc', '#80d8ff', '#ff80ab', '#ffe57f'][Math.floor(Math.random() * 5)],
   }))
-  const hearts = Array.from({ length: 18 }, (_, i) => ({
+  const hearts = Array.from({ length: MOB_COUNT(18) }, (_, i) => ({
     id: i, left: Math.random() * 100, delay: 0.5 + Math.random() * 4,
     emoji: ['💜', '💗', '🩷', '💫', '⭐'][Math.floor(Math.random() * 5)],
     size: 1 + Math.random() * 1.5,
@@ -1838,7 +1832,7 @@ function KpopNoemieAnimation() {
       }}>
         {members.map((m, i) => (
           <div key={i} style={{
-            fontSize: '2.8rem',
+            fontSize: `${2.8 * MOB_SCALE}rem`,
             animation: `kpop-member ${0.4 + Math.random() * 0.3}s ${i * 0.1}s ease-in-out infinite alternate`,
           }}>{m}</div>
         ))}
@@ -1850,7 +1844,7 @@ function KpopNoemieAnimation() {
         animation: 'kpop-name 6s 0.8s ease-out forwards', opacity: 0,
       }}>
         <div style={{
-          fontSize: '1.5rem', fontWeight: 'bold',
+          fontSize: `${1.5 * MOB_SCALE}rem`, fontWeight: 'bold',
           background: 'linear-gradient(90deg, #b388ff, #ea80fc, #80d8ff, #ff80ab)',
           backgroundSize: '300% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           animation: 'kpop-gradient 2s linear infinite',
@@ -1861,7 +1855,7 @@ function KpopNoemieAnimation() {
       {hearts.map(h => (
         <div key={h.id} style={{
           position: 'absolute', left: `${h.left}%`, bottom: '10%',
-          fontSize: `${h.size}rem`,
+          fontSize: `${h.size * MOB_SCALE}rem`,
           animation: `kpop-heart ${2 + Math.random()}s ${h.delay}s ease-out forwards`, opacity: 0,
         }}>{h.emoji}</div>
       ))}
@@ -1883,7 +1877,7 @@ function KcorpWeddingAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 8000); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const confetti = Array.from({ length: 40 }, (_, i) => ({
+  const confetti = Array.from({ length: MOB_COUNT(40) }, (_, i) => ({
     id: i, left: Math.random() * 100, delay: Math.random() * 3,
     size: 0.8 + Math.random() * 1.2,
     emoji: ['💍', '🤍', '💒', '🥂', '✨', '🏆', '⚔️', '👑'][Math.floor(Math.random() * 8)],
@@ -1907,7 +1901,7 @@ function KcorpWeddingAnimation() {
         background: `linear-gradient(90deg, ${kcorpBlue}, ${kcorpGold})`,
         animation: 'geof-banner 7s 0.3s ease-out forwards', opacity: 0,
       }}>
-        <span style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fff', letterSpacing: '4px', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+        <span style={{ fontSize: `${1.8 * MOB_SCALE}rem`, fontWeight: 'bold', color: '#fff', letterSpacing: '4px', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
           ⚔️ KC ⚔️
         </span>
       </div>
@@ -1916,11 +1910,11 @@ function KcorpWeddingAnimation() {
         position: 'absolute', top: '35%', left: '50%', transform: 'translate(-50%,-50%)',
         textAlign: 'center', animation: 'geof-couple 7s 0.5s ease-out forwards', opacity: 0,
       }}>
-        <div style={{ fontSize: '4rem', animation: 'geof-pulse 1s ease-in-out infinite alternate' }}>
+        <div style={{ fontSize: `${4.0 * MOB_SCALE}rem`, animation: 'geof-pulse 1s ease-in-out infinite alternate' }}>
           👰‍♀️💍🤵
         </div>
         <div style={{
-          fontSize: '1.6rem', fontWeight: 'bold', marginTop: '8px',
+          fontSize: `${1.6 * MOB_SCALE}rem`, fontWeight: 'bold', marginTop: '8px',
           background: `linear-gradient(90deg, ${kcorpBlue}, #fff, ${kcorpGold})`,
           backgroundSize: '200% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           animation: 'geof-gradient 3s linear infinite',
@@ -1942,7 +1936,7 @@ function KcorpWeddingAnimation() {
       {confetti.map(c => (
         <div key={c.id} style={{
           position: 'absolute', left: `${c.left}%`, top: '-40px',
-          fontSize: `${c.size}rem`,
+          fontSize: `${c.size * MOB_SCALE}rem`,
           animation: `geof-fall ${c.speed}s ${c.delay}s ease-in forwards`,
           opacity: 0, '--wobble': `${c.wobble}px`,
         }}>{c.emoji}</div>
@@ -1950,7 +1944,7 @@ function KcorpWeddingAnimation() {
       {/* Swords crossing animation */}
       <div style={{
         position: 'absolute', top: '60%', left: '50%', transform: 'translate(-50%,-50%)',
-        fontSize: '3rem', animation: 'geof-swords 6s 1.5s ease-out forwards', opacity: 0,
+        fontSize: `${3.0 * MOB_SCALE}rem`, animation: 'geof-swords 6s 1.5s ease-out forwards', opacity: 0,
       }}>
         <span style={{ display: 'inline-block', animation: 'geof-sword-l 0.6s 2s ease-out forwards', transform: 'rotate(45deg)' }}>⚔️</span>
       </div>
@@ -2011,14 +2005,14 @@ function DisneyTravelAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 8000); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const sparkles = Array.from({ length: 35 }, (_, i) => ({
+  const sparkles = Array.from({ length: MOB_COUNT(35) }, (_, i) => ({
     id: i, left: Math.random() * 100, top: Math.random() * 100,
     delay: Math.random() * 5, size: 0.6 + Math.random() * 1.2,
     emoji: ['✨', '⭐', '💫', '🌟'][Math.floor(Math.random() * 4)],
   }))
   const destinations = ['🗼', '🏝️', '🗽', '🏯', '🕌', '🌋', '🎡', '🌸']
   const disneyIcons = ['🏰', '🎆', '🎠', '🎢', '🧚‍♀️', '👸', '🐭', '🪄']
-  const shootingStars = Array.from({ length: 5 }, (_, i) => ({
+  const shootingStars = Array.from({ length: MOB_COUNT(5) }, (_, i) => ({
     id: i, delay: 1 + i * 1.2, startX: 10 + Math.random() * 30, startY: 5 + Math.random() * 15,
   }))
   return (
@@ -2043,7 +2037,7 @@ function DisneyTravelAnimation() {
         position: 'absolute', top: '22%', left: '50%', transform: 'translateX(-50%)',
         textAlign: 'center', animation: 'sarah-castle 7s 0.5s ease-out forwards', opacity: 0,
       }}>
-        <div style={{ fontSize: '5rem', filter: 'drop-shadow(0 0 20px rgba(244,114,182,0.6))' }}>🏰</div>
+        <div style={{ fontSize: `${5.0 * MOB_SCALE}rem`, filter: 'drop-shadow(0 0 20px rgba(244,114,182,0.6))' }}>🏰</div>
         <div style={{
           fontSize: '0.65rem', color: '#f9a8d4', letterSpacing: '5px', marginTop: '4px',
           textTransform: 'uppercase',
@@ -2052,7 +2046,7 @@ function DisneyTravelAnimation() {
       {/* Magic wand arc */}
       <div style={{
         position: 'absolute', top: '18%', left: '58%',
-        fontSize: '2rem', animation: 'sarah-wand 3s 1s ease-in-out forwards', opacity: 0,
+        fontSize: `${2.0 * MOB_SCALE}rem`, animation: 'sarah-wand 3s 1s ease-in-out forwards', opacity: 0,
         transformOrigin: 'bottom left',
       }}>🪄</div>
       {/* Name */}
@@ -2062,7 +2056,7 @@ function DisneyTravelAnimation() {
         animation: 'sarah-name 7s 1.2s ease-out forwards', opacity: 0,
       }}>
         <div style={{
-          fontSize: '2rem', fontWeight: 'bold',
+          fontSize: `${2.0 * MOB_SCALE}rem`, fontWeight: 'bold',
           background: 'linear-gradient(90deg, #f9a8d4, #fbbf24, #a78bfa, #f9a8d4)',
           backgroundSize: '300% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           animation: 'sarah-gradient 3s linear infinite',
@@ -2079,7 +2073,7 @@ function DisneyTravelAnimation() {
       }}>
         {[...destinations, ...disneyIcons, ...destinations].map((d, i) => (
           <span key={i} style={{
-            fontSize: '2.2rem', marginRight: '30px', display: 'inline-block',
+            fontSize: `${2.2 * MOB_SCALE}rem`, marginRight: '30px', display: 'inline-block',
             animation: `sarah-bob 1s ${i * 0.15}s ease-in-out infinite alternate`,
           }}>{d}</span>
         ))}
@@ -2088,14 +2082,14 @@ function DisneyTravelAnimation() {
       {sparkles.map(s => (
         <div key={s.id} style={{
           position: 'absolute', left: `${s.left}%`, top: `${s.top}%`,
-          fontSize: `${s.size}rem`,
+          fontSize: `${s.size * MOB_SCALE}rem`,
           animation: `sarah-sparkle 1.2s ${s.delay}s ease-in-out forwards`, opacity: 0,
         }}>{s.emoji}</div>
       ))}
       {/* Fireworks bursts */}
-      <div style={{ position: 'absolute', top: '10%', left: '20%', fontSize: '3rem', animation: 'sarah-firework 1s 2.5s ease-out forwards', opacity: 0 }}>🎆</div>
-      <div style={{ position: 'absolute', top: '8%', left: '75%', fontSize: '2.5rem', animation: 'sarah-firework 1s 3.2s ease-out forwards', opacity: 0 }}>🎇</div>
-      <div style={{ position: 'absolute', top: '15%', left: '50%', fontSize: '2.8rem', animation: 'sarah-firework 1s 4s ease-out forwards', opacity: 0 }}>🎆</div>
+      <div style={{ position: 'absolute', top: '10%', left: '20%', fontSize: `${3.0 * MOB_SCALE}rem`, animation: 'sarah-firework 1s 2.5s ease-out forwards', opacity: 0 }}>🎆</div>
+      <div style={{ position: 'absolute', top: '8%', left: '75%', fontSize: `${2.5 * MOB_SCALE}rem`, animation: 'sarah-firework 1s 3.2s ease-out forwards', opacity: 0 }}>🎇</div>
+      <div style={{ position: 'absolute', top: '15%', left: '50%', fontSize: `${2.8 * MOB_SCALE}rem`, animation: 'sarah-firework 1s 4s ease-out forwards', opacity: 0 }}>🎆</div>
       <style>{`
         @keyframes sarah-sky { 0% { opacity: 0; } 8% { opacity: 0.5; } 85% { opacity: 0.5; } 100% { opacity: 0; } }
         @keyframes sarah-shoot {
@@ -2157,7 +2151,7 @@ function OrangeSportAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 7000); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const oranges = Array.from({ length: 30 }, (_, i) => ({
+  const oranges = Array.from({ length: MOB_COUNT(30) }, (_, i) => ({
     id: i, left: Math.random() * 100, delay: Math.random() * 3.5,
     size: 1.2 + Math.random() * 1.8, speed: 2 + Math.random() * 2,
     emoji: ['🍊', '🍊', '🍊', '🍋', '🧃'][Math.floor(Math.random() * 5)],
@@ -2165,7 +2159,7 @@ function OrangeSportAnimation() {
     spin: 360 + Math.random() * 720,
   }))
   const sports = ['⚽', '🏀', '🏐', '🎾', '🏃‍♀️', '🤸‍♀️', '🏋️‍♀️', '🚴‍♀️', '🏊‍♀️', '⛹️‍♀️']
-  const splashes = Array.from({ length: 8 }, (_, i) => ({
+  const splashes = Array.from({ length: MOB_COUNT(8) }, (_, i) => ({
     id: i, left: 10 + Math.random() * 80, top: 20 + Math.random() * 60,
     delay: 1 + Math.random() * 4, size: 40 + Math.random() * 30,
   }))
@@ -2191,7 +2185,7 @@ function OrangeSportAnimation() {
       {oranges.map(o => (
         <div key={o.id} style={{
           position: 'absolute', left: `${o.left}%`, top: '-50px',
-          fontSize: `${o.size}rem`,
+          fontSize: `${o.size * MOB_SCALE}rem`,
           animation: `clem-fall ${o.speed}s ${o.delay}s ease-in forwards`,
           opacity: 0, '--wobble': `${o.wobble}px`, '--spin': `${o.spin}deg`,
         }}>{o.emoji}</div>
@@ -2203,7 +2197,7 @@ function OrangeSportAnimation() {
       }}>
         {sports.map((s, i) => (
           <div key={i} style={{
-            fontSize: '2.2rem',
+            fontSize: `${2.2 * MOB_SCALE}rem`,
             animation: `clem-sport ${0.5 + Math.random() * 0.4}s ${0.5 + i * 0.15}s ease-in-out infinite alternate`,
             opacity: 0, animationFillMode: 'forwards',
           }}>{s}</div>
@@ -2215,9 +2209,9 @@ function OrangeSportAnimation() {
         transform: 'translate(-50%,-50%)', textAlign: 'center',
         animation: 'clem-name 6.5s 0.8s ease-out forwards', opacity: 0,
       }}>
-        <div style={{ fontSize: '3.5rem', marginBottom: '6px' }}>🍊</div>
+        <div style={{ fontSize: `${3.5 * MOB_SCALE}rem`, marginBottom: '6px' }}>🍊</div>
         <div style={{
-          fontSize: '1.8rem', fontWeight: 'bold',
+          fontSize: `${1.8 * MOB_SCALE}rem`, fontWeight: 'bold',
           background: 'linear-gradient(90deg, #ff9800, #ff5722, #ff9800)',
           backgroundSize: '200% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           animation: 'clem-gradient 2s linear infinite',
@@ -2263,13 +2257,13 @@ function FlameAstroAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 7500); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const flames = Array.from({ length: 25 }, (_, i) => ({
+  const flames = Array.from({ length: MOB_COUNT(25) }, (_, i) => ({
     id: i, left: Math.random() * 100, delay: Math.random() * 3,
     size: 1.5 + Math.random() * 2, speed: 2 + Math.random() * 2,
     emoji: ['🔥', '🔥', '🔥', '💥', '✨'][Math.floor(Math.random() * 5)],
   }))
   const zodiac = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
-  const stars = Array.from({ length: 20 }, (_, i) => ({
+  const stars = Array.from({ length: MOB_COUNT(20) }, (_, i) => ({
     id: i, left: Math.random() * 100, top: Math.random() * 80,
     delay: Math.random() * 5, size: 0.5 + Math.random() * 0.8,
   }))
@@ -2321,7 +2315,7 @@ function FlameAstroAnimation() {
             <div key={i} style={{
               position: 'absolute', left: `${x}px`, top: `${y}px`,
               transform: 'translate(-50%,-50%)',
-              fontSize: '1.3rem', color: '#c4b5fd',
+              fontSize: `${1.3 * MOB_SCALE}rem`, color: '#c4b5fd',
               textShadow: '0 0 8px rgba(196,181,253,0.5)',
               animation: `claire-zodiac-pop 0.4s ${0.8 + i * 0.15}s ease-out forwards`, opacity: 0,
             }}>{z}</div>
@@ -2338,7 +2332,7 @@ function FlameAstroAnimation() {
       {flames.map(f => (
         <div key={f.id} style={{
           position: 'absolute', left: `${f.left}%`, bottom: '-40px',
-          fontSize: `${f.size}rem`,
+          fontSize: `${f.size * MOB_SCALE}rem`,
           animation: `claire-flame ${f.speed}s ${f.delay}s ease-out forwards`, opacity: 0,
         }}>{f.emoji}</div>
       ))}
@@ -2349,7 +2343,7 @@ function FlameAstroAnimation() {
         animation: 'claire-name 6.5s 1s ease-out forwards', opacity: 0,
       }}>
         <div style={{
-          fontSize: '1.8rem', fontWeight: 'bold',
+          fontSize: `${1.8 * MOB_SCALE}rem`, fontWeight: 'bold',
           background: 'linear-gradient(90deg, #f97316, #ef4444, #a855f7, #6366f1)',
           backgroundSize: '300% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           animation: 'claire-gradient 3s linear infinite',
@@ -2394,9 +2388,9 @@ function CyberJadeAnimation() {
     'import { power } from "jade"', 'firewall.bypass()', 'encrypt(everything)',
     'chmod 777 success', '0x4A414445', 'ping jade@cyber.net',
   ]
-  const matrixDrops = Array.from({ length: 30 }, (_, i) => ({
+  const matrixDrops = Array.from({ length: MOB_COUNT(30) }, (_, i) => ({
     id: i, left: Math.random() * 100, delay: Math.random() * 4,
-    speed: 2 + Math.random() * 3, chars: Array.from({ length: 8 }, () =>
+    speed: 2 + Math.random() * 3, chars: Array.from({ length: MOB_COUNT(8) }, () =>
       String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96))
     ).join(''),
   }))
@@ -2456,7 +2450,7 @@ function CyberJadeAnimation() {
         animation: 'jade-name 6s 1.5s ease-out forwards', opacity: 0,
       }}>
         <div style={{
-          fontSize: '2rem', fontWeight: 'bold', fontFamily: 'monospace',
+          fontSize: `${2.0 * MOB_SCALE}rem`, fontWeight: 'bold', fontFamily: 'monospace',
           color: '#00ff41', textShadow: '0 0 20px rgba(0,255,65,0.5), 2px 2px 0 #003300',
           animation: 'jade-glitch 0.3s 2.5s ease-in-out 3',
         }}>{'<Jade/>'}</div>
@@ -2471,7 +2465,7 @@ function CyberJadeAnimation() {
       }}>
         {glitchIcons.map((g, i) => (
           <div key={i} style={{
-            fontSize: '1.8rem',
+            fontSize: `${1.8 * MOB_SCALE}rem`,
             animation: `jade-icon 0.6s ${2 + i * 0.2}s ease-out forwards`, opacity: 0,
           }}>{g}</div>
         ))}
@@ -2511,7 +2505,7 @@ function AdventureThomasAnimation() {
   useEffect(() => { const t = setTimeout(() => setActive(false), 8000); return () => clearTimeout(t) }, [])
   if (!active) return null
   const terrain = ['🏔️', '🌋', '🏜️', '🌊', '🌴', '🏕️', '⛰️', '🗻']
-  const items = Array.from({ length: 20 }, (_, i) => ({
+  const items = Array.from({ length: MOB_COUNT(20) }, (_, i) => ({
     id: i, left: Math.random() * 100, delay: 0.5 + Math.random() * 4,
     size: 1 + Math.random() * 1.5,
     emoji: ['🗡️', '🧭', '🗺️', '🔦', '🪂', '🏹', '⚡', '💎', '🦖', '🐉'][Math.floor(Math.random() * 10)],
@@ -2522,10 +2516,10 @@ function AdventureThomasAnimation() {
     { emoji: '🐊', top: 62, delay: 4.5, speed: 6, size: 2.5, dir: 'left' },
     { emoji: '🦖', top: 45, delay: 2, speed: 5.5, size: 3, dir: 'right' },
   ]
-  const clouds = Array.from({ length: 6 }, (_, i) => ({
+  const clouds = Array.from({ length: MOB_COUNT(6) }, (_, i) => ({
     id: i, top: 5 + Math.random() * 20, delay: Math.random() * 2, speed: 5 + Math.random() * 4,
   }))
-  const pathDots = Array.from({ length: 12 }, (_, i) => ({
+  const pathDots = Array.from({ length: MOB_COUNT(12) }, (_, i) => ({
     id: i, x: 8 + i * 7.5, y: 70 + Math.sin(i * 0.8) * 8,
   }))
   return (
@@ -2547,7 +2541,7 @@ function AdventureThomasAnimation() {
       {clouds.map(c => (
         <div key={c.id} style={{
           position: 'absolute', top: `${c.top}%`, left: '-10%',
-          fontSize: '2.5rem', opacity: 0.5,
+          fontSize: `${2.5 * MOB_SCALE}rem`, opacity: 0.5,
           animation: `tom-cloud ${c.speed}s ${c.delay}s linear forwards`,
         }}>☁️</div>
       ))}
@@ -2559,7 +2553,7 @@ function AdventureThomasAnimation() {
       }}>
         {terrain.map((t, i) => (
           <div key={i} style={{
-            fontSize: '2.5rem',
+            fontSize: `${2.5 * MOB_SCALE}rem`,
             animation: `tom-grow 0.5s ${1 + i * 0.15}s ease-out forwards`,
             opacity: 0, transform: 'scale(0) translateY(20px)',
           }}>{t}</div>
@@ -2582,7 +2576,7 @@ function AdventureThomasAnimation() {
       {/* Explorer walking across */}
       <div style={{
         position: 'absolute', bottom: '20%', left: '-10%',
-        fontSize: '3rem',
+        fontSize: `${3.0 * MOB_SCALE}rem`,
         animation: 'tom-explorer 5.5s 1.5s ease-in-out forwards', opacity: 0,
       }}>
         <span style={{ display: 'inline-block', animation: 'tom-step 0.4s ease-in-out infinite alternate' }}>🧗</span>
@@ -2593,7 +2587,7 @@ function AdventureThomasAnimation() {
           position: 'absolute', top: `${d.top}%`,
           left: d.dir === 'left' ? '-12%' : undefined,
           right: d.dir === 'right' ? '-12%' : undefined,
-          fontSize: `${d.size}rem`,
+          fontSize: `${d.size * MOB_SCALE}rem`,
           transform: d.dir === 'right' ? 'scaleX(-1)' : 'none',
           animation: `tom-dino-${d.dir} ${d.speed}s ${d.delay}s ease-in-out forwards`,
           opacity: 0, filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
@@ -2612,7 +2606,7 @@ function AdventureThomasAnimation() {
       {/* Compass spinning top-right */}
       <div style={{
         position: 'absolute', top: '12%', right: '12%',
-        fontSize: '3.5rem',
+        fontSize: `${3.5 * MOB_SCALE}rem`,
         animation: 'tom-compass 7s 0.5s ease-out forwards', opacity: 0,
       }}>🧭</div>
       {/* Name */}
@@ -2622,7 +2616,7 @@ function AdventureThomasAnimation() {
         animation: 'tom-name 7s 1s ease-out forwards', opacity: 0,
       }}>
         <div style={{
-          fontSize: '2rem', fontWeight: 'bold',
+          fontSize: `${2.0 * MOB_SCALE}rem`, fontWeight: 'bold',
           background: 'linear-gradient(90deg, #f39c12, #e74c3c, #f39c12)',
           backgroundSize: '200% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           animation: 'tom-gradient 2.5s linear infinite',
@@ -2635,7 +2629,7 @@ function AdventureThomasAnimation() {
       {items.map(it => (
         <div key={it.id} style={{
           position: 'absolute', left: `${it.left}%`, top: '-30px',
-          fontSize: `${it.size}rem`,
+          fontSize: `${it.size * MOB_SCALE}rem`,
           animation: `tom-item ${2 + Math.random() * 2}s ${it.delay}s ease-in forwards`, opacity: 0,
         }}>{it.emoji}</div>
       ))}
@@ -2753,7 +2747,7 @@ function SpiralJonasAnimation() {
         <div key={`s-${s.id}`} style={{
           position: 'absolute',
           left: `${s.startX}%`, top: `${s.startY}%`,
-          fontSize: `${s.size}rem`,
+          fontSize: `${s.size * MOB_SCALE}rem`,
           '--sx': `${s.startX}%`, '--sy': `${s.startY}%`,
           '--rot': `${s.rotations * 360}deg`,
           animation: `jonas-siphon 2.5s ${s.delay}s cubic-bezier(0.4, 0, 0.2, 1) forwards`,
@@ -2771,7 +2765,7 @@ function SpiralJonasAnimation() {
       {/* Center 🌀 spinning fast */}
       <div style={{
         position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-        fontSize: '3.5rem',
+        fontSize: `${3.5 * MOB_SCALE}rem`,
         animation: 'jonas-vortex 8s 0.3s ease-in-out forwards', opacity: 0,
       }}>
         <div style={{ animation: 'jonas-fast-spin 0.8s linear infinite' }}>🌀</div>
@@ -2780,7 +2774,7 @@ function SpiralJonasAnimation() {
       {explode.map(e => (
         <div key={`e-${e.id}`} style={{
           position: 'absolute', top: '50%', left: '50%',
-          fontSize: `${e.size}rem`,
+          fontSize: `${e.size * MOB_SCALE}rem`,
           '--ex': `${e.endX}vw`, '--ey': `${e.endY}vh`, '--espin': `${e.spin}deg`,
           animation: `jonas-explode 1.8s ${5.5 + e.delay}s cubic-bezier(0, 0.5, 0.3, 1) forwards`,
           opacity: 0,
@@ -2812,7 +2806,7 @@ function SpiralJonasAnimation() {
         animation: 'jonas-name 3s 6.5s ease-out forwards', opacity: 0,
       }}>
         <div style={{
-          fontSize: '2.2rem', fontWeight: 'bold',
+          fontSize: `${2.2 * MOB_SCALE}rem`, fontWeight: 'bold',
           background: 'linear-gradient(90deg, #6366f1, #ec4899, #f59e0b, #10b981, #6366f1)',
           backgroundSize: '400% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           animation: 'jonas-rainbow 2s linear infinite',
@@ -2888,7 +2882,7 @@ function GhostDevAnimation() {
     'sudo rm -rf node_modules', 'localhost:3000', 'CTRL+Z CTRL+Z',
     '¯\\_(ツ)_/¯', 'merge conflict 💀', 'git blame michel',
   ]
-  const ghosts = Array.from({ length: 8 }, (_, i) => ({
+  const ghosts = Array.from({ length: MOB_COUNT(8) }, (_, i) => ({
     id: i,
     left: 10 + Math.random() * 80,
     top: 10 + Math.random() * 70,
@@ -2912,7 +2906,7 @@ function GhostDevAnimation() {
       {/* Michel appearing and disappearing — half opacity */}
       <div style={{
         position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%,-50%)',
-        fontSize: '5rem',
+        fontSize: `${5.0 * MOB_SCALE}rem`,
         animation: 'michel-appear 8s 0.5s ease-in-out forwards', opacity: 0,
       }}>
         <div style={{ animation: 'michel-flicker 0.3s ease-in-out infinite alternate' }}>👨‍💻</div>
@@ -2924,7 +2918,7 @@ function GhostDevAnimation() {
         textAlign: 'center',
       }}>
         <div style={{
-          fontSize: '2rem', fontWeight: 'bold', color: '#a0a0a0',
+          fontSize: `${2.0 * MOB_SCALE}rem`, fontWeight: 'bold', color: '#a0a0a0',
           background: 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.9) 50%, transparent 50%, transparent 100%)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
         }}>Michel</div>
@@ -2936,7 +2930,7 @@ function GhostDevAnimation() {
       {ghosts.map(g => (
         <div key={g.id} style={{
           position: 'absolute', left: `${g.left}%`, top: `${g.top}%`,
-          fontSize: `${g.size}rem`,
+          fontSize: `${g.size * MOB_SCALE}rem`,
           animation: `michel-ghost ${g.duration}s ${g.delay}s ease-in-out forwards`,
           opacity: 0,
         }}>👻</div>
@@ -3050,10 +3044,10 @@ function SeoLoudAnimation() {
     startX: Math.random() * 100, startY: Math.random() * 100,
     delay: 0.5 + Math.random() * 4, size: 0.55 + Math.random() * 0.4,
   }))
-  const soundWaves = Array.from({ length: 5 }, (_, i) => ({
+  const soundWaves = Array.from({ length: MOB_COUNT(5) }, (_, i) => ({
     id: i, delay: 1.5 + i * 0.8,
   }))
-  const mysterySymbols = Array.from({ length: 12 }, (_, i) => ({
+  const mysterySymbols = Array.from({ length: MOB_COUNT(12) }, (_, i) => ({
     id: i, left: Math.random() * 100, top: Math.random() * 100,
     delay: 1 + Math.random() * 5,
     symbol: ['👁️', '🔮', '🌙', '⚗️', '🗝️', '🔺'][Math.floor(Math.random() * 6)],
@@ -3070,7 +3064,7 @@ function SeoLoudAnimation() {
       {mysterySymbols.map(m => (
         <div key={`mys-${m.id}`} style={{
           position: 'absolute', left: `${m.left}%`, top: `${m.top}%`,
-          fontSize: '1.5rem', opacity: 0,
+          fontSize: `${1.5 * MOB_SCALE}rem`, opacity: 0,
           animation: `yass-mystery 2.5s ${m.delay}s ease-in-out forwards`,
         }}>{m.symbol}</div>
       ))}
@@ -3103,7 +3097,7 @@ function SeoLoudAnimation() {
         animation: 'yass-center 7s 0.8s ease-out forwards', opacity: 0,
       }}>
         <div style={{
-          fontSize: '4rem',
+          fontSize: `${4.0 * MOB_SCALE}rem`,
           animation: 'yass-shake 0.15s ease-in-out infinite alternate',
         }}>🗣️</div>
       </div>
@@ -3136,7 +3130,7 @@ function SeoLoudAnimation() {
         animation: 'yass-name 6s 1.5s ease-out forwards', opacity: 0,
       }}>
         <div style={{
-          fontSize: '2rem', fontWeight: 'bold',
+          fontSize: `${2.0 * MOB_SCALE}rem`, fontWeight: 'bold',
           background: 'linear-gradient(90deg, #4ade80, #22d3ee, #a78bfa)',
           backgroundSize: '200% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           animation: 'yass-gradient 2s linear infinite',
@@ -3149,7 +3143,7 @@ function SeoLoudAnimation() {
       {floatingTerms.map(t => (
         <div key={`seo-${t.id}`} style={{
           position: 'absolute', left: `${t.startX}%`, top: `${t.startY}%`,
-          fontFamily: 'monospace', fontSize: `${t.size}rem`, fontWeight: 'bold',
+          fontFamily: 'monospace', fontSize: `${t.size * MOB_SCALE}rem`, fontWeight: 'bold',
           color: 'rgba(74,222,128,0.35)',
           animation: `yass-term 2s ${t.delay}s ease-in-out forwards`, opacity: 0,
         }}>{t.text}</div>
@@ -3227,7 +3221,7 @@ function OlafDisneyAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 8000); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const snowflakes = Array.from({ length: 40 }, (_, i) => ({
+  const snowflakes = Array.from({ length: MOB_COUNT(40) }, (_, i) => ({
     id: i, left: Math.random() * 100, delay: Math.random() * 4,
     size: 0.6 + Math.random() * 1.2, speed: 3 + Math.random() * 3,
     emoji: ['❄️', '❅', '❆', '✨', '🤍'][Math.floor(Math.random() * 5)],
@@ -3246,7 +3240,7 @@ function OlafDisneyAnimation() {
       {snowflakes.map(s => (
         <div key={s.id} style={{
           position: 'absolute', left: `${s.left}%`, top: '-30px',
-          fontSize: `${s.size}rem`,
+          fontSize: `${s.size * MOB_SCALE}rem`,
           animation: `olaf-snow ${s.speed}s ${s.delay}s linear forwards`,
           opacity: 0, '--wobble': `${s.wobble}px`,
         }}>{s.emoji}</div>
@@ -3257,7 +3251,7 @@ function OlafDisneyAnimation() {
         textAlign: 'center',
         animation: 'olaf-appear 7s 0.8s ease-out forwards', opacity: 0,
       }}>
-        <div style={{ fontSize: '5rem', animation: 'olaf-waddle 0.6s ease-in-out infinite alternate' }}>⛄</div>
+        <div style={{ fontSize: `${5.0 * MOB_SCALE}rem`, animation: 'olaf-waddle 0.6s ease-in-out infinite alternate' }}>⛄</div>
         <div style={{
           fontSize: '0.8rem', color: '#fbbf24', marginTop: '4px',
           fontStyle: 'italic', textShadow: '0 0 10px rgba(251,191,36,0.4)',
@@ -3266,13 +3260,13 @@ function OlafDisneyAnimation() {
       {/* Sun appearing (Olaf loves summer) */}
       <div style={{
         position: 'absolute', top: '8%', right: '15%',
-        fontSize: '3.5rem',
+        fontSize: `${3.5 * MOB_SCALE}rem`,
         animation: 'olaf-sun 6s 2s ease-out forwards', opacity: 0,
       }}>☀️</div>
       {/* Carrot nose flying */}
       <div style={{
         position: 'absolute', top: '28%', left: '52%',
-        fontSize: '1.5rem',
+        fontSize: `${1.5 * MOB_SCALE}rem`,
         animation: 'olaf-carrot 2s 3.5s ease-out forwards', opacity: 0,
       }}>🥕</div>
       {/* Name */}
@@ -3282,7 +3276,7 @@ function OlafDisneyAnimation() {
         animation: 'olaf-name 6s 1.5s ease-out forwards', opacity: 0,
       }}>
         <div style={{
-          fontSize: '1.8rem', fontWeight: 'bold',
+          fontSize: `${1.8 * MOB_SCALE}rem`, fontWeight: 'bold',
           background: 'linear-gradient(90deg, #7dd3fc, #bae6fd, #fbbf24, #7dd3fc)',
           backgroundSize: '300% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           animation: 'olaf-gradient 3s linear infinite',
@@ -3299,7 +3293,7 @@ function OlafDisneyAnimation() {
       }}>
         {disneyIcons.map((d, i) => (
           <div key={i} style={{
-            fontSize: '2rem',
+            fontSize: `${2.0 * MOB_SCALE}rem`,
             animation: `olaf-bounce 0.8s ${1.8 + i * 0.15}s ease-in-out infinite alternate`,
           }}>{d}</div>
         ))}
@@ -3360,7 +3354,7 @@ function BossNathalieAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 7500); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const sparkles = Array.from({ length: 20 }, (_, i) => ({
+  const sparkles = Array.from({ length: MOB_COUNT(20) }, (_, i) => ({
     id: i, left: Math.random() * 100, top: Math.random() * 100,
     delay: 0.5 + Math.random() * 5, size: 0.8 + Math.random() * 1,
   }))
@@ -3384,7 +3378,7 @@ function BossNathalieAnimation() {
       {/* Crown descending */}
       <div style={{
         position: 'absolute', top: '15%', left: '50%', transform: 'translateX(-50%)',
-        fontSize: '4rem',
+        fontSize: `${4.0 * MOB_SCALE}rem`,
         animation: 'nath-crown 7s 1s ease-out forwards', opacity: 0,
         filter: 'drop-shadow(0 0 15px rgba(251,191,36,0.5))',
       }}>👑</div>
@@ -3394,7 +3388,7 @@ function BossNathalieAnimation() {
         textAlign: 'center',
         animation: 'nath-entrance 6.5s 1.5s ease-out forwards', opacity: 0,
       }}>
-        <div style={{ fontSize: '4.5rem', animation: 'nath-power 1.5s ease-in-out infinite alternate' }}>💼</div>
+        <div style={{ fontSize: `${4.5 * MOB_SCALE}rem`, animation: 'nath-power 1.5s ease-in-out infinite alternate' }}>💼</div>
       </div>
       {/* Name */}
       <div style={{
@@ -3403,7 +3397,7 @@ function BossNathalieAnimation() {
         animation: 'nath-name 6s 2s ease-out forwards', opacity: 0,
       }}>
         <div style={{
-          fontSize: '2rem', fontWeight: 'bold',
+          fontSize: `${2.0 * MOB_SCALE}rem`, fontWeight: 'bold',
           background: 'linear-gradient(90deg, #fbbf24, #f59e0b, #d97706, #fbbf24)',
           backgroundSize: '300% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           animation: 'nath-gold 2s linear infinite',
@@ -3430,7 +3424,7 @@ function BossNathalieAnimation() {
           return (
             <div key={i} style={{
               position: 'absolute', left: `${x}px`, top: `${y}px`,
-              transform: 'translate(-50%,-50%)', fontSize: '1.8rem',
+              transform: 'translate(-50%,-50%)', fontSize: `${1.8 * MOB_SCALE}rem`,
               animation: `nath-logo-pop 0.4s ${2 + i * 0.2}s ease-out forwards`, opacity: 0,
             }}>{l}</div>
           )
@@ -3440,7 +3434,7 @@ function BossNathalieAnimation() {
       {sparkles.map(s => (
         <div key={s.id} style={{
           position: 'absolute', left: `${s.left}%`, top: `${s.top}%`,
-          fontSize: `${s.size}rem`, color: '#fbbf24',
+          fontSize: `${s.size * MOB_SCALE}rem`, color: '#fbbf24',
           animation: `nath-sparkle 1.2s ${s.delay}s ease-in-out forwards`, opacity: 0,
         }}>✨</div>
       ))}
@@ -3494,7 +3488,7 @@ function EdusemantixMetaAnimation() {
   if (!active) return null
   const letters = 'EDUSEMANTIX'.split('')
   const glitchColors = ['#818cf8', '#f472b6', '#fb923c', '#34d399', '#fbbf24', '#60a5fa']
-  const particles = Array.from({ length: 50 }, (_, i) => ({
+  const particles = Array.from({ length: MOB_COUNT(50) }, (_, i) => ({
     id: i,
     angle: (i / 50) * Math.PI * 2,
     dist: 30 + Math.random() * 25,
@@ -3510,7 +3504,7 @@ function EdusemantixMetaAnimation() {
     'while(meta) { meta++ }',
     'import self from "self"',
   ]
-  const matrixChars = Array.from({ length: 20 }, (_, i) => ({
+  const matrixChars = Array.from({ length: MOB_COUNT(20) }, (_, i) => ({
     id: i, left: Math.random() * 100, delay: Math.random() * 3,
     speed: 2 + Math.random() * 2,
     chars: 'EDUSEMANTIX'.split('').sort(() => Math.random() - 0.5).join(''),
@@ -3540,7 +3534,7 @@ function EdusemantixMetaAnimation() {
       }}>
         {letters.map((l, i) => (
           <div key={i} style={{
-            fontSize: '3rem', fontWeight: 'bold',
+            fontSize: `${3.0 * MOB_SCALE}rem`, fontWeight: 'bold',
             color: glitchColors[i % glitchColors.length],
             textShadow: `0 0 15px ${glitchColors[i % glitchColors.length]}60`,
             animation: `meta-letter 0.3s ${0.8 + i * 0.15}s ease-out forwards`,
@@ -3587,7 +3581,7 @@ function EdusemantixMetaAnimation() {
         <div style={{ fontSize: '0.9rem', color: '#818cf8', fontFamily: 'monospace' }}>
           {'> '}le jeu se regarde jouer...
         </div>
-        <div style={{ fontSize: '2.5rem', marginTop: '8px', animation: 'meta-emoji-spin 2s linear infinite' }}>
+        <div style={{ fontSize: `${2.5 * MOB_SCALE}rem`, marginTop: '8px', animation: 'meta-emoji-spin 2s linear infinite' }}>
           🤯
         </div>
         <div style={{ fontSize: '0.65rem', color: '#6366f1', marginTop: '6px', letterSpacing: '4px' }}>
@@ -3598,7 +3592,7 @@ function EdusemantixMetaAnimation() {
       {particles.map(p => (
         <div key={`p-${p.id}`} style={{
           position: 'absolute', top: '50%', left: '50%',
-          fontSize: `${p.size}rem`,
+          fontSize: `${p.size * MOB_SCALE}rem`,
           '--px': `${Math.cos(p.angle) * p.dist}vw`,
           '--py': `${Math.sin(p.angle) * p.dist}vh`,
           animation: `meta-explode 1.5s ${p.delay}s ease-out forwards`, opacity: 0,
@@ -3666,7 +3660,7 @@ function MoneyRainAnimation() {
   const [active, setActive] = useState(true)
   useEffect(() => { const t = setTimeout(() => setActive(false), 6000); return () => clearTimeout(t) }, [])
   if (!active) return null
-  const bills = Array.from({ length: 40 }, (_, i) => ({
+  const bills = Array.from({ length: MOB_COUNT(40) }, (_, i) => ({
     id: i, left: Math.random() * 100, delay: Math.random() * 3,
     size: 1 + Math.random() * 1.5, speed: 2.5 + Math.random() * 2,
     emoji: ['💵', '💶', '💷', '💰', '🤑', '💎', '💸'][Math.floor(Math.random() * 7)],
@@ -3683,7 +3677,7 @@ function MoneyRainAnimation() {
       {bills.map(b => (
         <div key={b.id} style={{
           position: 'absolute', left: `${b.left}%`, top: '-40px',
-          fontSize: `${b.size}rem`,
+          fontSize: `${b.size * MOB_SCALE}rem`,
           animation: `money-fall ${b.speed}s ${b.delay}s ease-in forwards`,
           opacity: 0, '--wobble': `${b.wobble}px`, '--spin': `${b.spin}deg`,
         }}>{b.emoji}</div>
@@ -3726,7 +3720,7 @@ function MarketingRocketAnimation() {
       {/* Rocket going up along the graph */}
       <div style={{
         position: 'absolute', bottom: '15%', left: '10%',
-        fontSize: '2.5rem',
+        fontSize: `${2.5 * MOB_SCALE}rem`,
         animation: 'mktg-rocket 3s 1.5s ease-in-out forwards', opacity: 0,
       }}>🚀</div>
       {/* KPI emojis popping along the graph */}
@@ -3734,7 +3728,7 @@ function MarketingRocketAnimation() {
         <div key={i} style={{
           position: 'absolute',
           left: `${10 + i * 11}%`, bottom: `${15 + i * 9}%`,
-          fontSize: '1.5rem',
+          fontSize: `${1.5 * MOB_SCALE}rem`,
           animation: `mktg-kpi 0.5s ${1.5 + i * 0.3}s ease-out forwards`, opacity: 0,
         }}>{k}</div>
       ))}

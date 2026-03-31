@@ -217,9 +217,45 @@ export default function App() {
 
   const handleLogin = useCallback((name) => {
     if (!name.trim()) return
-    setUsername(name.trim())
+    const trimmed = name.trim()
+    const nameLower = trimmed.toLowerCase()
+    if (nameLower === 'zarina') {
+      setEasterEggAnim('heartsZarina')
+      setEasterEggKey(k => k + 1)
+    } else if (nameLower === 'lucie') {
+      setEasterEggAnim('danceLucie')
+      setEasterEggKey(k => k + 1)
+    } else if (nameLower === 'meigan') {
+      setEasterEggAnim('nurseTraveler')
+      setEasterEggKey(k => k + 1)
+    } else if (nameLower === 'noemie' || nameLower === 'noémie') {
+      setEasterEggAnim('kpopNoemie')
+      setEasterEggKey(k => k + 1)
+    } else if (nameLower === 'geoffrey') {
+      setEasterEggAnim('kcorpWedding')
+      setEasterEggKey(k => k + 1)
+    } else if (nameLower === 'sarah') {
+      setEasterEggAnim('disneyTravel')
+      setEasterEggKey(k => k + 1)
+    } else if (nameLower === 'clementine' || nameLower === 'clémentine' || nameLower === 'clemantine') {
+      setEasterEggAnim('orangeSport')
+      setEasterEggKey(k => k + 1)
+    } else if (nameLower === 'claire') {
+      setEasterEggAnim('flameAstro')
+      setEasterEggKey(k => k + 1)
+    } else if (nameLower === 'jade') {
+      setEasterEggAnim('cyberJade')
+      setEasterEggKey(k => k + 1)
+    } else if (nameLower === 'thomas') {
+      setEasterEggAnim('adventureThomas')
+      setEasterEggKey(k => k + 1)
+    } else if (nameLower === 'jonas') {
+      setEasterEggAnim('spiralJonas')
+      setEasterEggKey(k => k + 1)
+    }
+    setUsername(trimmed)
     socket.connect()
-    socket.emit('join', name.trim())
+    socket.emit('join', trimmed)
   }, [])
 
   const handleGuess = useCallback((word) => {
@@ -243,7 +279,12 @@ export default function App() {
   }
 
   if (screen === 'login') {
-    return <LoginScreen onLogin={handleLogin} savedName={loadState()?.username} />
+    return (
+      <>
+        <LoginScreen onLogin={handleLogin} savedName={loadState()?.username} />
+        <EasterEggOverlay anim={easterEggAnim} animKey={easterEggKey} />
+      </>
+    )
   }
 
   const totalGuesses = guessesPerRound.reduce((sum, g) => sum + g.length, 0)

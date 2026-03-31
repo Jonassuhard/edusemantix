@@ -34,6 +34,17 @@ const ANIMATIONS = {
   butterfly: ButterflyAnimation,
   casino: CasinoAnimation,
   ninja: NinjaAnimation,
+  heartsZarina: HeartsZarinaAnimation,
+  danceLucie: DanceLucieAnimation,
+  nurseTraveler: NurseTravelerAnimation,
+  kpopNoemie: KpopNoemieAnimation,
+  kcorpWedding: KcorpWeddingAnimation,
+  disneyTravel: DisneyTravelAnimation,
+  orangeSport: OrangeSportAnimation,
+  flameAstro: FlameAstroAnimation,
+  cyberJade: CyberJadeAnimation,
+  adventureThomas: AdventureThomasAnimation,
+  spiralJonas: SpiralJonasAnimation,
 }
 
 export default function EasterEggOverlay({ anim, animKey }) {
@@ -1433,6 +1444,1362 @@ function NinjaAnimation() {
         @keyframes ninja-shuriken-3 { 0% { opacity: 1; transform: translate(-50%,-50%) rotate(0deg); } 100% { opacity: 0; left: 90%; top: 85%; transform: rotate(1080deg) scale(0.5); } }
         @keyframes ninja-slide { 0% { left: -10%; opacity: 0; } 15% { opacity: 1; } 50% { left: 45%; top: 40%; } 85% { opacity: 1; } 100% { left: 110%; top: 35%; opacity: 0; } }
         @keyframes ninja-slash { to { stroke-dashoffset: 0; } }
+      `}</style>
+    </div>
+  )
+}
+
+// 💖 Cascade de coeurs — easter egg Zarina
+function HeartsZarinaAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 6000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const hearts = Array.from({ length: 60 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 3,
+    size: 1 + Math.random() * 3,
+    duration: 2.5 + Math.random() * 2,
+    wobble: (Math.random() - 0.5) * 60,
+    emoji: ['❤️', '💖', '💗', '💕', '💓', '💘', '💝', '🩷'][Math.floor(Math.random() * 8)],
+  }))
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Soft pink glow pulse */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(circle at 50% 40%, rgba(255,105,180,0.15) 0%, transparent 70%)',
+        animation: 'zarina-glow 2s ease-in-out 3 alternate',
+      }} />
+      {/* Central message */}
+      <div style={{
+        position: 'absolute', top: '38%', left: '50%', transform: 'translate(-50%,-50%)',
+        fontSize: '2.5rem', textAlign: 'center',
+        animation: 'zarina-text 5s 0.5s ease-out forwards', opacity: 0,
+        textShadow: '0 0 20px rgba(255,105,180,0.6)',
+        fontWeight: 'bold',
+      }}>
+        💖
+        <div style={{ fontSize: '1.2rem', marginTop: '4px', color: '#ff69b4' }}>Zarina</div>
+      </div>
+      {/* Cascade of hearts */}
+      {hearts.map(h => (
+        <div key={h.id} style={{
+          position: 'absolute',
+          left: `${h.left}%`,
+          top: '-50px',
+          fontSize: `${h.size}rem`,
+          animation: `zarina-fall ${h.duration}s ${h.delay}s ease-in forwards`,
+          opacity: 0,
+          '--wobble': `${h.wobble}px`,
+        }}>
+          {h.emoji}
+        </div>
+      ))}
+      <style>{`
+        @keyframes zarina-fall {
+          0% { transform: translateY(0) translateX(0) rotate(0deg) scale(0.3); opacity: 0; }
+          10% { opacity: 1; transform: translateY(10vh) translateX(calc(var(--wobble) * 0.3)) rotate(20deg) scale(1); }
+          50% { opacity: 0.9; transform: translateY(50vh) translateX(var(--wobble)) rotate(180deg) scale(1.1); }
+          100% { transform: translateY(110vh) translateX(calc(var(--wobble) * -0.5)) rotate(360deg) scale(0.6); opacity: 0; }
+        }
+        @keyframes zarina-glow {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        @keyframes zarina-text {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          20% { opacity: 1; transform: translate(-50%,-50%) scale(1.2); }
+          30% { transform: translate(-50%,-50%) scale(1); }
+          80% { opacity: 1; }
+          100% { opacity: 0; transform: translate(-50%,-50%) scale(0.8); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// 💃 Dance party — easter egg Lucie
+function DanceLucieAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 7000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const dancers = ['💃', '🕺', '💃', '🕺', '💃', '🕺', '💃']
+  const notes = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    left: 5 + Math.random() * 90,
+    delay: Math.random() * 4,
+    size: 1.2 + Math.random() * 1.5,
+    emoji: ['🎵', '🎶', '✨', '🪩', '⭐'][Math.floor(Math.random() * 5)],
+  }))
+  const colors = ['#ff00ff', '#00ffff', '#ffff00', '#ff6600', '#ff0099', '#6600ff']
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Disco lights */}
+      {colors.map((c, i) => (
+        <div key={`light-${i}`} style={{
+          position: 'absolute',
+          top: '-20%', left: `${15 + i * 14}%`,
+          width: '120px', height: '300%',
+          background: `linear-gradient(180deg, ${c}44 0%, transparent 60%)`,
+          transformOrigin: 'top center',
+          animation: `lucie-light 1.5s ${i * 0.2}s ease-in-out infinite alternate`,
+          opacity: 0.4,
+        }} />
+      ))}
+      {/* Disco ball */}
+      <div style={{
+        position: 'absolute', top: '5%', left: '50%', transform: 'translateX(-50%)',
+        fontSize: '4rem',
+        animation: 'lucie-ball 2s ease-in-out infinite',
+      }}>🪩</div>
+      {/* Dancing emojis across the bottom */}
+      <div style={{
+        position: 'absolute', bottom: '8%', left: 0, right: 0,
+        display: 'flex', justifyContent: 'space-around', alignItems: 'flex-end',
+        padding: '0 5%',
+      }}>
+        {dancers.map((d, i) => (
+          <div key={`dancer-${i}`} style={{
+            fontSize: `${2.5 + (i % 2) * 0.8}rem`,
+            animation: `lucie-dance-${i % 2 === 0 ? 'a' : 'b'} ${0.5 + Math.random() * 0.3}s ${i * 0.1}s ease-in-out infinite alternate`,
+            filter: `hue-rotate(${i * 50}deg)`,
+          }}>
+            {d}
+          </div>
+        ))}
+      </div>
+      {/* Central name */}
+      <div style={{
+        position: 'absolute', top: '35%', left: '50%', transform: 'translate(-50%,-50%)',
+        textAlign: 'center', animation: 'lucie-name 6s 0.3s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{ fontSize: '3rem', animation: 'lucie-bounce 0.6s ease-in-out infinite alternate' }}>💃</div>
+        <div style={{
+          fontSize: '1.5rem', fontWeight: 'bold', marginTop: '4px',
+          background: 'linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #ff00ff)',
+          backgroundSize: '300% 100%',
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          animation: 'lucie-gradient 2s linear infinite',
+        }}>Lucie</div>
+      </div>
+      {/* Floating notes */}
+      {notes.map(n => (
+        <div key={n.id} style={{
+          position: 'absolute', left: `${n.left}%`, bottom: '15%',
+          fontSize: `${n.size}rem`,
+          animation: `lucie-note ${2 + Math.random()}s ${n.delay}s ease-out forwards`,
+          opacity: 0,
+        }}>{n.emoji}</div>
+      ))}
+      <style>{`
+        @keyframes lucie-light {
+          0% { transform: rotate(-15deg); opacity: 0.3; }
+          100% { transform: rotate(15deg); opacity: 0.5; }
+        }
+        @keyframes lucie-ball {
+          0%, 100% { transform: translateX(-50%) rotate(0deg) scale(1); }
+          50% { transform: translateX(-50%) rotate(180deg) scale(1.1); }
+        }
+        @keyframes lucie-dance-a {
+          0% { transform: translateY(0) rotate(-8deg) scale(1); }
+          100% { transform: translateY(-30px) rotate(8deg) scale(1.15); }
+        }
+        @keyframes lucie-dance-b {
+          0% { transform: translateY(-20px) rotate(10deg) scale(1.1); }
+          100% { transform: translateY(0) rotate(-10deg) scale(1); }
+        }
+        @keyframes lucie-bounce {
+          0% { transform: translateY(0) scale(1); }
+          100% { transform: translateY(-15px) scale(1.15); }
+        }
+        @keyframes lucie-name {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3); }
+          15% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+          25% { transform: translate(-50%,-50%) scale(1); }
+          85% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes lucie-gradient {
+          0% { background-position: 0% 50%; }
+          100% { background-position: 300% 50%; }
+        }
+        @keyframes lucie-note {
+          0% { transform: translateY(0) scale(0.5); opacity: 0; }
+          15% { opacity: 1; transform: translateY(-10vh) scale(1); }
+          100% { transform: translateY(-60vh) translateX(${20 - Math.random() * 40}px) rotate(${Math.random() * 360}deg); opacity: 0; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// 👩‍⚕️✈️ Infirmière en voyage — easter egg Meigan
+function NurseTravelerAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 7000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const landmarks = ['🗼', '🗽', '🏯', '🕌', '🏝️', '🌋', '🎡']
+  const clouds = Array.from({ length: 8 }, (_, i) => ({
+    id: i, top: 5 + Math.random() * 25, size: 2 + Math.random() * 2, delay: Math.random() * 3, speed: 4 + Math.random() * 3,
+  }))
+  const sparkles = Array.from({ length: 15 }, (_, i) => ({
+    id: i, left: Math.random() * 100, top: Math.random() * 100, delay: Math.random() * 5, size: 0.8 + Math.random() * 1,
+  }))
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Sky gradient */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(180deg, #1a0533 0%, #2d1b69 30%, #ff7eb3 70%, #ff758c 100%)',
+        opacity: 0.4, animation: 'meigan-sky 7s ease-in-out forwards',
+      }} />
+      {/* Clouds drifting */}
+      {clouds.map(c => (
+        <div key={c.id} style={{
+          position: 'absolute', top: `${c.top}%`, left: '-15%',
+          fontSize: `${c.size}rem`, opacity: 0.7,
+          animation: `meigan-cloud ${c.speed}s ${c.delay}s linear forwards`,
+        }}>☁️</div>
+      ))}
+      {/* Landmarks scrolling by at the bottom */}
+      <div style={{
+        position: 'absolute', bottom: '5%', left: 0, right: 0, height: '80px',
+        display: 'flex', alignItems: 'flex-end',
+        animation: 'meigan-landmarks 6s 0.5s linear forwards',
+        opacity: 0,
+      }}>
+        {landmarks.map((l, i) => (
+          <div key={i} style={{
+            fontSize: '3rem', marginLeft: `${8 + i * 12}%`, flexShrink: 0,
+            animation: `meigan-landmark-bob 1.5s ${i * 0.2}s ease-in-out infinite alternate`,
+          }}>{l}</div>
+        ))}
+      </div>
+      {/* Nurse with suitcase flying across */}
+      <div style={{
+        position: 'absolute', top: '30%', left: '-15%',
+        animation: 'meigan-fly 5s 0.8s ease-in-out forwards', opacity: 0,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '3.5rem' }}>
+          <span style={{ animation: 'meigan-wave 0.4s ease-in-out infinite alternate' }}>👩‍⚕️</span>
+          <span>🧳</span>
+          <span style={{ fontSize: '2rem' }}>✈️</span>
+        </div>
+      </div>
+      {/* Central name */}
+      <div style={{
+        position: 'absolute', top: '55%', left: '50%',
+        transform: 'translate(-50%,-50%)', textAlign: 'center',
+        animation: 'meigan-name 6s 1s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#ff758c', textShadow: '0 0 15px rgba(255,117,140,0.5)' }}>
+          Meigan 🌍
+        </div>
+        <div style={{ fontSize: '0.75rem', color: '#ffb6c1', marginTop: '4px' }}>off to see the world</div>
+      </div>
+      {/* Sparkles */}
+      {sparkles.map(s => (
+        <div key={s.id} style={{
+          position: 'absolute', left: `${s.left}%`, top: `${s.top}%`,
+          fontSize: `${s.size}rem`,
+          animation: `meigan-sparkle 1.5s ${s.delay}s ease-in-out forwards`,
+          opacity: 0,
+        }}>✨</div>
+      ))}
+      <style>{`
+        @keyframes meigan-sky {
+          0% { opacity: 0; } 15% { opacity: 0.45; } 85% { opacity: 0.45; } 100% { opacity: 0; }
+        }
+        @keyframes meigan-cloud {
+          0% { left: -15%; opacity: 0; } 10% { opacity: 0.7; } 90% { opacity: 0.7; } 100% { left: 110%; opacity: 0; }
+        }
+        @keyframes meigan-fly {
+          0% { left: -15%; top: 35%; opacity: 0; }
+          10% { opacity: 1; }
+          30% { top: 25%; }
+          50% { top: 35%; }
+          70% { top: 28%; }
+          90% { opacity: 1; }
+          100% { left: 110%; top: 32%; opacity: 0; }
+        }
+        @keyframes meigan-wave {
+          0% { transform: rotate(-5deg); }
+          100% { transform: rotate(5deg); }
+        }
+        @keyframes meigan-landmarks {
+          0% { opacity: 0; transform: translateX(10%); }
+          15% { opacity: 0.8; }
+          85% { opacity: 0.8; }
+          100% { opacity: 0; transform: translateX(-80%); }
+        }
+        @keyframes meigan-landmark-bob {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(-8px); }
+        }
+        @keyframes meigan-name {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          15% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+          25% { transform: translate(-50%,-50%) scale(1); }
+          80% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes meigan-sparkle {
+          0% { opacity: 0; transform: scale(0) rotate(0deg); }
+          50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+          100% { opacity: 0; transform: scale(0) rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// 🎤💜 K-pop fan — easter egg Noemie
+function KpopNoemieAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 7000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const lightsticks = Array.from({ length: 25 }, (_, i) => ({
+    id: i, left: Math.random() * 100, delay: Math.random() * 3,
+    color: ['#b388ff', '#ea80fc', '#80d8ff', '#ff80ab', '#ffe57f'][Math.floor(Math.random() * 5)],
+  }))
+  const hearts = Array.from({ length: 18 }, (_, i) => ({
+    id: i, left: Math.random() * 100, delay: 0.5 + Math.random() * 4,
+    emoji: ['💜', '💗', '🩷', '💫', '⭐'][Math.floor(Math.random() * 5)],
+    size: 1 + Math.random() * 1.5,
+  }))
+  const members = ['🧑‍🎤', '👩‍🎤', '🧑‍🎤', '👩‍🎤', '🧑‍🎤']
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Stage lights */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(135deg, rgba(179,136,255,0.2) 0%, rgba(234,128,252,0.15) 50%, rgba(128,216,255,0.2) 100%)',
+        animation: 'kpop-bg 7s ease-in-out forwards',
+      }} />
+      {/* Lightsticks waving */}
+      {lightsticks.map(l => (
+        <div key={l.id} style={{
+          position: 'absolute', bottom: '0', left: `${l.left}%`,
+          width: '3px', height: '60px',
+          background: `linear-gradient(to top, transparent, ${l.color})`,
+          borderRadius: '2px', transformOrigin: 'bottom center',
+          animation: `kpop-stick 0.8s ${l.delay}s ease-in-out infinite alternate`, opacity: 0.8,
+        }}>
+          <div style={{
+            position: 'absolute', top: '-8px', left: '-5px',
+            width: '12px', height: '12px', borderRadius: '50%',
+            background: l.color, boxShadow: `0 0 10px ${l.color}`,
+          }} />
+        </div>
+      ))}
+      {/* K-pop group */}
+      <div style={{
+        position: 'absolute', top: '25%', left: '50%', transform: 'translateX(-50%)',
+        display: 'flex', gap: '20px',
+        animation: 'kpop-group 6s 0.5s ease-out forwards', opacity: 0,
+      }}>
+        {members.map((m, i) => (
+          <div key={i} style={{
+            fontSize: '2.8rem',
+            animation: `kpop-member ${0.4 + Math.random() * 0.3}s ${i * 0.1}s ease-in-out infinite alternate`,
+          }}>{m}</div>
+        ))}
+      </div>
+      {/* Name */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%',
+        transform: 'translate(-50%,-50%)', textAlign: 'center',
+        animation: 'kpop-name 6s 0.8s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{
+          fontSize: '1.5rem', fontWeight: 'bold',
+          background: 'linear-gradient(90deg, #b388ff, #ea80fc, #80d8ff, #ff80ab)',
+          backgroundSize: '300% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          animation: 'kpop-gradient 2s linear infinite',
+        }}>Noemie 🎤</div>
+        <div style={{ fontSize: '0.7rem', color: '#b388ff', marginTop: '3px', letterSpacing: '3px' }}>STAN FOREVER 💜</div>
+      </div>
+      {/* Floating hearts */}
+      {hearts.map(h => (
+        <div key={h.id} style={{
+          position: 'absolute', left: `${h.left}%`, bottom: '10%',
+          fontSize: `${h.size}rem`,
+          animation: `kpop-heart ${2 + Math.random()}s ${h.delay}s ease-out forwards`, opacity: 0,
+        }}>{h.emoji}</div>
+      ))}
+      <style>{`
+        @keyframes kpop-bg { 0% { opacity: 0; } 10% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes kpop-stick { 0% { transform: rotate(-12deg); } 100% { transform: rotate(12deg); } }
+        @keyframes kpop-member { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(-15px) scale(1.1); } }
+        @keyframes kpop-group { 0% { opacity: 0; transform: translateX(-50%) translateY(20px); } 15% { opacity: 1; transform: translateX(-50%) translateY(0); } 85% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes kpop-name { 0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); } 15% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); } 25% { transform: translate(-50%,-50%) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes kpop-gradient { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+        @keyframes kpop-heart { 0% { transform: translateY(0) scale(0.3); opacity: 0; } 15% { opacity: 1; transform: translateY(-15vh) scale(1); } 100% { transform: translateY(-70vh) scale(0.5); opacity: 0; } }
+      `}</style>
+    </div>
+  )
+}
+
+// 💍🏆 Mariage + K Corp — easter egg Geoffrey
+function KcorpWeddingAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 8000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const confetti = Array.from({ length: 40 }, (_, i) => ({
+    id: i, left: Math.random() * 100, delay: Math.random() * 3,
+    size: 0.8 + Math.random() * 1.2,
+    emoji: ['💍', '🤍', '💒', '🥂', '✨', '🏆', '⚔️', '👑'][Math.floor(Math.random() * 8)],
+    speed: 2.5 + Math.random() * 2,
+    wobble: (Math.random() - 0.5) * 80,
+  }))
+  const kcorpBlue = '#00a8e8'
+  const kcorpGold = '#ffd700'
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* K Corp blue/gold split background */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: `linear-gradient(135deg, ${kcorpBlue}22 0%, transparent 40%, transparent 60%, ${kcorpGold}22 100%)`,
+        animation: 'geof-bg 8s ease-in-out forwards',
+      }} />
+      {/* KC banner flash */}
+      <div style={{
+        position: 'absolute', top: '8%', left: '50%', transform: 'translateX(-50%)',
+        padding: '8px 30px', borderRadius: '8px',
+        background: `linear-gradient(90deg, ${kcorpBlue}, ${kcorpGold})`,
+        animation: 'geof-banner 7s 0.3s ease-out forwards', opacity: 0,
+      }}>
+        <span style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#fff', letterSpacing: '4px', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+          ⚔️ KC ⚔️
+        </span>
+      </div>
+      {/* Wedding couple center */}
+      <div style={{
+        position: 'absolute', top: '35%', left: '50%', transform: 'translate(-50%,-50%)',
+        textAlign: 'center', animation: 'geof-couple 7s 0.5s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{ fontSize: '4rem', animation: 'geof-pulse 1s ease-in-out infinite alternate' }}>
+          👰‍♀️💍🤵
+        </div>
+        <div style={{
+          fontSize: '1.6rem', fontWeight: 'bold', marginTop: '8px',
+          background: `linear-gradient(90deg, ${kcorpBlue}, #fff, ${kcorpGold})`,
+          backgroundSize: '200% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          animation: 'geof-gradient 3s linear infinite',
+        }}>Geoffrey</div>
+        <div style={{ fontSize: '0.85rem', color: kcorpGold, marginTop: '4px', fontStyle: 'italic' }}>
+          GG WP dans la vie 🏆
+        </div>
+      </div>
+      {/* Kameto quote bottom */}
+      <div style={{
+        position: 'absolute', bottom: '15%', left: '50%', transform: 'translateX(-50%)',
+        textAlign: 'center', animation: 'geof-quote 6s 2s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{ fontSize: '1.1rem', color: '#fff', textShadow: `0 0 15px ${kcorpBlue}` }}>
+          « ON EST LÀ 🔥 »
+        </div>
+      </div>
+      {/* Confetti cascade */}
+      {confetti.map(c => (
+        <div key={c.id} style={{
+          position: 'absolute', left: `${c.left}%`, top: '-40px',
+          fontSize: `${c.size}rem`,
+          animation: `geof-fall ${c.speed}s ${c.delay}s ease-in forwards`,
+          opacity: 0, '--wobble': `${c.wobble}px`,
+        }}>{c.emoji}</div>
+      ))}
+      {/* Swords crossing animation */}
+      <div style={{
+        position: 'absolute', top: '60%', left: '50%', transform: 'translate(-50%,-50%)',
+        fontSize: '3rem', animation: 'geof-swords 6s 1.5s ease-out forwards', opacity: 0,
+      }}>
+        <span style={{ display: 'inline-block', animation: 'geof-sword-l 0.6s 2s ease-out forwards', transform: 'rotate(45deg)' }}>⚔️</span>
+      </div>
+      <style>{`
+        @keyframes geof-bg { 0% { opacity: 0; } 10% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes geof-banner {
+          0% { opacity: 0; transform: translateX(-50%) scaleX(0); }
+          15% { opacity: 1; transform: translateX(-50%) scaleX(1.05); }
+          20% { transform: translateX(-50%) scaleX(1); }
+          80% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes geof-couple {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3); }
+          12% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+          20% { transform: translate(-50%,-50%) scale(1); }
+          82% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes geof-pulse {
+          0% { transform: scale(1); }
+          100% { transform: scale(1.08); }
+        }
+        @keyframes geof-gradient {
+          0% { background-position: 0% 50%; }
+          100% { background-position: 200% 50%; }
+        }
+        @keyframes geof-quote {
+          0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+          15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+          80% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes geof-fall {
+          0% { transform: translateY(0) translateX(0) rotate(0deg) scale(0.3); opacity: 0; }
+          10% { opacity: 1; }
+          50% { transform: translateY(50vh) translateX(var(--wobble)) rotate(180deg) scale(1); opacity: 0.9; }
+          100% { transform: translateY(110vh) translateX(calc(var(--wobble) * -0.5)) rotate(360deg) scale(0.5); opacity: 0; }
+        }
+        @keyframes geof-swords {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0); }
+          20% { opacity: 1; transform: translate(-50%,-50%) scale(1.3); }
+          30% { transform: translate(-50%,-50%) scale(1); }
+          75% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes geof-sword-l {
+          0% { transform: rotate(-45deg) scale(0.5); }
+          100% { transform: rotate(0deg) scale(1); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// 🏰✈️ Disneyland + Voyages — easter egg Sarah
+function DisneyTravelAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 8000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const sparkles = Array.from({ length: 35 }, (_, i) => ({
+    id: i, left: Math.random() * 100, top: Math.random() * 100,
+    delay: Math.random() * 5, size: 0.6 + Math.random() * 1.2,
+    emoji: ['✨', '⭐', '💫', '🌟'][Math.floor(Math.random() * 4)],
+  }))
+  const destinations = ['🗼', '🏝️', '🗽', '🏯', '🕌', '🌋', '🎡', '🌸']
+  const disneyIcons = ['🏰', '🎆', '🎠', '🎢', '🧚‍♀️', '👸', '🐭', '🪄']
+  const shootingStars = Array.from({ length: 5 }, (_, i) => ({
+    id: i, delay: 1 + i * 1.2, startX: 10 + Math.random() * 30, startY: 5 + Math.random() * 15,
+  }))
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Enchanted night sky */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(180deg, #0a0033 0%, #1a0a4e 30%, #3d1a8e 60%, #f472b6 90%, #fbbf24 100%)',
+        animation: 'sarah-sky 8s ease-in-out forwards', opacity: 0,
+      }} />
+      {/* Shooting stars */}
+      {shootingStars.map(s => (
+        <div key={s.id} style={{
+          position: 'absolute', left: `${s.startX}%`, top: `${s.startY}%`,
+          width: '3px', height: '3px', borderRadius: '50%',
+          background: '#fff', boxShadow: '0 0 6px 2px rgba(255,255,255,0.8), -20px 0 15px 2px rgba(255,255,255,0.3)',
+          animation: `sarah-shoot 0.8s ${s.delay}s ease-out forwards`, opacity: 0,
+        }} />
+      ))}
+      {/* Disney castle silhouette center */}
+      <div style={{
+        position: 'absolute', top: '22%', left: '50%', transform: 'translateX(-50%)',
+        textAlign: 'center', animation: 'sarah-castle 7s 0.5s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{ fontSize: '5rem', filter: 'drop-shadow(0 0 20px rgba(244,114,182,0.6))' }}>🏰</div>
+        <div style={{
+          fontSize: '0.65rem', color: '#f9a8d4', letterSpacing: '5px', marginTop: '4px',
+          textTransform: 'uppercase',
+        }}>Where dreams come true</div>
+      </div>
+      {/* Magic wand arc */}
+      <div style={{
+        position: 'absolute', top: '18%', left: '58%',
+        fontSize: '2rem', animation: 'sarah-wand 3s 1s ease-in-out forwards', opacity: 0,
+        transformOrigin: 'bottom left',
+      }}>🪄</div>
+      {/* Name */}
+      <div style={{
+        position: 'absolute', top: '48%', left: '50%',
+        transform: 'translate(-50%,-50%)', textAlign: 'center',
+        animation: 'sarah-name 7s 1.2s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{
+          fontSize: '2rem', fontWeight: 'bold',
+          background: 'linear-gradient(90deg, #f9a8d4, #fbbf24, #a78bfa, #f9a8d4)',
+          backgroundSize: '300% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          animation: 'sarah-gradient 3s linear infinite',
+          textShadow: 'none',
+        }}>Sarah ✈️</div>
+        <div style={{ fontSize: '0.8rem', color: '#fbbf24', marginTop: '4px' }}>
+          princesse globe-trotteuse 👸🌍
+        </div>
+      </div>
+      {/* Destinations parade at bottom */}
+      <div style={{
+        position: 'absolute', bottom: '12%', left: '0', whiteSpace: 'nowrap',
+        animation: 'sarah-parade 10s 1.5s linear forwards', opacity: 0,
+      }}>
+        {[...destinations, ...disneyIcons, ...destinations].map((d, i) => (
+          <span key={i} style={{
+            fontSize: '2.2rem', marginRight: '30px', display: 'inline-block',
+            animation: `sarah-bob 1s ${i * 0.15}s ease-in-out infinite alternate`,
+          }}>{d}</span>
+        ))}
+      </div>
+      {/* Sparkles everywhere */}
+      {sparkles.map(s => (
+        <div key={s.id} style={{
+          position: 'absolute', left: `${s.left}%`, top: `${s.top}%`,
+          fontSize: `${s.size}rem`,
+          animation: `sarah-sparkle 1.2s ${s.delay}s ease-in-out forwards`, opacity: 0,
+        }}>{s.emoji}</div>
+      ))}
+      {/* Fireworks bursts */}
+      <div style={{ position: 'absolute', top: '10%', left: '20%', fontSize: '3rem', animation: 'sarah-firework 1s 2.5s ease-out forwards', opacity: 0 }}>🎆</div>
+      <div style={{ position: 'absolute', top: '8%', left: '75%', fontSize: '2.5rem', animation: 'sarah-firework 1s 3.2s ease-out forwards', opacity: 0 }}>🎇</div>
+      <div style={{ position: 'absolute', top: '15%', left: '50%', fontSize: '2.8rem', animation: 'sarah-firework 1s 4s ease-out forwards', opacity: 0 }}>🎆</div>
+      <style>{`
+        @keyframes sarah-sky { 0% { opacity: 0; } 8% { opacity: 0.5; } 85% { opacity: 0.5; } 100% { opacity: 0; } }
+        @keyframes sarah-shoot {
+          0% { opacity: 0; transform: translate(0,0); }
+          20% { opacity: 1; }
+          100% { opacity: 0; transform: translate(40vw, 15vh); }
+        }
+        @keyframes sarah-castle {
+          0% { opacity: 0; transform: translateX(-50%) scale(0.3); }
+          12% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+          18% { transform: translateX(-50%) scale(1); }
+          82% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes sarah-wand {
+          0% { opacity: 0; transform: rotate(-30deg) scale(0.5); }
+          20% { opacity: 1; transform: rotate(0deg) scale(1); }
+          40% { transform: rotate(15deg) scale(1.1); }
+          60% { transform: rotate(-5deg) scale(1); }
+          80% { opacity: 1; }
+          100% { opacity: 0; transform: rotate(10deg); }
+        }
+        @keyframes sarah-name {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          12% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+          20% { transform: translate(-50%,-50%) scale(1); }
+          82% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes sarah-gradient {
+          0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; }
+        }
+        @keyframes sarah-parade {
+          0% { transform: translateX(100vw); opacity: 0; }
+          5% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { transform: translateX(-200%); opacity: 0; }
+        }
+        @keyframes sarah-bob {
+          0% { transform: translateY(0); } 100% { transform: translateY(-10px); }
+        }
+        @keyframes sarah-sparkle {
+          0% { opacity: 0; transform: scale(0) rotate(0deg); }
+          50% { opacity: 1; transform: scale(1.3) rotate(180deg); }
+          100% { opacity: 0; transform: scale(0) rotate(360deg); }
+        }
+        @keyframes sarah-firework {
+          0% { opacity: 0; transform: scale(0.2); }
+          50% { opacity: 1; transform: scale(1.4); }
+          100% { opacity: 0; transform: scale(1.8); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// 🍊🏅 Oranges + Sport — easter egg Clementine
+function OrangeSportAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 7000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const oranges = Array.from({ length: 30 }, (_, i) => ({
+    id: i, left: Math.random() * 100, delay: Math.random() * 3.5,
+    size: 1.2 + Math.random() * 1.8, speed: 2 + Math.random() * 2,
+    emoji: ['🍊', '🍊', '🍊', '🍋', '🧃'][Math.floor(Math.random() * 5)],
+    wobble: (Math.random() - 0.5) * 60,
+    spin: 360 + Math.random() * 720,
+  }))
+  const sports = ['⚽', '🏀', '🏐', '🎾', '🏃‍♀️', '🤸‍♀️', '🏋️‍♀️', '🚴‍♀️', '🏊‍♀️', '⛹️‍♀️']
+  const splashes = Array.from({ length: 8 }, (_, i) => ({
+    id: i, left: 10 + Math.random() * 80, top: 20 + Math.random() * 60,
+    delay: 1 + Math.random() * 4, size: 40 + Math.random() * 30,
+  }))
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Orange gradient bg */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(circle at 50% 50%, rgba(255,165,0,0.2) 0%, rgba(255,87,34,0.1) 50%, transparent 80%)',
+        animation: 'clem-bg 7s ease-in-out forwards',
+      }} />
+      {/* Juice splashes */}
+      {splashes.map(s => (
+        <div key={s.id} style={{
+          position: 'absolute', left: `${s.left}%`, top: `${s.top}%`,
+          width: `${s.size}px`, height: `${s.size}px`, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,165,0,0.4) 0%, rgba(255,140,0,0.1) 60%, transparent 80%)',
+          animation: `clem-splash 0.8s ${s.delay}s ease-out forwards`, opacity: 0,
+          transform: 'scale(0)',
+        }} />
+      ))}
+      {/* Raining oranges */}
+      {oranges.map(o => (
+        <div key={o.id} style={{
+          position: 'absolute', left: `${o.left}%`, top: '-50px',
+          fontSize: `${o.size}rem`,
+          animation: `clem-fall ${o.speed}s ${o.delay}s ease-in forwards`,
+          opacity: 0, '--wobble': `${o.wobble}px`, '--spin': `${o.spin}deg`,
+        }}>{o.emoji}</div>
+      ))}
+      {/* Sports icons bouncing across */}
+      <div style={{
+        position: 'absolute', bottom: '8%', left: 0, right: 0,
+        display: 'flex', justifyContent: 'space-around', padding: '0 3%',
+      }}>
+        {sports.map((s, i) => (
+          <div key={i} style={{
+            fontSize: '2.2rem',
+            animation: `clem-sport ${0.5 + Math.random() * 0.4}s ${0.5 + i * 0.15}s ease-in-out infinite alternate`,
+            opacity: 0, animationFillMode: 'forwards',
+          }}>{s}</div>
+        ))}
+      </div>
+      {/* Name center */}
+      <div style={{
+        position: 'absolute', top: '42%', left: '50%',
+        transform: 'translate(-50%,-50%)', textAlign: 'center',
+        animation: 'clem-name 6.5s 0.8s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{ fontSize: '3.5rem', marginBottom: '6px' }}>🍊</div>
+        <div style={{
+          fontSize: '1.8rem', fontWeight: 'bold',
+          background: 'linear-gradient(90deg, #ff9800, #ff5722, #ff9800)',
+          backgroundSize: '200% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          animation: 'clem-gradient 2s linear infinite',
+        }}>Clémentine</div>
+        <div style={{ fontSize: '0.8rem', color: '#ff9800', marginTop: '4px' }}>
+          vitaminée & sportive 🏅
+        </div>
+      </div>
+      <style>{`
+        @keyframes clem-bg { 0% { opacity: 0; } 10% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes clem-splash {
+          0% { opacity: 0; transform: scale(0); }
+          50% { opacity: 0.8; transform: scale(1.5); }
+          100% { opacity: 0; transform: scale(2.5); }
+        }
+        @keyframes clem-fall {
+          0% { transform: translateY(0) translateX(0) rotate(0deg) scale(0.3); opacity: 0; }
+          10% { opacity: 1; }
+          50% { transform: translateY(50vh) translateX(var(--wobble)) rotate(calc(var(--spin) * 0.5)) scale(1); }
+          100% { transform: translateY(110vh) translateX(calc(var(--wobble) * -0.3)) rotate(var(--spin)) scale(0.7); opacity: 0; }
+        }
+        @keyframes clem-sport {
+          0% { transform: translateY(0) scale(1); opacity: 0.9; }
+          100% { transform: translateY(-25px) scale(1.15); opacity: 1; }
+        }
+        @keyframes clem-name {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.4); }
+          12% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+          20% { transform: translate(-50%,-50%) scale(1); }
+          82% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes clem-gradient {
+          0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// 🔥♈ Flammes + Astrologie — easter egg Claire
+function FlameAstroAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 7500); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const flames = Array.from({ length: 25 }, (_, i) => ({
+    id: i, left: Math.random() * 100, delay: Math.random() * 3,
+    size: 1.5 + Math.random() * 2, speed: 2 + Math.random() * 2,
+    emoji: ['🔥', '🔥', '🔥', '💥', '✨'][Math.floor(Math.random() * 5)],
+  }))
+  const zodiac = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+  const stars = Array.from({ length: 20 }, (_, i) => ({
+    id: i, left: Math.random() * 100, top: Math.random() * 80,
+    delay: Math.random() * 5, size: 0.5 + Math.random() * 0.8,
+  }))
+  const constellationPoints = [
+    { x: 25, y: 15 }, { x: 35, y: 22 }, { x: 30, y: 35 }, { x: 40, y: 45 },
+    { x: 65, y: 18 }, { x: 72, y: 28 }, { x: 68, y: 40 }, { x: 75, y: 50 },
+  ]
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Deep cosmic background */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(ellipse at 50% 30%, rgba(88,28,135,0.3) 0%, rgba(15,5,30,0.4) 60%, transparent 90%)',
+        animation: 'claire-bg 7.5s ease-in-out forwards',
+      }} />
+      {/* Twinkling stars */}
+      {stars.map(s => (
+        <div key={s.id} style={{
+          position: 'absolute', left: `${s.left}%`, top: `${s.top}%`,
+          width: `${s.size * 4}px`, height: `${s.size * 4}px`, borderRadius: '50%',
+          background: '#fff', boxShadow: `0 0 ${s.size * 6}px rgba(255,255,255,0.6)`,
+          animation: `claire-twinkle 1.5s ${s.delay}s ease-in-out infinite alternate`,
+          opacity: 0.3,
+        }} />
+      ))}
+      {/* Constellation lines */}
+      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', animation: 'claire-const 6s 1s ease-out forwards', opacity: 0 }}>
+        {constellationPoints.slice(0, 4).map((p, i) => i < 3 ? (
+          <line key={i} x1={`${p.x}%`} y1={`${p.y}%`} x2={`${constellationPoints[i + 1].x}%`} y2={`${constellationPoints[i + 1].y}%`}
+            stroke="rgba(200,170,255,0.3)" strokeWidth="1" strokeDasharray="4 4" />
+        ) : null)}
+        {constellationPoints.slice(4).map((p, i) => i < 3 ? (
+          <line key={`r${i}`} x1={`${p.x}%`} y1={`${p.y}%`} x2={`${constellationPoints[5 + i].x}%`} y2={`${constellationPoints[5 + i].y}%`}
+            stroke="rgba(200,170,255,0.3)" strokeWidth="1" strokeDasharray="4 4" />
+        ) : null)}
+      </svg>
+      {/* Zodiac wheel */}
+      <div style={{
+        position: 'absolute', top: '25%', left: '50%', transform: 'translate(-50%,-50%)',
+        width: '180px', height: '180px',
+        animation: 'claire-wheel 7s 0.5s ease-out forwards', opacity: 0,
+      }}>
+        {zodiac.map((z, i) => {
+          const angle = (i / 12) * 360
+          const rad = angle * Math.PI / 180
+          const x = 90 + Math.cos(rad) * 80
+          const y = 90 + Math.sin(rad) * 80
+          return (
+            <div key={i} style={{
+              position: 'absolute', left: `${x}px`, top: `${y}px`,
+              transform: 'translate(-50%,-50%)',
+              fontSize: '1.3rem', color: '#c4b5fd',
+              textShadow: '0 0 8px rgba(196,181,253,0.5)',
+              animation: `claire-zodiac-pop 0.4s ${0.8 + i * 0.15}s ease-out forwards`, opacity: 0,
+            }}>{z}</div>
+          )
+        })}
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+          width: '160px', height: '160px', borderRadius: '50%',
+          border: '1px solid rgba(196,181,253,0.2)',
+          animation: 'claire-ring 8s linear infinite',
+        }} />
+      </div>
+      {/* Flames rising from bottom */}
+      {flames.map(f => (
+        <div key={f.id} style={{
+          position: 'absolute', left: `${f.left}%`, bottom: '-40px',
+          fontSize: `${f.size}rem`,
+          animation: `claire-flame ${f.speed}s ${f.delay}s ease-out forwards`, opacity: 0,
+        }}>{f.emoji}</div>
+      ))}
+      {/* Name */}
+      <div style={{
+        position: 'absolute', top: '55%', left: '50%',
+        transform: 'translate(-50%,-50%)', textAlign: 'center',
+        animation: 'claire-name 6.5s 1s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{
+          fontSize: '1.8rem', fontWeight: 'bold',
+          background: 'linear-gradient(90deg, #f97316, #ef4444, #a855f7, #6366f1)',
+          backgroundSize: '300% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          animation: 'claire-gradient 3s linear infinite',
+        }}>Claire 🔮</div>
+        <div style={{ fontSize: '0.75rem', color: '#c4b5fd', marginTop: '4px' }}>
+          fire sign energy ♌🔥
+        </div>
+      </div>
+      <style>{`
+        @keyframes claire-bg { 0% { opacity: 0; } 8% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes claire-twinkle { 0% { opacity: 0.2; transform: scale(1); } 100% { opacity: 0.8; transform: scale(1.3); } }
+        @keyframes claire-const { 0% { opacity: 0; } 20% { opacity: 0.6; } 80% { opacity: 0.6; } 100% { opacity: 0; } }
+        @keyframes claire-wheel { 0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3) rotate(-30deg); } 15% { opacity: 1; transform: translate(-50%,-50%) scale(1) rotate(0deg); } 80% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes claire-ring { 0% { transform: translate(-50%,-50%) rotate(0deg); } 100% { transform: translate(-50%,-50%) rotate(360deg); } }
+        @keyframes claire-zodiac-pop { 0% { opacity: 0; transform: translate(-50%,-50%) scale(0); } 100% { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+        @keyframes claire-flame {
+          0% { transform: translateY(0) scale(0.5); opacity: 0; }
+          15% { opacity: 1; transform: translateY(-15vh) scale(1.2); }
+          100% { transform: translateY(-100vh) scale(0.4); opacity: 0; }
+        }
+        @keyframes claire-name {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          12% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+          20% { transform: translate(-50%,-50%) scale(1); }
+          82% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes claire-gradient { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+      `}</style>
+    </div>
+  )
+}
+
+// 💻🛡️ Cyber + Code — easter egg Jade
+function CyberJadeAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 7500); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const codeLines = [
+    'const hack = () => 🔓', 'if (jade.skill > 9000)', 'sudo rm -rf boring/',
+    'git push --force life', 'while(true) { learn() }', '> access_granted ✅',
+    'import { power } from "jade"', 'firewall.bypass()', 'encrypt(everything)',
+    'chmod 777 success', '0x4A414445', 'ping jade@cyber.net',
+  ]
+  const matrixDrops = Array.from({ length: 30 }, (_, i) => ({
+    id: i, left: Math.random() * 100, delay: Math.random() * 4,
+    speed: 2 + Math.random() * 3, chars: Array.from({ length: 8 }, () =>
+      String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96))
+    ).join(''),
+  }))
+  const glitchIcons = ['🛡️', '💻', '🔐', '👾', '🕶️', '⚡', '🧠', '💀']
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Dark cyber bg */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(circle at 50% 50%, rgba(0,255,65,0.06) 0%, rgba(0,20,0,0.3) 70%)',
+        animation: 'jade-bg 7.5s ease-in-out forwards',
+      }} />
+      {/* Matrix rain */}
+      {matrixDrops.map(d => (
+        <div key={d.id} style={{
+          position: 'absolute', left: `${d.left}%`, top: '-20%',
+          fontFamily: 'monospace', fontSize: '0.75rem', color: '#00ff41',
+          opacity: 0.6, writingMode: 'vertical-rl',
+          animation: `jade-matrix ${d.speed}s ${d.delay}s linear forwards`,
+          textShadow: '0 0 8px rgba(0,255,65,0.5)',
+        }}>{d.chars}</div>
+      ))}
+      {/* Scanning line */}
+      <div style={{
+        position: 'absolute', left: 0, right: 0, height: '2px',
+        background: 'linear-gradient(90deg, transparent, #00ff41, transparent)',
+        boxShadow: '0 0 15px rgba(0,255,65,0.5)',
+        animation: 'jade-scan 2.5s 0.5s ease-in-out 2',
+        opacity: 0,
+      }} />
+      {/* Terminal window center */}
+      <div style={{
+        position: 'absolute', top: '28%', left: '50%', transform: 'translate(-50%,-50%)',
+        background: 'rgba(0,10,0,0.8)', border: '1px solid rgba(0,255,65,0.3)',
+        borderRadius: '8px', padding: '12px 16px', maxWidth: '320px', width: '80%',
+        animation: 'jade-terminal 6.5s 0.5s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ff5f57' }} />
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#febc2e' }} />
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#28c840' }} />
+        </div>
+        {codeLines.slice(0, 5).map((line, i) => (
+          <div key={i} style={{
+            fontFamily: 'monospace', fontSize: '0.7rem', color: '#00ff41',
+            animation: `jade-type 0.5s ${1 + i * 0.6}s ease-out forwards`, opacity: 0,
+            whiteSpace: 'nowrap', overflow: 'hidden',
+          }}>
+            <span style={{ color: '#666' }}>$ </span>{line}
+          </div>
+        ))}
+      </div>
+      {/* Name */}
+      <div style={{
+        position: 'absolute', top: '55%', left: '50%',
+        transform: 'translate(-50%,-50%)', textAlign: 'center',
+        animation: 'jade-name 6s 1.5s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{
+          fontSize: '2rem', fontWeight: 'bold', fontFamily: 'monospace',
+          color: '#00ff41', textShadow: '0 0 20px rgba(0,255,65,0.5), 2px 2px 0 #003300',
+          animation: 'jade-glitch 0.3s 2.5s ease-in-out 3',
+        }}>{'<Jade/>'}</div>
+        <div style={{ fontSize: '0.7rem', color: '#00cc33', marginTop: '4px', fontFamily: 'monospace' }}>
+          cyber queen 🛡️ // access_level: root
+        </div>
+      </div>
+      {/* Floating icons */}
+      <div style={{
+        position: 'absolute', bottom: '8%', left: 0, right: 0,
+        display: 'flex', justifyContent: 'space-around', padding: '0 5%',
+      }}>
+        {glitchIcons.map((g, i) => (
+          <div key={i} style={{
+            fontSize: '1.8rem',
+            animation: `jade-icon 0.6s ${2 + i * 0.2}s ease-out forwards`, opacity: 0,
+          }}>{g}</div>
+        ))}
+      </div>
+      <style>{`
+        @keyframes jade-bg { 0% { opacity: 0; } 8% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes jade-matrix { 0% { top: -20%; opacity: 0.6; } 100% { top: 110%; opacity: 0; } }
+        @keyframes jade-scan { 0% { top: 0; opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { top: 100%; opacity: 0; } }
+        @keyframes jade-terminal {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.8); }
+          10% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+          82% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes jade-type { 0% { opacity: 0; max-width: 0; } 100% { opacity: 1; max-width: 300px; } }
+        @keyframes jade-name {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          12% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+          20% { transform: translate(-50%,-50%) scale(1); }
+          80% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes jade-glitch {
+          0% { transform: translate(0); } 25% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); }
+          50% { transform: translate(3px, -2px); } 75% { transform: translate(-2px, -1px); filter: hue-rotate(0deg); }
+          100% { transform: translate(0); }
+        }
+        @keyframes jade-icon { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 0.8; transform: translateY(0); } }
+      `}</style>
+    </div>
+  )
+}
+
+// 🧭⛰️ Aventure — easter egg Thomas
+function AdventureThomasAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 8000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const terrain = ['🏔️', '🌋', '🏜️', '🌊', '🌴', '🏕️', '⛰️', '🗻']
+  const items = Array.from({ length: 20 }, (_, i) => ({
+    id: i, left: Math.random() * 100, delay: 0.5 + Math.random() * 4,
+    size: 1 + Math.random() * 1.5,
+    emoji: ['🗡️', '🧭', '🗺️', '🔦', '🪂', '🏹', '⚡', '💎', '🦖', '🐉'][Math.floor(Math.random() * 10)],
+  }))
+  const dinos = [
+    { emoji: '🦕', top: 58, delay: 1.5, speed: 5, size: 4, dir: 'left' },
+    { emoji: '🦖', top: 52, delay: 3, speed: 4.5, size: 3.5, dir: 'right' },
+    { emoji: '🐊', top: 62, delay: 4.5, speed: 6, size: 2.5, dir: 'left' },
+    { emoji: '🦖', top: 45, delay: 2, speed: 5.5, size: 3, dir: 'right' },
+  ]
+  const clouds = Array.from({ length: 6 }, (_, i) => ({
+    id: i, top: 5 + Math.random() * 20, delay: Math.random() * 2, speed: 5 + Math.random() * 4,
+  }))
+  const pathDots = Array.from({ length: 12 }, (_, i) => ({
+    id: i, x: 8 + i * 7.5, y: 70 + Math.sin(i * 0.8) * 8,
+  }))
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Epic sky */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(180deg, #0c1445 0%, #1e3a5f 25%, #e67e22 70%, #f39c12 100%)',
+        animation: 'tom-sky 8s ease-in-out forwards', opacity: 0,
+      }} />
+      {/* Sun/horizon glow */}
+      <div style={{
+        position: 'absolute', bottom: '15%', left: '50%', transform: 'translateX(-50%)',
+        width: '200px', height: '100px', borderRadius: '100px 100px 0 0',
+        background: 'radial-gradient(ellipse at 50% 100%, rgba(243,156,18,0.6) 0%, transparent 70%)',
+        animation: 'tom-sun 7s 0.5s ease-out forwards', opacity: 0,
+      }} />
+      {/* Clouds */}
+      {clouds.map(c => (
+        <div key={c.id} style={{
+          position: 'absolute', top: `${c.top}%`, left: '-10%',
+          fontSize: '2.5rem', opacity: 0.5,
+          animation: `tom-cloud ${c.speed}s ${c.delay}s linear forwards`,
+        }}>☁️</div>
+      ))}
+      {/* Terrain at bottom */}
+      <div style={{
+        position: 'absolute', bottom: '3%', left: 0, right: 0,
+        display: 'flex', justifyContent: 'space-around', padding: '0 2%',
+        animation: 'tom-terrain 7s 0.8s ease-out forwards', opacity: 0,
+      }}>
+        {terrain.map((t, i) => (
+          <div key={i} style={{
+            fontSize: '2.5rem',
+            animation: `tom-grow 0.5s ${1 + i * 0.15}s ease-out forwards`,
+            opacity: 0, transform: 'scale(0) translateY(20px)',
+          }}>{t}</div>
+        ))}
+      </div>
+      {/* Dotted trail path */}
+      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', animation: 'tom-path 6s 1.5s ease-out forwards', opacity: 0 }}>
+        <path
+          d={`M ${pathDots.map(p => `${p.x}% ${p.y}%`).join(' L ')}`}
+          fill="none" stroke="rgba(243,156,18,0.4)" strokeWidth="2"
+          strokeDasharray="8 6" strokeLinecap="round"
+        />
+        {pathDots.map((p, i) => (
+          <circle key={i} cx={`${p.x}%`} cy={`${p.y}%`} r="3"
+            fill="#f39c12" opacity="0.6"
+            style={{ animation: `tom-dot-pop 0.3s ${1.8 + i * 0.1}s ease-out forwards`, opacity: 0 }}
+          />
+        ))}
+      </svg>
+      {/* Explorer walking across */}
+      <div style={{
+        position: 'absolute', bottom: '20%', left: '-10%',
+        fontSize: '3rem',
+        animation: 'tom-explorer 5.5s 1.5s ease-in-out forwards', opacity: 0,
+      }}>
+        <span style={{ display: 'inline-block', animation: 'tom-step 0.4s ease-in-out infinite alternate' }}>🧗</span>
+      </div>
+      {/* Dinosaurs crossing */}
+      {dinos.map((d, i) => (
+        <div key={`dino-${i}`} style={{
+          position: 'absolute', top: `${d.top}%`,
+          left: d.dir === 'left' ? '-12%' : undefined,
+          right: d.dir === 'right' ? '-12%' : undefined,
+          fontSize: `${d.size}rem`,
+          transform: d.dir === 'right' ? 'scaleX(-1)' : 'none',
+          animation: `tom-dino-${d.dir} ${d.speed}s ${d.delay}s ease-in-out forwards`,
+          opacity: 0, filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
+        }}>
+          <div style={{ animation: 'tom-dino-stomp 0.3s ease-in-out infinite alternate' }}>{d.emoji}</div>
+        </div>
+      ))}
+      {/* Dino footprints */}
+      {[20, 35, 50, 65, 80].map((x, i) => (
+        <div key={`foot-${i}`} style={{
+          position: 'absolute', bottom: '13%', left: `${x}%`,
+          fontSize: '1rem', opacity: 0,
+          animation: `tom-footprint 1.5s ${2.5 + i * 0.4}s ease-out forwards`,
+        }}>🦶</div>
+      ))}
+      {/* Compass spinning top-right */}
+      <div style={{
+        position: 'absolute', top: '12%', right: '12%',
+        fontSize: '3.5rem',
+        animation: 'tom-compass 7s 0.5s ease-out forwards', opacity: 0,
+      }}>🧭</div>
+      {/* Name */}
+      <div style={{
+        position: 'absolute', top: '42%', left: '50%',
+        transform: 'translate(-50%,-50%)', textAlign: 'center',
+        animation: 'tom-name 7s 1s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{
+          fontSize: '2rem', fontWeight: 'bold',
+          background: 'linear-gradient(90deg, #f39c12, #e74c3c, #f39c12)',
+          backgroundSize: '200% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          animation: 'tom-gradient 2.5s linear infinite',
+        }}>Thomas ⚔️</div>
+        <div style={{ fontSize: '0.8rem', color: '#f39c12', marginTop: '4px' }}>
+          l'aventure ne fait que commencer 🦖🗺️
+        </div>
+      </div>
+      {/* Floating adventure items */}
+      {items.map(it => (
+        <div key={it.id} style={{
+          position: 'absolute', left: `${it.left}%`, top: '-30px',
+          fontSize: `${it.size}rem`,
+          animation: `tom-item ${2 + Math.random() * 2}s ${it.delay}s ease-in forwards`, opacity: 0,
+        }}>{it.emoji}</div>
+      ))}
+      <style>{`
+        @keyframes tom-sky { 0% { opacity: 0; } 8% { opacity: 0.55; } 85% { opacity: 0.55; } 100% { opacity: 0; } }
+        @keyframes tom-sun { 0% { opacity: 0; transform: translateX(-50%) scale(0.5); } 15% { opacity: 0.8; transform: translateX(-50%) scale(1); } 80% { opacity: 0.8; } 100% { opacity: 0; } }
+        @keyframes tom-cloud { 0% { left: -10%; opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { left: 110%; opacity: 0; } }
+        @keyframes tom-terrain { 0% { opacity: 0; } 10% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes tom-grow { 0% { opacity: 0; transform: scale(0) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes tom-path { 0% { opacity: 0; } 15% { opacity: 0.7; } 80% { opacity: 0.7; } 100% { opacity: 0; } }
+        @keyframes tom-dot-pop { 0% { opacity: 0; r: 0; } 100% { opacity: 0.6; r: 3; } }
+        @keyframes tom-explorer {
+          0% { left: -10%; opacity: 0; bottom: 20%; }
+          10% { opacity: 1; }
+          30% { bottom: 25%; }
+          50% { bottom: 18%; }
+          70% { bottom: 24%; }
+          90% { opacity: 1; }
+          100% { left: 110%; bottom: 20%; opacity: 0; }
+        }
+        @keyframes tom-step { 0% { transform: translateY(0) rotate(-3deg); } 100% { transform: translateY(-5px) rotate(3deg); } }
+        @keyframes tom-compass {
+          0% { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+          15% { opacity: 0.8; transform: rotate(0deg) scale(1); }
+          50% { transform: rotate(360deg) scale(1); }
+          80% { opacity: 0.8; }
+          100% { opacity: 0; transform: rotate(720deg); }
+        }
+        @keyframes tom-name {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.4); }
+          12% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+          20% { transform: translate(-50%,-50%) scale(1); }
+          82% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes tom-gradient { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+        @keyframes tom-dino-left { 0% { left: -12%; opacity: 0; } 8% { opacity: 1; } 88% { opacity: 1; } 100% { left: 110%; opacity: 0; } }
+        @keyframes tom-dino-right { 0% { right: -12%; opacity: 0; } 8% { opacity: 1; } 88% { opacity: 1; } 100% { right: 110%; opacity: 0; } }
+        @keyframes tom-dino-stomp { 0% { transform: translateY(0) rotate(-2deg); } 100% { transform: translateY(-6px) rotate(2deg); } }
+        @keyframes tom-footprint { 0% { opacity: 0; transform: scale(0); } 30% { opacity: 0.5; transform: scale(1.2); } 60% { opacity: 0.3; transform: scale(1); } 100% { opacity: 0; } }
+        @keyframes tom-item {
+          0% { transform: translateY(0) rotate(0deg) scale(0.3); opacity: 0; }
+          10% { opacity: 0.9; }
+          100% { transform: translateY(110vh) rotate(${180 + Math.random() * 360}deg) scale(0.6); opacity: 0; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// 🌀 Spirale d'emojis — easter egg Jonas
+function SpiralJonasAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 9000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const allEmojis = [
+    '😀','😂','🥹','😎','🤩','🥳','😈','👻','💀','🤖','👽','🎃',
+    '❤️','🔥','⭐','💎','🌈','🍕','🎸','🚀','🧠','👑','🐉','🦄',
+    '🌍','🎯','💡','🎮','🏆','⚡','🌊','🌸','🍊','🎵','🪐','🔮',
+    '🦖','🐱','🐶','🦅','🐙','🦋','🌻','🍉','🎪','🏔️','🌙','☀️',
+    '🎲','🃏','💣','🧲','🔱','⚔️','🛡️','🪄','💫','✨','🎆','🎇',
+    '🧊','🔥','💧','🌪️','☄️','🌠','🏴‍☠️','🎭','🎨','📡','💻','🕹️',
+  ]
+  const spiralCount = 72
+  const spiral = Array.from({ length: spiralCount }, (_, i) => {
+    const angle = i * 0.45
+    const radius = 8 + i * 3.2
+    const x = 50 + Math.cos(angle) * radius * 0.5
+    const y = 50 + Math.sin(angle) * radius * 0.5
+    return {
+      id: i, x, y,
+      emoji: allEmojis[i % allEmojis.length],
+      delay: i * 0.06,
+      size: 0.8 + (i / spiralCount) * 1.2,
+    }
+  })
+  const outerRing = Array.from({ length: 24 }, (_, i) => {
+    const angle = (i / 24) * Math.PI * 2
+    return {
+      id: i, emoji: allEmojis[(i * 3) % allEmojis.length],
+      x: 50 + Math.cos(angle) * 45,
+      y: 50 + Math.sin(angle) * 45,
+      delay: 3 + i * 0.08,
+    }
+  })
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Cosmic vortex bg */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(circle at 50% 50%, rgba(99,102,241,0.15) 0%, rgba(15,5,30,0.3) 50%, transparent 80%)',
+        animation: 'jonas-bg 9s ease-in-out forwards',
+      }} />
+      {/* Rotating glow ring */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%',
+        width: '300px', height: '300px', transform: 'translate(-50%,-50%)',
+        borderRadius: '50%',
+        background: 'conic-gradient(from 0deg, rgba(99,102,241,0.2), rgba(236,72,153,0.2), rgba(245,158,11,0.2), rgba(16,185,129,0.2), rgba(99,102,241,0.2))',
+        animation: 'jonas-glow-ring 4s linear infinite',
+        opacity: 0.5,
+      }} />
+      {/* Spiral emojis appearing one by one */}
+      {spiral.map(s => (
+        <div key={s.id} style={{
+          position: 'absolute',
+          left: `${s.x}%`, top: `${s.y}%`,
+          fontSize: `${s.size}rem`,
+          transform: 'translate(-50%,-50%) scale(0)',
+          animation: `jonas-spiral-pop 0.4s ${s.delay}s ease-out forwards`,
+          opacity: 0,
+        }}>{s.emoji}</div>
+      ))}
+      {/* Outer ring burst */}
+      {outerRing.map(r => (
+        <div key={`ring-${r.id}`} style={{
+          position: 'absolute',
+          left: `${r.x}%`, top: `${r.y}%`,
+          fontSize: '1.5rem',
+          transform: 'translate(-50%,-50%) scale(0)',
+          animation: `jonas-ring-burst 0.5s ${r.delay}s ease-out forwards`,
+          opacity: 0,
+        }}>{r.emoji}</div>
+      ))}
+      {/* Center vortex */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%',
+        transform: 'translate(-50%,-50%)',
+        animation: 'jonas-center 8s 0.3s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{
+          fontSize: '3rem',
+          animation: 'jonas-vortex-spin 3s linear infinite',
+        }}>🌀</div>
+      </div>
+      {/* Name */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%',
+        transform: 'translate(-50%,-50%)', textAlign: 'center',
+        animation: 'jonas-name 5s 4.5s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{
+          fontSize: '2.2rem', fontWeight: 'bold',
+          background: 'linear-gradient(90deg, #6366f1, #ec4899, #f59e0b, #10b981, #6366f1)',
+          backgroundSize: '400% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          animation: 'jonas-rainbow 2s linear infinite',
+          textShadow: 'none',
+        }}>Jonas 🌀</div>
+        <div style={{ fontSize: '0.75rem', color: '#a78bfa', marginTop: '4px' }}>
+          the one who built this 🛠️
+        </div>
+      </div>
+      {/* Final explosion of emojis outward */}
+      {allEmojis.slice(0, 36).map((e, i) => {
+        const angle = (i / 36) * Math.PI * 2
+        return (
+          <div key={`exp-${i}`} style={{
+            position: 'absolute', top: '50%', left: '50%',
+            fontSize: '1.3rem',
+            animation: `jonas-explode 1.5s ${6.5 + i * 0.03}s ease-out forwards`,
+            opacity: 0,
+            '--ex': `${Math.cos(angle) * 55}vw`,
+            '--ey': `${Math.sin(angle) * 55}vh`,
+          }}>{e}</div>
+        )
+      })}
+      <style>{`
+        @keyframes jonas-bg { 0% { opacity: 0; } 5% { opacity: 1; } 88% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes jonas-glow-ring { 0% { transform: translate(-50%,-50%) rotate(0deg); } 100% { transform: translate(-50%,-50%) rotate(360deg); } }
+        @keyframes jonas-spiral-pop {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0) rotate(-180deg); }
+          60% { opacity: 1; transform: translate(-50%,-50%) scale(1.3) rotate(10deg); }
+          100% { opacity: 0.9; transform: translate(-50%,-50%) scale(1) rotate(0deg); }
+        }
+        @keyframes jonas-ring-burst {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0); }
+          50% { opacity: 1; transform: translate(-50%,-50%) scale(1.4); }
+          100% { opacity: 0.7; transform: translate(-50%,-50%) scale(1); }
+        }
+        @keyframes jonas-center {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0); }
+          15% { opacity: 1; transform: translate(-50%,-50%) scale(1.2); }
+          20% { transform: translate(-50%,-50%) scale(1); }
+          55% { opacity: 1; }
+          65% { opacity: 0; }
+          100% { opacity: 0; }
+        }
+        @keyframes jonas-vortex-spin { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.15); } 100% { transform: rotate(360deg) scale(1); } }
+        @keyframes jonas-name {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3); }
+          15% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
+          25% { transform: translate(-50%,-50%) scale(1); }
+          80% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes jonas-rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 400% 50%; } }
+        @keyframes jonas-explode {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          20% { opacity: 1; }
+          100% { opacity: 0; transform: translate(calc(-50% + var(--ex)), calc(-50% + var(--ey))) scale(0.3) rotate(360deg); }
+        }
       `}</style>
     </div>
   )

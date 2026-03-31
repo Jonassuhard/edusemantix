@@ -47,6 +47,8 @@ const ANIMATIONS = {
   spiralJonas: SpiralJonasAnimation,
   ghostDev: GhostDevAnimation,
   seoLoud: SeoLoudAnimation,
+  olafDisney: OlafDisneyAnimation,
+  bossNathalie: BossNathalieAnimation,
 }
 
 export default function EasterEggOverlay({ anim, animKey }) {
@@ -3181,6 +3183,271 @@ function SeoLoudAnimation() {
           50% { transform: translate(3px, -2px); }
           75% { transform: translate(-2px, -1px); }
           100% { transform: translate(0,0); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+// ⛄✨ Olaf + Disneyland — easter egg Mélanie
+function OlafDisneyAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 8000); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const snowflakes = Array.from({ length: 40 }, (_, i) => ({
+    id: i, left: Math.random() * 100, delay: Math.random() * 4,
+    size: 0.6 + Math.random() * 1.2, speed: 3 + Math.random() * 3,
+    emoji: ['❄️', '❅', '❆', '✨', '🤍'][Math.floor(Math.random() * 5)],
+    wobble: (Math.random() - 0.5) * 40,
+  }))
+  const disneyIcons = ['🏰', '🎠', '🎢', '🎆', '👸', '🐭', '⭐', '🎪']
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Frozen blue sky */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(180deg, #0a1628 0%, #1e3a5f 30%, #7dd3fc 70%, #bae6fd 100%)',
+        animation: 'olaf-sky 8s ease-in-out forwards', opacity: 0,
+      }} />
+      {/* Snowflakes */}
+      {snowflakes.map(s => (
+        <div key={s.id} style={{
+          position: 'absolute', left: `${s.left}%`, top: '-30px',
+          fontSize: `${s.size}rem`,
+          animation: `olaf-snow ${s.speed}s ${s.delay}s linear forwards`,
+          opacity: 0, '--wobble': `${s.wobble}px`,
+        }}>{s.emoji}</div>
+      ))}
+      {/* Olaf center with warm hug */}
+      <div style={{
+        position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%,-50%)',
+        textAlign: 'center',
+        animation: 'olaf-appear 7s 0.8s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{ fontSize: '5rem', animation: 'olaf-waddle 0.6s ease-in-out infinite alternate' }}>⛄</div>
+        <div style={{
+          fontSize: '0.8rem', color: '#fbbf24', marginTop: '4px',
+          fontStyle: 'italic', textShadow: '0 0 10px rgba(251,191,36,0.4)',
+        }}>"Hi, I'm Olaf and I like warm hugs!" ☀️</div>
+      </div>
+      {/* Sun appearing (Olaf loves summer) */}
+      <div style={{
+        position: 'absolute', top: '8%', right: '15%',
+        fontSize: '3.5rem',
+        animation: 'olaf-sun 6s 2s ease-out forwards', opacity: 0,
+      }}>☀️</div>
+      {/* Carrot nose flying */}
+      <div style={{
+        position: 'absolute', top: '28%', left: '52%',
+        fontSize: '1.5rem',
+        animation: 'olaf-carrot 2s 3.5s ease-out forwards', opacity: 0,
+      }}>🥕</div>
+      {/* Name */}
+      <div style={{
+        position: 'absolute', top: '55%', left: '50%',
+        transform: 'translate(-50%,-50%)', textAlign: 'center',
+        animation: 'olaf-name 6s 1.5s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{
+          fontSize: '1.8rem', fontWeight: 'bold',
+          background: 'linear-gradient(90deg, #7dd3fc, #bae6fd, #fbbf24, #7dd3fc)',
+          backgroundSize: '300% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          animation: 'olaf-gradient 3s linear infinite',
+        }}>Mélanie ⛄</div>
+        <div style={{ fontSize: '0.7rem', color: '#7dd3fc', marginTop: '3px' }}>
+          warm hugs & Disney magic 🏰✨
+        </div>
+      </div>
+      {/* Disney icons parade at bottom */}
+      <div style={{
+        position: 'absolute', bottom: '8%', left: 0, right: 0,
+        display: 'flex', justifyContent: 'space-around', padding: '0 5%',
+        animation: 'olaf-parade 7s 1.5s ease-out forwards', opacity: 0,
+      }}>
+        {disneyIcons.map((d, i) => (
+          <div key={i} style={{
+            fontSize: '2rem',
+            animation: `olaf-bounce 0.8s ${1.8 + i * 0.15}s ease-in-out infinite alternate`,
+          }}>{d}</div>
+        ))}
+      </div>
+      <style>{`
+        @keyframes olaf-sky { 0% { opacity: 0; } 8% { opacity: 0.5; } 85% { opacity: 0.5; } 100% { opacity: 0; } }
+        @keyframes olaf-snow {
+          0% { transform: translateY(0) translateX(0); opacity: 0; }
+          10% { opacity: 0.8; }
+          50% { transform: translateY(50vh) translateX(var(--wobble)); }
+          100% { transform: translateY(110vh) translateX(calc(var(--wobble) * -0.5)); opacity: 0; }
+        }
+        @keyframes olaf-appear {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0); }
+          10% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
+          15% { transform: translate(-50%,-50%) scale(1); }
+          85% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes olaf-waddle {
+          0% { transform: rotate(-5deg) translateY(0); }
+          100% { transform: rotate(5deg) translateY(-8px); }
+        }
+        @keyframes olaf-sun {
+          0% { opacity: 0; transform: scale(0) rotate(-30deg); }
+          15% { opacity: 0.9; transform: scale(1.1) rotate(0deg); }
+          20% { transform: scale(1); }
+          80% { opacity: 0.9; }
+          100% { opacity: 0; }
+        }
+        @keyframes olaf-carrot {
+          0% { opacity: 0; transform: translate(0,0) rotate(0deg); }
+          20% { opacity: 1; }
+          100% { opacity: 0; transform: translate(80px, -60px) rotate(360deg); }
+        }
+        @keyframes olaf-name {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          12% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+          20% { transform: translate(-50%,-50%) scale(1); }
+          82% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes olaf-gradient { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+        @keyframes olaf-parade {
+          0% { opacity: 0; transform: translateY(10px); }
+          10% { opacity: 1; transform: translateY(0); }
+          85% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes olaf-bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-10px); } }
+      `}</style>
+    </div>
+  )
+}
+
+// 👑 Big Boss Eduservices — easter egg Nathalie
+function BossNathalieAnimation() {
+  const [active, setActive] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setActive(false), 7500); return () => clearTimeout(t) }, [])
+  if (!active) return null
+  const sparkles = Array.from({ length: 20 }, (_, i) => ({
+    id: i, left: Math.random() * 100, top: Math.random() * 100,
+    delay: 0.5 + Math.random() * 5, size: 0.8 + Math.random() * 1,
+  }))
+  const logos = ['🎓', '📚', '🏫', '💼', '📊', '🌐', '🏆', '⭐']
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+      {/* Royal bg */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(135deg, rgba(120,80,0,0.15) 0%, rgba(180,140,20,0.1) 50%, rgba(60,20,80,0.15) 100%)',
+        animation: 'nath-bg 7.5s ease-in-out forwards',
+      }} />
+      {/* Red carpet unrolling */}
+      <div style={{
+        position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+        width: '120px', height: '0',
+        background: 'linear-gradient(180deg, rgba(220,38,38,0.6) 0%, rgba(185,28,28,0.8) 100%)',
+        borderRadius: '4px 4px 0 0',
+        animation: 'nath-carpet 2s 0.5s ease-out forwards',
+      }} />
+      {/* Crown descending */}
+      <div style={{
+        position: 'absolute', top: '15%', left: '50%', transform: 'translateX(-50%)',
+        fontSize: '4rem',
+        animation: 'nath-crown 7s 1s ease-out forwards', opacity: 0,
+        filter: 'drop-shadow(0 0 15px rgba(251,191,36,0.5))',
+      }}>👑</div>
+      {/* Boss entrance */}
+      <div style={{
+        position: 'absolute', top: '35%', left: '50%', transform: 'translate(-50%,-50%)',
+        textAlign: 'center',
+        animation: 'nath-entrance 6.5s 1.5s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{ fontSize: '4.5rem', animation: 'nath-power 1.5s ease-in-out infinite alternate' }}>💼</div>
+      </div>
+      {/* Name */}
+      <div style={{
+        position: 'absolute', top: '55%', left: '50%',
+        transform: 'translate(-50%,-50%)', textAlign: 'center',
+        animation: 'nath-name 6s 2s ease-out forwards', opacity: 0,
+      }}>
+        <div style={{
+          fontSize: '2rem', fontWeight: 'bold',
+          background: 'linear-gradient(90deg, #fbbf24, #f59e0b, #d97706, #fbbf24)',
+          backgroundSize: '300% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          animation: 'nath-gold 2s linear infinite',
+          textShadow: 'none',
+        }}>Nathalie 👑</div>
+        <div style={{ fontSize: '0.85rem', color: '#fbbf24', marginTop: '4px', letterSpacing: '3px', textTransform: 'uppercase' }}>
+          la big boss
+        </div>
+        <div style={{ fontSize: '0.65rem', color: '#d97706', marginTop: '2px' }}>
+          Eduservices tremble à son passage 🏢
+        </div>
+      </div>
+      {/* Edu logos orbiting */}
+      <div style={{
+        position: 'absolute', top: '38%', left: '50%',
+        width: '250px', height: '250px', transform: 'translate(-50%,-50%)',
+        animation: 'nath-orbit 6s 1.5s linear forwards', opacity: 0,
+      }}>
+        {logos.map((l, i) => {
+          const angle = (i / logos.length) * 360
+          const rad = angle * Math.PI / 180
+          const x = 125 + Math.cos(rad) * 110
+          const y = 125 + Math.sin(rad) * 110
+          return (
+            <div key={i} style={{
+              position: 'absolute', left: `${x}px`, top: `${y}px`,
+              transform: 'translate(-50%,-50%)', fontSize: '1.8rem',
+              animation: `nath-logo-pop 0.4s ${2 + i * 0.2}s ease-out forwards`, opacity: 0,
+            }}>{l}</div>
+          )
+        })}
+      </div>
+      {/* Gold sparkles */}
+      {sparkles.map(s => (
+        <div key={s.id} style={{
+          position: 'absolute', left: `${s.left}%`, top: `${s.top}%`,
+          fontSize: `${s.size}rem`, color: '#fbbf24',
+          animation: `nath-sparkle 1.2s ${s.delay}s ease-in-out forwards`, opacity: 0,
+        }}>✨</div>
+      ))}
+      <style>{`
+        @keyframes nath-bg { 0% { opacity: 0; } 8% { opacity: 1; } 88% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes nath-carpet { 0% { height: 0; } 100% { height: 100%; } }
+        @keyframes nath-crown {
+          0% { opacity: 0; top: -10%; }
+          20% { opacity: 1; top: 15%; }
+          30% { top: 13%; } 35% { top: 15%; }
+          85% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes nath-entrance {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3); }
+          15% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
+          22% { transform: translate(-50%,-50%) scale(1); }
+          82% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes nath-power { 0% { transform: scale(1); } 100% { transform: scale(1.1); filter: drop-shadow(0 0 10px rgba(251,191,36,0.4)); } }
+        @keyframes nath-name {
+          0% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+          12% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+          20% { transform: translate(-50%,-50%) scale(1); }
+          82% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes nath-gold { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+        @keyframes nath-orbit {
+          0% { opacity: 0; transform: translate(-50%,-50%) rotate(0deg); }
+          10% { opacity: 1; }
+          80% { opacity: 1; }
+          100% { opacity: 0; transform: translate(-50%,-50%) rotate(360deg); }
+        }
+        @keyframes nath-logo-pop { 0% { opacity: 0; transform: translate(-50%,-50%) scale(0); } 100% { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+        @keyframes nath-sparkle {
+          0% { opacity: 0; transform: scale(0) rotate(0deg); }
+          50% { opacity: 1; transform: scale(1.3) rotate(180deg); }
+          100% { opacity: 0; transform: scale(0) rotate(360deg); }
         }
       `}</style>
     </div>
